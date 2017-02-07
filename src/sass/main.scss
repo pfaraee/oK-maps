@@ -1,7 +1,19 @@
 @import "materialize";
 
 div#num-vars {
-  margin-left: 20px;
-  margin-right: 20px;
+
   margin-bottom: 40px;
+}
+
+.tt-wrapper {
+  margin-top: 20px;
+}
+
+h4.title {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+canvas#canvas {
+  margin: 40px;
 }

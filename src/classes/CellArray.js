@@ -35,18 +35,19 @@ class CellArray {
   }
 
   mark(terms) {
-    console.log(this.cells);
+    // console.log(terms);
     for(let i = 0; i < terms.length; i++) { // for each minterm
       for(let j = 0; j < this.cells.length; j++) {
-        if(this.cells[j].val === terms[i]) {
+        if((this.cells[j].val === i) && (terms[i] == 1)) {
           this.cells[j].active = true;
         }
       }
     }
+    console.log(this.cells);
   }
 
   reset() {
-    console.log(this.cells);
+    // console.log(this.cells);
     for(let i = 0; i < this.cells.length; i ++) {
       this.cells[i].active = false;
     }

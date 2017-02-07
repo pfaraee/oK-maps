@@ -26,6 +26,22 @@ slider.noUiSlider.on('update', function () {
   var tbl = document.createElement('table');
 
   var thead = document.createElement('thead');
+
+  var superHeadRow = document.createElement('tr');
+
+  var input = document.createElement('th');
+  input.appendChild(document.createTextNode('Input'));
+  input.setAttribute('colspan', slider.noUiSlider.get());
+
+  var output = document.createElement('th');
+  output.setAttribute('colspan', 3);
+  output.appendChild(document.createTextNode('Output'));
+
+  superHeadRow.appendChild(input);
+  superHeadRow.appendChild(output);
+
+  thead.appendChild(superHeadRow);
+
   var tr = document.createElement('tr');
   // Creates headers for the truth table
   for (var i = 0; i < slider.noUiSlider.get(); i++) {
@@ -33,6 +49,18 @@ slider.noUiSlider.on('update', function () {
     th.appendChild(document.createTextNode(String.fromCharCode(65 + i)));
     tr.appendChild(th);
   }
+
+  var off = document.createElement('th');
+  off.appendChild(document.createTextNode("0"));
+  var on = document.createElement('th');
+  on.appendChild(document.createTextNode("1"));
+  var dontCare = document.createElement('th');
+  dontCare.appendChild(document.createTextNode("X"));
+
+  tr.appendChild(off);
+  tr.appendChild(on);
+  tr.appendChild(dontCare);
+
   thead.appendChild(tr);
   tbl.appendChild(thead);
 
@@ -47,10 +75,49 @@ slider.noUiSlider.on('update', function () {
     var binArray = bin.split("");
 
     for (var _i2 = 0; _i2 < binArray.length; _i2++) {
-      var td = document.createElement('td');
-      td.appendChild(document.createTextNode(binArray[_i2]));
-      _tr.appendChild(td);
+      var _td = document.createElement('td');
+      _td.appendChild(document.createTextNode(binArray[_i2]));
+      _tr.appendChild(_td);
     }
+
+    var _td = document.createElement('td');
+    var input1 = document.createElement('input');
+    input1.setAttribute('name', 'group' + _i);
+    input1.setAttribute('type', 'radio');
+    input1.setAttribute('id', 'OFF' + _i);
+    input1.setAttribute('value', '0');
+    input1.setAttribute('checked', 'checked');
+    var label1 = document.createElement('label');
+    label1.setAttribute('for', 'OFF' + _i);
+    _td.appendChild(input1);
+    _td.appendChild(label1);
+
+    var td2 = document.createElement('td');
+    var input2 = document.createElement('input');
+    input2.setAttribute('name', 'group' + _i);
+    input2.setAttribute('type', 'radio');
+    input2.setAttribute('id', 'ON' + _i);
+    input2.setAttribute('value', '1');
+    var label2 = document.createElement('label');
+    label2.setAttribute('for', 'ON' + _i);
+    td2.appendChild(input2);
+    td2.appendChild(label2);
+
+    var td3 = document.createElement('td');
+    var input3 = document.createElement('input');
+    input3.setAttribute('name', 'group' + _i);
+    input3.setAttribute('type', 'radio');
+    input3.setAttribute('id', 'DONTCARE' + _i);
+    input3.setAttribute('value', 'X');
+    var label3 = document.createElement('label');
+    label3.setAttribute('for', 'DONTCARE' + _i);
+    td3.appendChild(input3);
+    td3.appendChild(label3);
+
+    _tr.appendChild(_td);
+    _tr.appendChild(td2);
+    _tr.appendChild(td3);
+
     tbody.appendChild(_tr);
   }
   tbl.appendChild(tbody);
@@ -95,19 +162,26 @@ document.addEventListener('keypress', function (e) {
     cellArray.reset();
 
     draw3varkmap();
-
+    console.log(minterms);
     //TODO: change it to work for more minterms instead of hardcoding the 8
     //gets minterms from html form
     for (var i = 0; i < 8; i++) {
-      minterms[i] = document.getElementsByClassName('var-wrapper')[0].children[i].value;
+      var formGroup = document.getElementsByName("group" + i);
+      for (var j = 0; j < formGroup.length; j++) {
+        if (formGroup[j].checked == true) {
+          console.log(formGroup[j]);
+          minterms[i] = formGroup[j].value;
+        }
+      }
     }
-
+    console.log(minterms);
     cleanArray(minterms);
+    console.log(minterms);
     // marks every cell as active or not based on minterms
     cellArray.mark(minterms);
-    console.log(cellArray.cells);
+    // console.log(cellArray.cells);
     cellArray.drawTerms();
-    console.log("hello");
+    // console.log("hello");
     drawer = new Drawer(cellArray.getGroups());
     drawer.drawPoints();
   }
@@ -133,17 +207,17 @@ function draw3varkmap() {
   //draws table
   ctx.beginPath();
 
-  ctx.moveTo(0, 0);
-  ctx.lineTo(c.width, 0);
-
-  ctx.moveTo(c.width, 0);
-  ctx.lineTo(c.width, c.width);
-
-  ctx.moveTo(c.width, c.width);
-  ctx.lineTo(0, c.width);
-
-  ctx.moveTo(0, c.width);
-  ctx.lineTo(0, 0);
+  // ctx.moveTo(0,0);
+  // ctx.lineTo(c.width, 0);
+  //
+  // ctx.moveTo(c.width,0);
+  // ctx.lineTo(c.width, c.width);
+  //
+  // ctx.moveTo(c.width, c.width);
+  // ctx.lineTo(0, c.width);
+  //
+  // ctx.moveTo(0, c.width);
+  // ctx.lineTo(0, 0);
 
   ctx.moveTo(0, 0);
   ctx.lineTo(scale, scale);
