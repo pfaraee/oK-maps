@@ -184,6 +184,11 @@ var CellArray = function () {
       return false;
     }
   }, {
+    key: 'armeniscool',
+    value: function armeniscool() {
+      console.log("jk");
+    }
+  }, {
     key: 'isGroupUnique',
     value: function isGroupUnique(marked, group) {
       var matches = 0;

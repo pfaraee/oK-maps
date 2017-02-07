@@ -1,3 +1,63 @@
+var slider = document.getElementById('num-vars');
+
+noUiSlider.create(slider, {
+ start: 3,
+ connect: [true, false],
+ step: 1,
+ range: {
+   'min': [3],
+   'max': [6]
+ },
+ pips: {
+   mode: 'steps',
+   density: 30
+ }
+});
+
+slider.noUiSlider.on('update', function () {
+  var truthTable = document.getElementById('truth-table');
+
+  while(truthTable.firstChild){
+    truthTable.removeChild(truthTable.firstChild);
+  }
+
+  var tbl = document.createElement('table');
+
+  var thead = document.createElement('thead');
+  var tr = document.createElement('tr');
+  // Creates headers for the truth table
+  for(let i = 0; i < slider.noUiSlider.get(); i ++) {
+    let th = document.createElement('th');
+    th.appendChild(document.createTextNode(String.fromCharCode(65 + i)));
+    tr.appendChild(th);
+  }
+  thead.appendChild(tr);
+  tbl.appendChild(thead);
+
+  var tbody = document.createElement('tbody');
+  for(let i = 0; i < Math.pow(2, slider.noUiSlider.get()); i++) {
+    let tr = document.createElement('tr');
+
+    var num = "" + i.toString(2);
+    var pad = '0'.repeat(slider.noUiSlider.get()); // its just 5 0's for the max var nums
+    var bin = pad.substring(0, pad.length - num.length) + num;
+
+    var binArray = bin.split("");
+
+    for (let i = 0; i < binArray.length; i++) {
+      var td = document.createElement('td');
+      td.appendChild(document.createTextNode(binArray[i]));
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+  tbl.appendChild(tbody);
+  truthTable.appendChild(tbl);
+});
+
+
+
+
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
 
@@ -73,6 +133,18 @@ function resetkmap() {
 function draw3varkmap() {
   //draws table
   ctx.beginPath();
+
+  ctx.moveTo(0,0);
+  ctx.lineTo(c.width, 0);
+
+  ctx.moveTo(c.width,0);
+  ctx.lineTo(c.width, c.width);
+
+  ctx.moveTo(c.width, c.width);
+  ctx.lineTo(0, c.width);
+
+  ctx.moveTo(0, c.width);
+  ctx.lineTo(0, 0);
 
   ctx.moveTo(0,0);
   ctx.lineTo(scale, scale);

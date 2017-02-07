@@ -169,6 +169,10 @@ class CellArray {
     return false;
   }
 
+  armeniscool() {
+    console.log("jk");
+  }
+
   isGroupUnique(marked, group) {
     var matches = 0;
 

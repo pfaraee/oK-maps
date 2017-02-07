@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var sass = require('gulp-sass');
 var babel = require('gulp-babel');
 var connect = require('gulp-connect');
 
@@ -9,6 +10,13 @@ gulp.task('connect', function(){
   });
 });
 
+// keeps gulp from crashing for scss errors
+gulp.task('sass', function () {
+  return gulp.src('./src/sass/main.scss')
+      .pipe(sass({ errLogToConsole: true }))
+      .pipe(gulp.dest('./public/css'));
+});
+
 gulp.task('livereload', function (){
   gulp.src('./public/**/*')
   .pipe(connect.reload());
@@ -16,6 +24,7 @@ gulp.task('livereload', function (){
 
 gulp.task('watch', function () {
   gulp.watch('./src/**/*.js', ['build']);
+  gulp.watch('./src/**/*.scss', ['sass']);
   gulp.watch('./public/**/*', ['livereload']);
 });
 
@@ -25,4 +34,4 @@ gulp.task('build', function() {
     .pipe(gulp.dest('public/build'));
 });
 
-gulp.task('default', ['connect', 'watch', 'build']);
+gulp.task('default', ['connect', 'watch', 'build', 'sass']);
