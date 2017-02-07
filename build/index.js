@@ -1,4 +1,61 @@
-"use strict";
+'use strict';
+
+var slider = document.getElementById('num-vars');
+
+noUiSlider.create(slider, {
+  start: 3,
+  connect: [true, false],
+  step: 1,
+  range: {
+    'min': [3],
+    'max': [6]
+  },
+  pips: {
+    mode: 'steps',
+    density: 30
+  }
+});
+
+slider.noUiSlider.on('update', function () {
+  var truthTable = document.getElementById('truth-table');
+
+  while (truthTable.firstChild) {
+    truthTable.removeChild(truthTable.firstChild);
+  }
+
+  var tbl = document.createElement('table');
+
+  var thead = document.createElement('thead');
+  var tr = document.createElement('tr');
+  // Creates headers for the truth table
+  for (var i = 0; i < slider.noUiSlider.get(); i++) {
+    var th = document.createElement('th');
+    th.appendChild(document.createTextNode(String.fromCharCode(65 + i)));
+    tr.appendChild(th);
+  }
+  thead.appendChild(tr);
+  tbl.appendChild(thead);
+
+  var tbody = document.createElement('tbody');
+  for (var _i = 0; _i < Math.pow(2, slider.noUiSlider.get()); _i++) {
+    var _tr = document.createElement('tr');
+
+    var num = "" + _i.toString(2);
+    var pad = '0'.repeat(slider.noUiSlider.get()); // its just 5 0's for the max var nums
+    var bin = pad.substring(0, pad.length - num.length) + num;
+
+    var binArray = bin.split("");
+
+    for (var _i2 = 0; _i2 < binArray.length; _i2++) {
+      var td = document.createElement('td');
+      td.appendChild(document.createTextNode(binArray[_i2]));
+      _tr.appendChild(td);
+    }
+    tbody.appendChild(_tr);
+  }
+  tbl.appendChild(tbody);
+  truthTable.appendChild(tbl);
+});
 
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
@@ -75,6 +132,18 @@ function resetkmap() {
 function draw3varkmap() {
   //draws table
   ctx.beginPath();
+
+  ctx.moveTo(0, 0);
+  ctx.lineTo(c.width, 0);
+
+  ctx.moveTo(c.width, 0);
+  ctx.lineTo(c.width, c.width);
+
+  ctx.moveTo(c.width, c.width);
+  ctx.lineTo(0, c.width);
+
+  ctx.moveTo(0, c.width);
+  ctx.lineTo(0, 0);
 
   ctx.moveTo(0, 0);
   ctx.lineTo(scale, scale);

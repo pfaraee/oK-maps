@@ -3,34 +3,60 @@
   <head>
     <meta charset="utf-8">
     <title>Karnaugh Map</title>
-    <link rel="stylesheet" href="index.css">
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/nouislider.css">
   </head>
   <body>
-    <div class="title-wrapper">
+    <nav>
+      <div class="nav-wrapper">
+        <div class="container">
+          <a href="#!" class="brand-logo">oK-Maps</a>
+          <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+          <ul class="right hide-on-med-and-down">
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+          </ul>
+          <ul class="side-nav" id="mobile-demo">
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
 
-      Enter between 3 - 6 variables<br>
-      enter all minterms
-    </div>
+      <div class="row">
+        <div class="col s4">
+          <h5>Enter desired number of variables</h5>
+          <form action="#">
+            <div id="num-vars" >
+            </div>
+          </form>
+          <table id="truth-table">
 
-    <div class="var-wrapper">
-      <input type="text" class="var-input" name="var-1" maxlength="1" />
-      <input type="text" class="var-input" name="var-2" maxlength="1" />
-      <input type="text" class="var-input" name="var-3" maxlength="1" />
-      <input type="text" class="var-input" name="var-4" maxlength="1" />
-      <input type="text" class="var-input" name="var-5" maxlength="1" />
-      <input type="text" class="var-input" name="var-6" maxlength="1" />
-      <input type="text" class="var-input" name="var-7" maxlength="1" />
-      <input type="text" class="var-input" name="var-8" maxlength="1" />
+          </table>
+        </div>
+        <div class="col s8">
+          <canvas id="canvas" width="400" height="400">
+            hello
+          </canvas>
+        </div>
+      </div>
     </div>
-    <canvas id="canvas" width="400" height="400">
-      hello
-    </canvas>
 
     <script type="text/javascript" src="build/polyfill.min.js"></script>
     <script type="text/javascript" src="build/classes/Point.js"></script>
     <script type="text/javascript" src="build/classes/Cell.js"></script>
     <script type="text/javascript" src="build/classes/CellArray.js"></script>
-    <script type="text/javascript" src="build/classes/Drawer.js"></script>    
+    <script type="text/javascript" src="build/classes/Drawer.js"></script>
+    <script type="text/javascript" src="js/nouislider.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/bin/materialize.min.js"></script>
     <script type="text/javascript" src="build/index.js"></script>
+
+
   </body>
 </html>
