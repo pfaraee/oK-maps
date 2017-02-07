@@ -43,20 +43,21 @@ var CellArray = function () {
   _createClass(CellArray, [{
     key: 'mark',
     value: function mark(terms) {
-      console.log(this.cells);
+      // console.log(terms);
       for (var i = 0; i < terms.length; i++) {
         // for each minterm
         for (var j = 0; j < this.cells.length; j++) {
-          if (this.cells[j].val === terms[i]) {
+          if (this.cells[j].val === i && terms[i] == 1) {
             this.cells[j].active = true;
           }
         }
       }
+      console.log(this.cells);
     }
   }, {
     key: 'reset',
     value: function reset() {
-      console.log(this.cells);
+      // console.log(this.cells);
       for (var i = 0; i < this.cells.length; i++) {
         this.cells[i].active = false;
       }
