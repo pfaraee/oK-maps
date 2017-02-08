@@ -52,7 +52,6 @@ var CellArray = function () {
           }
         }
       }
-      console.log(this.cells);
     }
   }, {
     key: 'reset',
@@ -87,7 +86,6 @@ var CellArray = function () {
       for (var i = 0; i < this.cells.length; i++) {
         if (this.cells[i].active && !this.cells[i].virtual) numActive++;
       }
-      console.log(numActive);
 
       if (numActive >= 8) {
         // draws if all are on
@@ -105,7 +103,6 @@ var CellArray = function () {
       }
 
       if (numActive >= 4) {
-        console.log("quads");
         //marks "quads"
         for (var _i = 0; _i <= 1; _i++) {
           if (this.search(_i, 0).active && this.search(_i, 1).active && this.search(_i, 2).active && this.search(_i, 3).active) {
@@ -143,10 +140,8 @@ var CellArray = function () {
       }
 
       if (numActive >= 2) {
-        console.log("hello?");
         for (var _i3 = 0; _i3 < 2; _i3++) {
           for (var _j3 = 0; _j3 < 4; _j3++) {
-            console.log("doing pairs now");
             // Horizontal pairs
             if (this.search(_i3, _j3).active && this.search(_i3 + 1, _j3).active) {
               var _group3 = [];
@@ -163,7 +158,6 @@ var CellArray = function () {
 
               _group4.push(new Point(_i3 % 4, _j3 % 4));
               _group4.push(new Point(_i3 % 4, (_j3 + 1) % 4));
-
               if (this.isGroupUnique(marked, _group4)) marked.push(_group4);
             }
           }
@@ -185,14 +179,9 @@ var CellArray = function () {
       return false;
     }
   }, {
-    key: 'armeniscool',
-    value: function armeniscool() {
-      console.log("jk");
-    }
-  }, {
     key: 'isGroupUnique',
     value: function isGroupUnique(marked, group) {
-      var matches = 0;
+      var matches = [];
 
       if (typeof marked === 'undefined' || marked === null) {
         console.log("marked is empty");
@@ -201,17 +190,30 @@ var CellArray = function () {
 
       // ends too quickly
       for (var i = 0; i < marked.length; i++) {
+        //for each marked group
         for (var j = 0; j < group.length; j++) {
+          // for each point in the group
           for (var k = 0; k < marked[i].length; k++) {
+            // for each point in the marked group
             if (marked[i][k].x == group[j].x && marked[i][k].y == group[j].y) {
-              matches++;
+
+              // TODO: add checking for "flowers" causes error for m(0, 1, 2, 4)
+              for (var l = 0; l < matches.length; l++) {
+                if (matches[l].x != group[j].x && matches[l].y != group[j].y) {
+                  if (l >= matches.length - 1) {
+                    matches.push(group[j]);
+                  }
+                } else {
+                  break;
+                }
+              }
             }
           }
         }
       }
       console.log(matches);
       // too many matches
-      if (matches > group.length / 2) {
+      if (matches.length > group.length / 2) {
         console.log("false");
         return false;
       }

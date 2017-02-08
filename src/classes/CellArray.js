@@ -43,7 +43,6 @@ class CellArray {
         }
       }
     }
-    console.log(this.cells);
   }
 
   reset() {
@@ -73,7 +72,6 @@ class CellArray {
     for(let i = 0; i < this.cells.length; i++) {
       if(this.cells[i].active && !this.cells[i].virtual) numActive++;
     }
-    console.log(numActive);
 
     if(numActive >= 8) {
       // draws if all are on
@@ -91,7 +89,6 @@ class CellArray {
     }
 
     if(numActive >= 4) {
-      console.log("quads");
       //marks "quads"
       for(let i = 0; i <= 1; i++) {
         if(this.search(i, 0).active && this.search(i, 1).active && this.search(i, 2).active && this.search(i, 3).active) {
@@ -129,10 +126,8 @@ class CellArray {
     }
 
     if(numActive >= 2) {
-      console.log("hello?");
       for(let i = 0; i < 2; i ++) {
         for(let j = 0; j < 4;  j++) {
-          console.log("doing pairs now");
           // Horizontal pairs
           if(this.search(i, j).active && this.search(i + 1, j).active) {
             let group = [];
@@ -149,7 +144,6 @@ class CellArray {
 
             group.push(new Point(i % 4, j % 4));
             group.push(new Point(i % 4, (j + 1) % 4));
-
             if(this.isGroupUnique(marked, group)) marked.push(group);
           }
         }
@@ -170,12 +164,8 @@ class CellArray {
     return false;
   }
 
-  armeniscool() {
-    console.log("jk");
-  }
-
   isGroupUnique(marked, group) {
-    var matches = 0;
+    var matches = [];
 
     if(typeof marked === 'undefined' || marked === null ) {
       console.log("marked is empty");
@@ -183,18 +173,29 @@ class CellArray {
     }
 
     // ends too quickly
-    for(let i = 0; i < marked.length; i++) {
-      for(let j = 0; j < group.length; j++) {
-        for(let k = 0; k < marked[i].length; k ++) {
+    for(let i = 0; i < marked.length; i++) { //for each marked group
+      for(let j = 0; j < group.length; j++) { // for each point in the group
+        for(let k = 0; k < marked[i].length; k ++) { // for each point in the marked group
           if((marked[i][k].x == group[j].x) && (marked[i][k].y == group[j].y)){
-            matches++;
+
+            // TODO: add checking for "flowers" causes error for m(0, 1, 2, 4)
+            for (let l = 0; l < matches.length; l++) {
+              if((matches[l].x != group[j].x) && (matches[l].y != group[j].y)){
+                if(l >= matches.length - 1) {
+                  matches.push(group[j]);
+                }
+              } else {
+                break;
+              }
+            }
+
           }
         }
       }
     }
     console.log(matches);
     // too many matches
-    if(matches > group.length / 2) {
+    if(matches.length > group.length / 2) {
       console.log("false");
       return false;
     }
