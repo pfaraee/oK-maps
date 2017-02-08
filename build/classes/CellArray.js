@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -41,35 +41,33 @@ var CellArray = function () {
   }
 
   _createClass(CellArray, [{
-    key: 'mark',
+    key: "mark",
     value: function mark(terms) {
       // console.log(terms);
       for (var i = 0; i < terms.length; i++) {
         // for each minterm
         for (var j = 0; j < this.cells.length; j++) {
-          if (this.cells[j].val === i && terms[i] == 1) {
-            this.cells[j].active = true;
+          if (this.cells[j].val === i) {
+            this.cells[j].status = terms[i];
           }
         }
       }
     }
   }, {
-    key: 'reset',
+    key: "reset",
     value: function reset() {
       // console.log(this.cells);
       for (var i = 0; i < this.cells.length; i++) {
-        this.cells[i].active = false;
+        this.cells[i].status = "";
       }
     }
   }, {
-    key: 'drawTerms',
+    key: "drawTerms",
     value: function drawTerms() {
       ctx.font = '20pt Roboto';
 
       for (var i = 0; i < this.cells.length; i++) {
-        if (this.cells[i].active == 1) {
-          ctx.fillText('1', scale * (this.cells[i].x + 1) + scale / 2, scale * (this.cells[i].y + 1) + scale / 2);
-        }
+        ctx.fillText(this.cells[i].status, scale * (this.cells[i].x + 1) + scale / 2, scale * (this.cells[i].y + 1) + scale / 2);
       }
     }
 
@@ -77,14 +75,14 @@ var CellArray = function () {
     // TODO: write it better later
 
   }, {
-    key: 'getGroups',
+    key: "getGroups",
     value: function getGroups() {
       var marked = [];
       // used to skip some group checks
       var numActive = 0;
 
       for (var i = 0; i < this.cells.length; i++) {
-        if (this.cells[i].active && !this.cells[i].virtual) numActive++;
+        if (this.cells[i].status != "0" && !this.cells[i].virtual) numActive++;
       }
 
       if (numActive >= 8) {
@@ -105,7 +103,12 @@ var CellArray = function () {
       if (numActive >= 4) {
         //marks "quads"
         for (var _i = 0; _i <= 1; _i++) {
-          if (this.search(_i, 0).active && this.search(_i, 1).active && this.search(_i, 2).active && this.search(_i, 3).active) {
+          var rootPoint = this.search(_i, 0);
+          var secondPoint = this.search(_i, 1);
+          var thirdPoint = this.search(_i, 2);
+          var fourthPoint = this.search(_i, 3);
+          // TODO: simplify this logic once you build 4 var kmaps
+          if (rootPoint.status != "0" && secondPoint.status != "0" && thirdPoint.status != "0" && fourthPoint.status != "0" && (rootPoint.status == "1" || secondPoint.status == "1" || thirdPoint.status == "1" || fourthPoint.status == "1")) {
             var _group = [];
 
             for (var _j = 0; _j < 4; _j++) {
@@ -118,7 +121,12 @@ var CellArray = function () {
 
         //marks "boxes"
         for (var _i2 = 0; _i2 < 4; _i2++) {
-          if (this.search(0, _i2).active && this.search(1, _i2).active && this.search(0, _i2 + 1).active && this.search(1, _i2 + 1).active) {
+          var _rootPoint = this.search(0, _i2);
+          var _secondPoint = this.search(1, _i2);
+          var _thirdPoint = this.search(0, _i2 + 1);
+          var _fourthPoint = this.search(1, _i2 + 1);
+
+          if (_rootPoint.status != "0" && _secondPoint.status != "0" && _thirdPoint.status != "0" && _fourthPoint.status != "0" && (_rootPoint.status == "1" || _secondPoint.status == "1" || _thirdPoint.status == "1" || _fourthPoint.status == "1")) {
             var _group2 = [];
 
             // over kill because im going to expand to 4 vars later
@@ -130,7 +138,7 @@ var CellArray = function () {
                 // x %= 4;
                 // y %= 4;
                 // if it is a "virtual" cell it is reset to its original position.
-                _group2.push(new Point(_j2 % 4, (_i2 + k) % 4));
+                _group2.push(new Point(_j2 % 2, (_i2 + k) % 4));
               }
             }
 
@@ -139,25 +147,29 @@ var CellArray = function () {
         }
       }
 
+      // TODO: remove verbose searches
       if (numActive >= 2) {
         for (var _i3 = 0; _i3 < 2; _i3++) {
           for (var _j3 = 0; _j3 < 4; _j3++) {
             // Horizontal pairs
-            if (this.search(_i3, _j3).active && this.search(_i3 + 1, _j3).active) {
+            var _rootPoint2 = this.search(_i3, _j3);
+            var _secondPoint2 = this.search(_i3 + 1, _j3);
+            if (_rootPoint2.status != "0" && _secondPoint2.status != "0" && (_rootPoint2.status == "1" || _secondPoint2.status == "1")) {
               var _group3 = [];
 
-              _group3.push(new Point(_i3 % 4, _j3 % 4));
-              _group3.push(new Point((_i3 + 1) % 4, _j3 % 4));
+              _group3.push(new Point(_i3 % 2, _j3 % 4));
+              _group3.push(new Point((_i3 + 1) % 2, _j3 % 4));
 
               if (this.isGroupUnique(marked, _group3)) marked.push(_group3);
             }
 
             //vertical                                                  // temp fix just because it is hardcoded for 2 rn
-            if (this.search(_i3, _j3).active && this.search(_i3, _j3 + 1) && this.search(_i3, _j3 + 1).active) {
+            var secondPointV = this.search(_i3, _j3 + 1);
+            if (_rootPoint2.status != "0" && secondPointV.status != "0" && (_rootPoint2.status == "1" || secondPointV.status == "1")) {
               var _group4 = [];
 
-              _group4.push(new Point(_i3 % 4, _j3 % 4));
-              _group4.push(new Point(_i3 % 4, (_j3 + 1) % 4));
+              _group4.push(new Point(_i3 % 2, _j3 % 4));
+              _group4.push(new Point(_i3 % 2, (_j3 + 1) % 4));
               if (this.isGroupUnique(marked, _group4)) marked.push(_group4);
             }
           }
@@ -169,7 +181,7 @@ var CellArray = function () {
       return marked;
     }
   }, {
-    key: 'search',
+    key: "search",
     value: function search(x, y) {
       for (var i = 0; i < this.cells.length; i++) {
         if (this.cells[i]["x"] === x && this.cells[i]["y"] === y) {
@@ -179,45 +191,30 @@ var CellArray = function () {
       return false;
     }
   }, {
-    key: 'isGroupUnique',
+    key: "isGroupUnique",
     value: function isGroupUnique(marked, group) {
-      var matches = [];
-
       if (typeof marked === 'undefined' || marked === null) {
         console.log("marked is empty");
         return true;
       }
-
       // ends too quickly
       for (var i = 0; i < marked.length; i++) {
         //for each marked group
+        var matches = [];
+
         for (var j = 0; j < group.length; j++) {
           // for each point in the group
           for (var k = 0; k < marked[i].length; k++) {
             // for each point in the marked group
             if (marked[i][k].x == group[j].x && marked[i][k].y == group[j].y) {
-
-              // TODO: add checking for "flowers" causes error for m(0, 1, 2, 4)
-              for (var l = 0; l < matches.length; l++) {
-                if (matches[l].x != group[j].x && matches[l].y != group[j].y) {
-                  if (l >= matches.length - 1) {
-                    matches.push(group[j]);
-                  }
-                } else {
-                  break;
-                }
-              }
+              matches.push(group[j]);
             }
           }
         }
+
+        if (matches.length > group.length / 2) return false;
       }
-      console.log(matches);
-      // too many matches
-      if (matches.length > group.length / 2) {
-        console.log("false");
-        return false;
-      }
-      console.log("true");
+
       return true;
     }
   }]);

@@ -173,28 +173,30 @@ document.addEventListener('keypress', function (e) {
         }
       }
     }
-    cleanArray(minterms);
+    console.log(minterms);
+
+    // cleanArray(minterms);
     // marks every cell as active or not based on minterms
     cellArray.mark(minterms);
-    // console.log(cellArray.cells);
+    console.log(cellArray.cells);
     cellArray.drawTerms();
-    // console.log("hello");
     drawer = new Drawer(cellArray.getGroups());
+    console.log(cellArray.points);
     drawer.drawPoints();
   }
 });
 
-// Cleans all empty values in the array and turns each string into an int
-function cleanArray(arr) {
-  // removes all empty values
-  for (var i = 0; i < arr.length; i++) {
-    if (arr[i] == "") {
-      arr.splice(i, 1);
-      i--;
-    }
-    arr[i] = parseInt(arr[i]);
-  }
-}
+// // Cleans all empty values in the array and turns each string into an int
+// function cleanArray(arr) {
+//   // removes all empty values
+//   for(var i = 0; i < arr.length; i++) {
+//     if(arr[i] == "") {
+//       arr.splice(i, 1);
+//       i--;
+//     }
+//     arr[i] = parseInt(arr[i]);
+//   }
+// }
 
 function resetkmap() {
   ctx.clearRect(0, 0, c.width, c.width);
