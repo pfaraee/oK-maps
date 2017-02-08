@@ -38,8 +38,8 @@ class CellArray {
     // console.log(terms);
     for(let i = 0; i < terms.length; i++) { // for each minterm
       for(let j = 0; j < this.cells.length; j++) {
-        if((this.cells[j].val === i) && (terms[i] == 1)) {
-          this.cells[j].active = true;
+        if(this.cells[j].val === i) {
+          this.cells[j].status = terms[i];
         }
       }
     }
@@ -48,7 +48,7 @@ class CellArray {
   reset() {
     // console.log(this.cells);
     for(let i = 0; i < this.cells.length; i ++) {
-      this.cells[i].active = false;
+      this.cells[i].status = "";
     }
   }
 
@@ -56,9 +56,7 @@ class CellArray {
     ctx.font = '20pt Roboto';
 
     for(let i = 0; i < this.cells.length; i ++) {
-      if(this.cells[i].active == 1) {
-        ctx.fillText('1', scale * (this.cells[i].x + 1)+ scale / 2, scale * (this.cells[i].y + 1) + scale / 2);
-      }
+      ctx.fillText(this.cells[i].status, scale * (this.cells[i].x + 1)+ scale / 2, scale * (this.cells[i].y + 1) + scale / 2);
     }
   }
 
@@ -70,7 +68,7 @@ class CellArray {
     var numActive = 0;
 
     for(let i = 0; i < this.cells.length; i++) {
-      if(this.cells[i].active && !this.cells[i].virtual) numActive++;
+      if((this.cells[i].status != "0") && !this.cells[i].virtual) numActive++;
     }
 
     if(numActive >= 8) {
@@ -91,7 +89,13 @@ class CellArray {
     if(numActive >= 4) {
       //marks "quads"
       for(let i = 0; i <= 1; i++) {
-        if(this.search(i, 0).active && this.search(i, 1).active && this.search(i, 2).active && this.search(i, 3).active) {
+        let rootPoint = this.search(i, 0);
+        let secondPoint = this.search(i, 1);
+        let thirdPoint = this.search(i, 2);
+        let fourthPoint = this.search(i, 3);
+        // TODO: simplify this logic once you build 4 var kmaps
+        if(((rootPoint.status != "0") && (secondPoint.status != "0") && (thirdPoint.status != "0") &&
+        (fourthPoint.status != "0")) && (rootPoint.status == "1" || secondPoint.status == "1" || thirdPoint.status == "1" || fourthPoint.status == "1" )) {
           let group = [];
 
           for(let j = 0; j < 4; j++) {
@@ -104,7 +108,13 @@ class CellArray {
 
       //marks "boxes"
       for(let i = 0; i < 4; i++) {
-        if(this.search(0,i).active && this.search(1,i).active && this.search(0, i+1).active && this.search(1, i+1).active ) {
+        let rootPoint = this.search(0,i);
+        let secondPoint = this.search(1,i);
+        let thirdPoint = this.search(0, i+1);
+        let fourthPoint = this.search(1, i+1);
+
+        if(((rootPoint.status != "0") && (secondPoint.status != "0") && (thirdPoint.status != "0") &&
+        (fourthPoint.status != "0")) && (rootPoint.status == "1" || secondPoint.status == "1" || thirdPoint.status == "1" || fourthPoint.status == "1" )) {
           let group = [];
 
           // over kill because im going to expand to 4 vars later
@@ -116,7 +126,7 @@ class CellArray {
               // x %= 4;
               // y %= 4;
               // if it is a "virtual" cell it is reset to its original position.
-              group.push(new Point(j % 4, (i + k) % 4));
+              group.push(new Point(j % 2, (i + k) % 4));
             }
           }
 
@@ -125,25 +135,29 @@ class CellArray {
       }
     }
 
+    // TODO: remove verbose searches
     if(numActive >= 2) {
       for(let i = 0; i < 2; i ++) {
         for(let j = 0; j < 4;  j++) {
           // Horizontal pairs
-          if(this.search(i, j).active && this.search(i + 1, j).active) {
+          let rootPoint = this.search(i, j);
+          let secondPoint = this.search(i + 1, j);
+          if(((rootPoint.status != "0") && (secondPoint.status != "0")) && (rootPoint.status == "1" || secondPoint.status == "1")) {
             let group = [];
 
-            group.push(new Point(i % 4, j % 4));
-            group.push(new Point((i + 1) % 4, j % 4));
+            group.push(new Point(i % 2, j % 4));
+            group.push(new Point((i + 1) % 2, j % 4));
 
             if(this.isGroupUnique(marked, group)) marked.push(group);
           }
 
           //vertical                                                  // temp fix just because it is hardcoded for 2 rn
-          if(this.search(i, j).active && this.search(i, j + 1) && this.search(i, j + 1).active) {
+          let secondPointV = this.search(i, j + 1);
+          if(((rootPoint.status != "0") && (secondPointV.status != "0")) &&(rootPoint.status == "1" || secondPointV.status == "1")) {
             let group = [];
 
-            group.push(new Point(i % 4, j % 4));
-            group.push(new Point(i % 4, (j + 1) % 4));
+            group.push(new Point(i % 2, j % 4));
+            group.push(new Point(i % 2, (j + 1) % 4));
             if(this.isGroupUnique(marked, group)) marked.push(group);
           }
         }
@@ -165,41 +179,25 @@ class CellArray {
   }
 
   isGroupUnique(marked, group) {
-    var matches = [];
-
     if(typeof marked === 'undefined' || marked === null ) {
       console.log("marked is empty");
       return true;
     }
-
     // ends too quickly
     for(let i = 0; i < marked.length; i++) { //for each marked group
+      var matches = [];
+
       for(let j = 0; j < group.length; j++) { // for each point in the group
         for(let k = 0; k < marked[i].length; k ++) { // for each point in the marked group
           if((marked[i][k].x == group[j].x) && (marked[i][k].y == group[j].y)){
-
-            // TODO: add checking for "flowers" causes error for m(0, 1, 2, 4)
-            for (let l = 0; l < matches.length; l++) {
-              if((matches[l].x != group[j].x) && (matches[l].y != group[j].y)){
-                if(l >= matches.length - 1) {
-                  matches.push(group[j]);
-                }
-              } else {
-                break;
-              }
-            }
-
+              matches.push(group[j]);
           }
         }
       }
+
+      if(matches.length > group.length / 2) return false;
     }
-    console.log(matches);
-    // too many matches
-    if(matches.length > group.length / 2) {
-      console.log("false");
-      return false;
-    }
-    console.log("true");
+
     return true;
   }
 }

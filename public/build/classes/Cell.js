@@ -19,7 +19,7 @@ var Cell = function (_Point) {
     var _this = _possibleConstructorReturn(this, (Cell.__proto__ || Object.getPrototypeOf(Cell)).call(this, x, y));
 
     _this.val = val;
-    _this.active = false;
+    _this.status = "";
     _this.virtual = virtual;
     return _this;
   }

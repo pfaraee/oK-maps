@@ -4,7 +4,7 @@ class Cell extends Point {
   constructor(val, x, y, virtual = false) {
     super(x, y);
     this.val = val;
-    this.active = false;
+    this.status = "";
     this.virtual = virtual;
   }
 }
