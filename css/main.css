@@ -6441,11 +6441,21 @@ div#num-vars {
   margin-bottom: 40px; }
 
 .tt-wrapper {
-  margin-top: 20px; }
+  margin-top: 20px;
+  height: 100%; }
 
 h4.title {
   margin-top: 20px;
   margin-bottom: 20px; }
 
 canvas#canvas {
-  margin: 40px; }
+  margin-top: 150px;
+  margin-left: 150px; }
+
+table {
+  width: 100%;
+  height: 100%;
+  overflow: scroll !important; }
+
+.container {
+  height: 100%; }

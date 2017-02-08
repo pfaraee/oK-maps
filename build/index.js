@@ -120,6 +120,8 @@ slider.noUiSlider.on('update', function () {
 
     tbody.appendChild(_tr);
   }
+
+  tbody.style.overflowY = "scroll";
   tbl.appendChild(tbody);
   truthTable.appendChild(tbl);
 });
@@ -132,7 +134,6 @@ var minterms = [];
 var numVars = 3;
 
 var cellArray = new CellArray(numVars);
-console.log(cellArray.cells);
 var drawer;
 
 // var pairPatterns = [
@@ -162,21 +163,17 @@ document.addEventListener('keypress', function (e) {
     cellArray.reset();
 
     draw3varkmap();
-    console.log(minterms);
     //TODO: change it to work for more minterms instead of hardcoding the 8
     //gets minterms from html form
     for (var i = 0; i < 8; i++) {
       var formGroup = document.getElementsByName("group" + i);
       for (var j = 0; j < formGroup.length; j++) {
         if (formGroup[j].checked == true) {
-          console.log(formGroup[j]);
           minterms[i] = formGroup[j].value;
         }
       }
     }
-    console.log(minterms);
     cleanArray(minterms);
-    console.log(minterms);
     // marks every cell as active or not based on minterms
     cellArray.mark(minterms);
     // console.log(cellArray.cells);
