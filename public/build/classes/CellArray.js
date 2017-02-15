@@ -97,7 +97,7 @@ var CellArray = function () {
 
         marked.push(group);
 
-        return; // all are marked
+        return marked; // all are marked
       }
 
       if (numActive >= 4) {
@@ -153,6 +153,7 @@ var CellArray = function () {
           for (var _j3 = 0; _j3 < 4; _j3++) {
             // Horizontal pairs
             var _rootPoint2 = this.search(_i3, _j3);
+            if (_rootPoint2.status == "1" && this.isAlreadyMatched(marked, new Point(_rootPoint2.x, _rootPoint2.y))) continue;
             var _secondPoint2 = this.search(_i3 + 1, _j3);
             if (_rootPoint2.status != "0" && _secondPoint2.status != "0" && (_rootPoint2.status == "1" || _secondPoint2.status == "1")) {
               var _group3 = [];
@@ -191,13 +192,24 @@ var CellArray = function () {
       return false;
     }
   }, {
+    key: "isAlreadyMatched",
+    value: function isAlreadyMatched(marked, point) {
+      for (var i = 0; i < marked.length; i++) {
+        for (var j = 0; j < marked[i].length; j++) {
+          if (marked[i][j].x == point.x && marked[i][j].y == point.y) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+  }, {
     key: "isGroupUnique",
     value: function isGroupUnique(marked, group) {
       if (typeof marked === 'undefined' || marked === null) {
         console.log("marked is empty");
         return true;
       }
-      // ends too quickly
       for (var i = 0; i < marked.length; i++) {
         //for each marked group
         var matches = [];

@@ -83,7 +83,7 @@ class CellArray {
 
       marked.push(group);
 
-      return; // all are marked
+      return marked; // all are marked
     }
 
     if(numActive >= 4) {
@@ -141,6 +141,7 @@ class CellArray {
         for(let j = 0; j < 4;  j++) {
           // Horizontal pairs
           let rootPoint = this.search(i, j);
+          if(rootPoint.status == "1" && this.isAlreadyMatched(marked, new Point(rootPoint.x, rootPoint.y))) continue;
           let secondPoint = this.search(i + 1, j);
           if(((rootPoint.status != "0") && (secondPoint.status != "0")) && (rootPoint.status == "1" || secondPoint.status == "1")) {
             let group = [];
@@ -178,12 +179,21 @@ class CellArray {
     return false;
   }
 
+  isAlreadyMatched(marked, point) {
+    for(let i = 0; i < marked.length; i ++) {
+      for(let j = 0; j < marked[i].length; j++) {
+        if(marked[i][j].x == point.x && marked[i][j].y == point.y) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
   isGroupUnique(marked, group) {
     if(typeof marked === 'undefined' || marked === null ) {
       console.log("marked is empty");
       return true;
     }
-    // ends too quickly
     for(let i = 0; i < marked.length; i++) { //for each marked group
       var matches = [];
 
