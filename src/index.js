@@ -1,3 +1,13 @@
+var c = document.getElementById("canvas");
+var ctx = c.getContext("2d");
+
+var scale = c.width / 5;
+var minterms = [];
+var numVars = 3;
+
+var cellArray = new CellArray(numVars);
+var drawer;
+
 var slider = document.getElementById('num-vars');
 
 noUiSlider.create(slider, {
@@ -122,17 +132,25 @@ slider.noUiSlider.on('update', function () {
   tbody.style.overflowY = "scroll";
   tbl.appendChild(tbody);
   truthTable.appendChild(tbl);
+
+  resetkmap();
+  var numVars = Number(slider.noUiSlider.get());
+  cellArray = new CellArray(numVars);
+
+  //rewdraws map
+  resetkmap();
+  switch(numVars) {
+    case 3:
+      draw3varkmap();
+      break;
+    case 4:
+      draw4varkmap();
+      break;
+    default:
+      console.log("You did it Professor.");
+      break;
+  }
 });
-
-var c = document.getElementById("canvas");
-var ctx = c.getContext("2d");
-
-var scale = c.width / 5;
-var minterms = [];
-var numVars = 3;
-
-var cellArray = new CellArray(numVars);
-var drawer;
 
 // var pairPatterns = [
 //   [new Point(0,0), new Point(0,-1)],
@@ -156,11 +174,27 @@ document.addEventListener('keypress', function(e) {
   if(e.keyCode == 13) {
     //resets the canvas
     resetkmap();
+    switch(numVars) {
+      case 3:
+        draw3varkmap();
+        break;
+      case 4:
+        draw4varkmap();
+        break;
+      case 5:
+        console.log("5 vars");
+        break;
+      case 6:
+        console.log("6 vars");
+        break;
+      default:
+        console.log("You did it Professor.");
+        break;
+    }
 
     //resets cell array
     cellArray.reset();
 
-    draw3varkmap();
     //TODO: change it to work for more minterms instead of hardcoding the 8
     //gets minterms from html form
     for(let i = 0; i < 8; i++) {
@@ -198,6 +232,64 @@ document.addEventListener('keypress', function(e) {
 
 function resetkmap() {
   ctx.clearRect(0, 0, c.width, c.width);
+}
+
+function draw4varkmap() {
+  ctx.beginPath();
+
+  ctx.moveTo(0,0);
+  ctx.lineTo(scale, scale);//
+
+  ctx.moveTo(scale, scale);
+  ctx.lineTo(scale, c.width);//
+
+  ctx.moveTo(scale * 2, scale);
+  ctx.lineTo(scale * 2, c.width);//
+
+  ctx.moveTo(scale, scale);
+  ctx.lineTo(c.width, scale);//
+
+  ctx.moveTo(scale * 3, scale);
+  ctx.lineTo(scale * 3, c.width);
+
+  ctx.moveTo(scale * 4, scale);
+  ctx.lineTo(scale * 4, c.width);//
+
+  ctx.moveTo(scale * 5, scale);
+  ctx.lineTo(scale * 5, c.width);//
+
+  ctx.moveTo(scale, scale * 2);
+  ctx.lineTo(c.width, scale * 2);
+
+  ctx.moveTo(scale, scale * 3);
+  ctx.lineTo(c.width, scale * 3);
+
+  ctx.moveTo(scale, scale * 4);
+  ctx.lineTo(c.width, scale * 4);
+
+  ctx.moveTo(scale, scale * 5);
+  ctx.lineTo(c.width, scale * 5);
+
+  ctx.stroke();
+
+  //draws vars and numbers
+  ctx.font = '20pt Roboto';
+
+  //vars
+  ctx.fillText('AB', scale * 0.6, scale * 0.4);
+
+  ctx.fillText('CD', scale * 0.1, scale * 0.9);
+
+  //numbers
+  ctx.fillText('00', scale * 1.5 - 5, scale - 5);
+  ctx.fillText('01', scale * 2.5 - 5, scale - 5);
+  ctx.fillText('11', scale * 3.5 - 5, scale - 5);
+  ctx.fillText('10', scale * 4.5 - 5, scale - 5);
+
+  ctx.fillText('00', scale * 0.5 + 5, scale * 1.6 );
+  ctx.fillText('01', scale * 0.5 + 5, scale * 2.6 );
+  ctx.fillText('11', scale * 0.5 + 5, scale * 3.6 );
+  ctx.fillText('10', scale * 0.5 + 5, scale * 4.6 );
 }
 
 function draw3varkmap() {

@@ -1,36 +1,44 @@
 class CellArray {
 
   constructor(vars) {
-    if (vars < 4) {
-      this.cells = new Array();
-      // TODO: remove verbose falses
-      // TODO: MAKE ALL VIRTUAL CELLS AT THE RIGHT AND BOTTOM OF EACH MAP, AND
-      // MAKE A SEPERATE MAP THAT MARKS ALL PAINTED CELLS
-      this.cells.push(new Cell(0, 0, 0, false));
-      this.cells.push(new Cell(1, 0, 1, false));
-      this.cells.push(new Cell(3, 0, 2, false));
-      this.cells.push(new Cell(2, 0, 3, false));
-      this.cells.push(new Cell(4, 1, 0, false));
-      this.cells.push(new Cell(5, 1, 1, false));
-      this.cells.push(new Cell(7, 1, 2, false));
-      this.cells.push(new Cell(6, 1, 3, false));
-      // virtual cells
-      this.cells.push(new Cell(0, 0, 4, true));
-      this.cells.push(new Cell(4, 1, 4, true));
+    this.cells = new Array();
+    // TODO: remove verbose falses
+    // TODO: MAKE ALL VIRTUAL CELLS AT THE RIGHT AND BOTTOM OF EACH MAP, AND
+    // MAKE A SEPERATE MAP THAT MARKS ALL PAINTED CELLS
+    this.cells.push(new Cell(0, 0, 0, false));
+    this.cells.push(new Cell(1, 0, 1, false));
+    this.cells.push(new Cell(3, 0, 2, false));
+    this.cells.push(new Cell(2, 0, 3, false));
+    this.cells.push(new Cell(4, 1, 0, false));
+    this.cells.push(new Cell(5, 1, 1, false));
+    this.cells.push(new Cell(7, 1, 2, false));
+    this.cells.push(new Cell(6, 1, 3, false));
+    // virtual cells
+    this.cells.push(new Cell(0, 0, 4, true));
+    this.cells.push(new Cell(4, 1, 4, true));
 
-    } else {
+    if (vars > 3) {
+
       // fix this as the coordinates are wrong
-      this.cells.push(new Cell(8, 2, 0, false));
-      this.cells.push(new Cell(9, 2, 1, false));
-      this.cells.push(new Cell(10, 2, 3, false));
-      this.cells.push(new Cell(11, 2, 2, false));
-      this.cells.push(new Cell(12, 3, 0, false));
-      this.cells.push(new Cell(13, 3, 1, false));
-      this.cells.push(new Cell(14, 3, 3, false));
-      this.cells.push(new Cell(15, 3, 2, false));
+      this.cells.push(new Cell(8, 3, 0, false));
+      this.cells.push(new Cell(9, 3, 1, false));
+      this.cells.push(new Cell(10, 3, 3, false));
+      this.cells.push(new Cell(11, 3, 2, false));
+      this.cells.push(new Cell(12, 2, 0, false));
+      this.cells.push(new Cell(13, 2, 1, false));
+      this.cells.push(new Cell(14, 2, 3, false));
+      this.cells.push(new Cell(15, 2, 2, false));
 
       //TODO: add virtual cells for 4 var kmap
+      this.cells.push(new Cell(0, 4, 0, true));
+      this.cells.push(new Cell(1, 4, 1, true));
+      this.cells.push(new Cell(3, 4, 2, true));
+      this.cells.push(new Cell(2, 4, 3, true));
+      this.cells.push(new Cell(0, 4, 4, true));
+      this.cells.push(new Cell(8, 2, 3, true));
+      this.cells.push(new Cell(12, 2, 2, true));
     }
+    console.log(this.cells);
     // holds all marked groups
   }
 
