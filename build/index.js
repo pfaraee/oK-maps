@@ -26,6 +26,8 @@ noUiSlider.create(slider, {
   }
 });
 
+slider.setAttribute('disabled', true);
+
 slider.noUiSlider.on('update', function () {
   var truthTable = document.getElementById('truth-table');
 
@@ -197,28 +199,35 @@ document.addEventListener('keypress', function (e) {
     //resets cell array
     cellArray.reset();
 
-    //TODO: change it to work for more minterms instead of hardcoding the 8
-    //gets minterms from html form
-    for (var i = 0; i < 8; i++) {
-      var formGroup = document.getElementsByName("group" + i);
-      for (var j = 0; j < formGroup.length; j++) {
-        if (formGroup[j].checked == true) {
-          minterms[i] = formGroup[j].value;
-        }
-      }
-    }
-    console.log(minterms);
-
+    minterms = getMinterms();
     // cleanArray(minterms);
     // marks every cell as active or not based on minterms
     cellArray.mark(minterms);
     console.log(cellArray.cells);
     cellArray.drawTerms();
+
     drawer = new Drawer(cellArray.getGroups());
-    console.log(cellArray.points);
+    console.log(drawer.points);
     drawer.drawPoints();
   }
 });
+
+function getMinterms() {
+  var temp = [];
+  //TODO: change it to work for more minterms instead of hardcoding the 8
+  //gets minterms from html form
+  for (var i = 0; i < Math.pow(2, numVars); i++) {
+    var formGroup = document.getElementsByName("group" + i);
+
+    for (var j = 0; j < formGroup.length; j++) {
+      if (formGroup[j].checked == true) {
+        temp[i] = formGroup[j].value;
+      }
+    }
+  }
+
+  return temp;
+}
 
 // // Cleans all empty values in the array and turns each string into an int
 // function cleanArray(arr) {
