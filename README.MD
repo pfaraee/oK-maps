@@ -4,14 +4,12 @@ Online K-map generator for 3-6 vars, featuring real 3D visualization.
 
 
 ## Todo:
-- [ ] fix gulpfile so browser refreshes on file change
-- [ ] add tests for 3 vars
-- [ ] add support and tests for 4 vars
-- [ ] add support and tests for 5 vars
-- [ ] add support and tests for 6 vars
-<!-- ## Getting Started
+- [x] fix gulpfile so browser refreshes on file change
+- [ ] add tests for all current functions
+- [ ] research and impliment simpler js bundling pipeline
+- [ ] fully refractor all code to es6
+- [ ] merge branches
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system. -->
 
 <!-- ### Prerequisites
 

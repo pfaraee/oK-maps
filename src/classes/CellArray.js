@@ -2,7 +2,6 @@ import Cell from './Cell';
 import Point from './Point';
 
 export default class CellArray {
-
   constructor(vars) {
     this.vars = vars;
     this.cells = new Array();
@@ -62,7 +61,9 @@ export default class CellArray {
   reset() {
     // console.log(this.cells);
     for(let i = 0; i < this.cells.length; i ++) {
-      this.cells[i].status = "";
+      for(let j = 0; j < this.cells[i].length; j++ ) {
+        this.cells[i][j].status = "";
+      }
     }
   }
 

@@ -36,9 +36,9 @@ gulp.task('livereload', function (){
 });
 
 gulp.task('watch', function () {
-  gulp.watch('./src/**/*.js', ['build', 'browserify']);
+  gulp.watch('./src/**/*.js', ['build']);
   gulp.watch('./src/**/*.scss', ['sass']);
-  gulp.watch('./public/**/*', ['livereload']);
+  gulp.watch('./public/**/*', ['browserify', 'livereload']);
 });
 
 gulp.task('build', function() {
