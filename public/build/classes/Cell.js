@@ -12,15 +12,12 @@ var Cell = function (_Point) {
   _inherits(Cell, _Point);
 
   function Cell(val, x, y) {
-    var virtual = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
     _classCallCheck(this, Cell);
 
     var _this = _possibleConstructorReturn(this, (Cell.__proto__ || Object.getPrototypeOf(Cell)).call(this, x, y));
 
     _this.val = val;
     _this.status = "";
-    _this.virtual = virtual;
     return _this;
   }
 

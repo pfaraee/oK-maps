@@ -1,10 +1,9 @@
 // Cell class
 // TODO: eventually remove the cell class as it is redundant
 class Cell extends Point {
-  constructor(val, x, y, virtual = false) {
+  constructor(val, x, y) {
     super(x, y);
     this.val = val;
     this.status = "";
-    this.virtual = virtual;
   }
 }

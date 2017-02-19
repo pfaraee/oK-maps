@@ -2,24 +2,25 @@ class CellArray {
 
   constructor(vars) {
     this.cells = new Array();
-    // TODO: remove verbose falses
-    // TODO: MAKE ALL VIRTUAL CELLS AT THE RIGHT AND BOTTOM OF EACH MAP, AND
-    // MAKE A SEPERATE MAP THAT MARKS ALL PAINTED CELLS
-    this.cells.push(new Cell(0, 0, 0, false));
-    this.cells.push(new Cell(1, 0, 1, false));
-    this.cells.push(new Cell(3, 0, 2, false));
-    this.cells.push(new Cell(2, 0, 3, false));
-    this.cells.push(new Cell(4, 1, 0, false));
-    this.cells.push(new Cell(5, 1, 1, false));
-    this.cells.push(new Cell(7, 1, 2, false));
-    this.cells.push(new Cell(6, 1, 3, false));
-    // virtual cells
-    this.cells.push(new Cell(0, 0, 4, true));
-    this.cells.push(new Cell(4, 1, 4, true));
+
+    this.cells[0] = new Array();
+    this.cells[0].push(new Cell(0, 0, 0));
+    this.cells[0].push(new Cell(4, 1, 0));
+
+    this.cells[1] = new Array();
+    this.cells[1].push(new Cell(1, 0, 1));
+    this.cells[1].push(new Cell(5, 1, 1));
+
+    this.cells[2] = new Array();
+    this.cells[2].push(new Cell(3, 0, 2));
+    this.cells[2].push(new Cell(7, 1, 2));
+
+    this.cells[3] = new Array();
+    this.cells[3].push(new Cell(2, 0, 3));
+    this.cells[3].push(new Cell(6, 1, 3));
 
     if (vars > 3) {
 
-      // fix this as the coordinates are wrong
       this.cells.push(new Cell(8, 3, 0, false));
       this.cells.push(new Cell(9, 3, 1, false));
       this.cells.push(new Cell(10, 3, 3, false));
@@ -38,7 +39,6 @@ class CellArray {
       this.cells.push(new Cell(8, 2, 3, true));
       this.cells.push(new Cell(12, 2, 2, true));
     }
-    console.log(this.cells);
     // holds all marked groups
   }
 
@@ -46,8 +46,10 @@ class CellArray {
     // console.log(terms);
     for(let i = 0; i < terms.length; i++) { // for each minterm
       for(let j = 0; j < this.cells.length; j++) {
-        if(this.cells[j].val === i) {
-          this.cells[j].status = terms[i];
+        for(let k = 0; k < this.cells[j].length; k++) {
+          if(this.cells[j][k].val === i) {
+            this.cells[j][k].status = terms[i];
+          }
         }
       }
     }
@@ -64,7 +66,9 @@ class CellArray {
     ctx.font = '20pt Roboto';
 
     for(let i = 0; i < this.cells.length; i ++) {
-      ctx.fillText(this.cells[i].status, scale * (this.cells[i].x + 1)+ scale / 2, scale * (this.cells[i].y + 1) + scale / 2);
+      for(let j = 0; j < this.cells[i].length; j++) {
+        ctx.fillText(this.cells[i][j].status, scale * (this.cells[i][j].x + 1)+ scale / 2, scale * (this.cells[i][j].y + 1) + scale / 2);
+      }
     }
   }
 
@@ -75,17 +79,20 @@ class CellArray {
     // used to skip some group checks
     var numActive = 0;
 
+    // TODO: refractor to work with maxterms
     for(let i = 0; i < this.cells.length; i++) {
-      if((this.cells[i].status != "0") && !this.cells[i].virtual) numActive++;
+      for(let j = 0; j < this.cells[i].length; j++) {
+        if(this.cells[i][j].status != "0") numActive++;
+      }
     }
 
     if(numActive >= 8) {
       // draws if all are on
       let group = [];
 
-      for(let j = 0; j < this.cells.length; j++) {
-        if(!this.cells[j].virtual) {
-          group.push(new Point(this.cells[j].x, this.cells[j].y));
+      for(let i = 0; i < this.cells.length; i++) {
+        for(let j = 0; j < this.cells[i].length; j++) {
+          group.push(new Point(this.cells[i][j].x, this.cells[i][j].y));
         }
       }
 
@@ -96,12 +103,12 @@ class CellArray {
 
     if(numActive >= 4) {
       //marks "quads"
-      for(let i = 0; i <= 1; i++) {
-        let rootPoint = this.search(i, 0);
-        let secondPoint = this.search(i, 1);
-        let thirdPoint = this.search(i, 2);
-        let fourthPoint = this.search(i, 3);
-        // TODO: simplify this logic once you build 4 var kmaps
+      for(let i = 0; i < 2; i++) {
+        let rootPoint = this.get(i, 0);
+        let secondPoint = this.get(i, 1);
+        let thirdPoint = this.get(i, 2);
+        let fourthPoint = this.get(i, 3);
+
         if(((rootPoint.status != "0") && (secondPoint.status != "0") && (thirdPoint.status != "0") &&
         (fourthPoint.status != "0")) && (rootPoint.status == "1" || secondPoint.status == "1" || thirdPoint.status == "1" || fourthPoint.status == "1" )) {
           let group = [];
@@ -116,75 +123,63 @@ class CellArray {
 
       //marks "boxes"
       for(let i = 0; i < 4; i++) {
-        let rootPoint = this.search(0,i);
-        let secondPoint = this.search(1,i);
-        let thirdPoint = this.search(0, i+1);
-        let fourthPoint = this.search(1, i+1);
+        let rootPoint = this.get(0,i);
+        let secondPoint = this.get(1,i);
+        let thirdPoint = this.get(0, i+1);
+        let fourthPoint = this.get(1, i+1);
 
         if(((rootPoint.status != "0") && (secondPoint.status != "0") && (thirdPoint.status != "0") &&
         (fourthPoint.status != "0")) && (rootPoint.status == "1" || secondPoint.status == "1" || thirdPoint.status == "1" || fourthPoint.status == "1" )) {
           let group = [];
 
-          // over kill because im going to expand to 4 vars later
-          //TODO: fix for 4+ vars
-          for(let j = 0; j <= 1; j ++) {
-            for(let k = 0; k <= 1; k ++) {
-              // let x = j;
-              // let y = i + k;
-              // x %= 4;
-              // y %= 4;
-              // if it is a "virtual" cell it is reset to its original position.
-              group.push(new Point(j % 2, (i + k) % 4));
-            }
-          }
+          group.push(new Point(rootPoint.x, rootPoint.y));
+          group.push(new Point(secondPoint.x, secondPoint.y));
+          group.push(new Point(thirdPoint.x, thirdPoint.y));
+          group.push(new Point(fourthPoint.x, fourthPoint.y));
 
           marked.push(group);
         }
       }
     }
-
+    console.log(this.cells);
     // TODO: remove verbose searches
     if(numActive >= 2) {
-      for(let i = 0; i < 2; i ++) {
+      for(let i = 0; i < Math.pow(2, numVars - 2); i ++) {
         for(let j = 0; j < 4;  j++) {
           // Horizontal pairs
-          let rootPoint = this.search(i, j);
+          let rootPoint = this.get(i, j);
           if(rootPoint.status == "1" && this.isAlreadyMatched(marked, new Point(rootPoint.x, rootPoint.y))) continue;
-          let secondPoint = this.search(i + 1, j);
+          let secondPoint = this.get(i + 1, j);
           if(((rootPoint.status != "0") && (secondPoint.status != "0")) && (rootPoint.status == "1" || secondPoint.status == "1")) {
             let group = [];
 
-            group.push(new Point(i % 2, j % 4));
-            group.push(new Point((i + 1) % 2, j % 4));
+            group.push(new Point(rootPoint.x , rootPoint.y));
+            group.push(new Point((secondPoint.x), secondPoint.y));
 
             if(this.isGroupUnique(marked, group)) marked.push(group);
           }
 
           //vertical                                                  // temp fix just because it is hardcoded for 2 rn
-          let secondPointV = this.search(i, j + 1);
+          let secondPointV = this.get(i, j + 1);
           if(((rootPoint.status != "0") && (secondPointV.status != "0")) &&(rootPoint.status == "1" || secondPointV.status == "1")) {
             let group = [];
 
-            group.push(new Point(i % 2, j % 4));
-            group.push(new Point(i % 2, (j + 1) % 4));
+            group.push(new Point(rootPoint.x, rootPoint.y));
+            group.push(new Point(secondPointV.x, secondPointV.y));
+
             if(this.isGroupUnique(marked, group)) marked.push(group);
           }
         }
       }
     }
-
-    console.log(marked);
+    // console.log(marked);
 
     return marked;
   }
 
-  search(x, y){
-    for (var i=0; i < this.cells.length; i++) {
-        if ((this.cells[i]["x"] === x) && (this.cells[i]["y"] === y)) {
-            return this.cells[i];
-        }
-    }
-    return false;
+  // mods coords for overflow and swaps them because array xy and map xy are flipped
+  get(x, y){
+    return this.cells[y % 4][x % Math.pow(2, numVars - 2)];
   }
 
   isAlreadyMatched(marked, point) {
@@ -197,6 +192,7 @@ class CellArray {
     }
     return false;
   }
+
   isGroupUnique(marked, group) {
     if(typeof marked === 'undefined' || marked === null ) {
       console.log("marked is empty");
