@@ -1,4 +1,16 @@
-"use strict";
+'use strict';
+
+var _CellArray = require('./classes/CellArray');
+
+var _CellArray2 = _interopRequireDefault(_CellArray);
+
+var _Drawer = require('./classes/Drawer');
+
+var drawer = _interopRequireWildcard(_Drawer);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
@@ -7,8 +19,7 @@ var scale = c.width / 5;
 var minterms = [];
 var numVars = 3;
 
-var cellArray = new CellArray(numVars);
-var drawer;
+var cellArray = new _CellArray2.default(numVars);
 
 var slider = document.getElementById('num-vars');
 
@@ -18,15 +29,13 @@ noUiSlider.create(slider, {
   step: 1,
   range: {
     'min': [3],
-    'max': [6]
+    'max': [4]
   },
   pips: {
     mode: 'steps',
     density: 30
   }
 });
-
-slider.setAttribute('disabled', true);
 
 slider.noUiSlider.on('update', function () {
   var truthTable = document.getElementById('truth-table');
@@ -92,7 +101,7 @@ slider.noUiSlider.on('update', function () {
       _tr.appendChild(_td);
     }
 
-    var _td = document.createElement('td');
+    var td = document.createElement('td');
     var input1 = document.createElement('input');
     input1.setAttribute('name', 'group' + _i);
     input1.setAttribute('type', 'radio');
@@ -101,8 +110,8 @@ slider.noUiSlider.on('update', function () {
     input1.setAttribute('checked', 'checked');
     var label1 = document.createElement('label');
     label1.setAttribute('for', 'OFF' + _i);
-    _td.appendChild(input1);
-    _td.appendChild(label1);
+    td.appendChild(input1);
+    td.appendChild(label1);
 
     var td2 = document.createElement('td');
     var input2 = document.createElement('input');
@@ -126,7 +135,7 @@ slider.noUiSlider.on('update', function () {
     td3.appendChild(input3);
     td3.appendChild(label3);
 
-    _tr.appendChild(_td);
+    _tr.appendChild(td);
     _tr.appendChild(td2);
     _tr.appendChild(td3);
 
@@ -137,9 +146,9 @@ slider.noUiSlider.on('update', function () {
   tbl.appendChild(tbody);
   truthTable.appendChild(tbl);
 
-  resetkmap();
-  var numVars = Number(slider.noUiSlider.get());
-  cellArray = new CellArray(numVars);
+  numVars = Number(slider.noUiSlider.get());
+  cellArray = new _CellArray2.default(numVars);
+  console.log(numVars);
 
   //rewdraws map
   resetkmap();
@@ -170,7 +179,6 @@ slider.noUiSlider.on('update', function () {
 //   [new Point(0,0), new Point(-1,0), new Point(-1,-1), new Point(0,-1)]
 // ];
 
-// TODO: add switching for 3-4 (5-6)
 draw3varkmap();
 
 document.addEventListener('keypress', function (e) {
@@ -178,6 +186,7 @@ document.addEventListener('keypress', function (e) {
   if (e.keyCode == 13) {
     //resets the canvas
     resetkmap();
+    console.log(numVars);
     switch (numVars) {
       case 3:
         draw3varkmap();
@@ -200,15 +209,11 @@ document.addEventListener('keypress', function (e) {
     cellArray.reset();
 
     minterms = getMinterms();
-    // cleanArray(minterms);
-    // marks every cell as active or not based on minterms
     cellArray.mark(minterms);
     console.log(cellArray.cells);
-    cellArray.drawTerms();
-
-    drawer = new Drawer(cellArray.getGroups());
-    console.log(drawer.points);
-    drawer.drawPoints();
+    drawer.drawTerms(ctx, scale, cellArray.cells);
+    console.log(cellArray.getGroups());
+    drawer.drawPoints(ctx, scale, cellArray.getGroups());
   }
 });
 
@@ -228,18 +233,6 @@ function getMinterms() {
 
   return temp;
 }
-
-// // Cleans all empty values in the array and turns each string into an int
-// function cleanArray(arr) {
-//   // removes all empty values
-//   for(var i = 0; i < arr.length; i++) {
-//     if(arr[i] == "") {
-//       arr.splice(i, 1);
-//       i--;
-//     }
-//     arr[i] = parseInt(arr[i]);
-//   }
-// }
 
 function resetkmap() {
   ctx.clearRect(0, 0, c.width, c.width);
