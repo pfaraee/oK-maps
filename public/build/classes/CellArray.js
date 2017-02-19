@@ -1,6 +1,20 @@
-"use strict";
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Cell = require('./Cell');
+
+var _Cell2 = _interopRequireDefault(_Cell);
+
+var _Point = require('./Point');
+
+var _Point2 = _interopRequireDefault(_Point);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -8,49 +22,50 @@ var CellArray = function () {
   function CellArray(vars) {
     _classCallCheck(this, CellArray);
 
+    this.vars = vars;
     this.cells = new Array();
 
     this.cells[0] = new Array();
-    this.cells[0].push(new Cell(0, 0, 0));
-    this.cells[0].push(new Cell(4, 1, 0));
+    this.cells[0].push(new _Cell2.default(0, 0, 0));
+    this.cells[0].push(new _Cell2.default(4, 1, 0));
 
     this.cells[1] = new Array();
-    this.cells[1].push(new Cell(1, 0, 1));
-    this.cells[1].push(new Cell(5, 1, 1));
+    this.cells[1].push(new _Cell2.default(1, 0, 1));
+    this.cells[1].push(new _Cell2.default(5, 1, 1));
 
     this.cells[2] = new Array();
-    this.cells[2].push(new Cell(3, 0, 2));
-    this.cells[2].push(new Cell(7, 1, 2));
+    this.cells[2].push(new _Cell2.default(3, 0, 2));
+    this.cells[2].push(new _Cell2.default(7, 1, 2));
 
     this.cells[3] = new Array();
-    this.cells[3].push(new Cell(2, 0, 3));
-    this.cells[3].push(new Cell(6, 1, 3));
+    this.cells[3].push(new _Cell2.default(2, 0, 3));
+    this.cells[3].push(new _Cell2.default(6, 1, 3));
 
-    if (vars > 3) {
+    if (this.vars > 3) {
 
-      this.cells.push(new Cell(8, 3, 0, false));
-      this.cells.push(new Cell(9, 3, 1, false));
-      this.cells.push(new Cell(10, 3, 3, false));
-      this.cells.push(new Cell(11, 3, 2, false));
-      this.cells.push(new Cell(12, 2, 0, false));
-      this.cells.push(new Cell(13, 2, 1, false));
-      this.cells.push(new Cell(14, 2, 3, false));
-      this.cells.push(new Cell(15, 2, 2, false));
+      this.cells.push(new _Cell2.default(8, 3, 0, false));
+      this.cells.push(new _Cell2.default(9, 3, 1, false));
+      this.cells.push(new _Cell2.default(10, 3, 3, false));
+      this.cells.push(new _Cell2.default(11, 3, 2, false));
+      this.cells.push(new _Cell2.default(12, 2, 0, false));
+      this.cells.push(new _Cell2.default(13, 2, 1, false));
+      this.cells.push(new _Cell2.default(14, 2, 3, false));
+      this.cells.push(new _Cell2.default(15, 2, 2, false));
 
       //TODO: add virtual cells for 4 var kmap
-      this.cells.push(new Cell(0, 4, 0, true));
-      this.cells.push(new Cell(1, 4, 1, true));
-      this.cells.push(new Cell(3, 4, 2, true));
-      this.cells.push(new Cell(2, 4, 3, true));
-      this.cells.push(new Cell(0, 4, 4, true));
-      this.cells.push(new Cell(8, 2, 3, true));
-      this.cells.push(new Cell(12, 2, 2, true));
+      this.cells.push(new _Cell2.default(0, 4, 0, true));
+      this.cells.push(new _Cell2.default(1, 4, 1, true));
+      this.cells.push(new _Cell2.default(3, 4, 2, true));
+      this.cells.push(new _Cell2.default(2, 4, 3, true));
+      this.cells.push(new _Cell2.default(0, 4, 4, true));
+      this.cells.push(new _Cell2.default(8, 2, 3, true));
+      this.cells.push(new _Cell2.default(12, 2, 2, true));
     }
     // holds all marked groups
   }
 
   _createClass(CellArray, [{
-    key: "mark",
+    key: 'mark',
     value: function mark(terms) {
       // console.log(terms);
       for (var i = 0; i < terms.length; i++) {
@@ -65,22 +80,11 @@ var CellArray = function () {
       }
     }
   }, {
-    key: "reset",
+    key: 'reset',
     value: function reset() {
       // console.log(this.cells);
       for (var i = 0; i < this.cells.length; i++) {
         this.cells[i].status = "";
-      }
-    }
-  }, {
-    key: "drawTerms",
-    value: function drawTerms() {
-      ctx.font = '20pt Roboto';
-
-      for (var i = 0; i < this.cells.length; i++) {
-        for (var j = 0; j < this.cells[i].length; j++) {
-          ctx.fillText(this.cells[i][j].status, scale * (this.cells[i][j].x + 1) + scale / 2, scale * (this.cells[i][j].y + 1) + scale / 2);
-        }
       }
     }
 
@@ -88,8 +92,9 @@ var CellArray = function () {
     // TODO: write it better later
 
   }, {
-    key: "getGroups",
+    key: 'getGroups',
     value: function getGroups() {
+      console.log("getgroups called");
       var marked = [];
       // used to skip some group checks
       var numActive = 0;
@@ -107,7 +112,7 @@ var CellArray = function () {
 
         for (var _i = 0; _i < this.cells.length; _i++) {
           for (var _j = 0; _j < this.cells[_i].length; _j++) {
-            group.push(new Point(this.cells[_i][_j].x, this.cells[_i][_j].y));
+            group.push(new _Point2.default(this.cells[_i][_j].x, this.cells[_i][_j].y));
           }
         }
 
@@ -128,7 +133,7 @@ var CellArray = function () {
             var _group = [];
 
             for (var _j2 = 0; _j2 < 4; _j2++) {
-              _group.push(new Point(_i2, _j2));
+              _group.push(new _Point2.default(_i2, _j2));
             }
 
             marked.push(_group);
@@ -145,29 +150,31 @@ var CellArray = function () {
           if (_rootPoint.status != "0" && _secondPoint.status != "0" && _thirdPoint.status != "0" && _fourthPoint.status != "0" && (_rootPoint.status == "1" || _secondPoint.status == "1" || _thirdPoint.status == "1" || _fourthPoint.status == "1")) {
             var _group2 = [];
 
-            _group2.push(new Point(_rootPoint.x, _rootPoint.y));
-            _group2.push(new Point(_secondPoint.x, _secondPoint.y));
-            _group2.push(new Point(_thirdPoint.x, _thirdPoint.y));
-            _group2.push(new Point(_fourthPoint.x, _fourthPoint.y));
+            _group2.push(new _Point2.default(_rootPoint.x, _rootPoint.y));
+            _group2.push(new _Point2.default(_secondPoint.x, _secondPoint.y));
+            _group2.push(new _Point2.default(_thirdPoint.x, _thirdPoint.y));
+            _group2.push(new _Point2.default(_fourthPoint.x, _fourthPoint.y));
 
             marked.push(_group2);
           }
         }
       }
-      console.log(this.cells);
       // TODO: remove verbose searches
       if (numActive >= 2) {
-        for (var _i4 = 0; _i4 < Math.pow(2, numVars - 2); _i4++) {
+        console.log("two or more active");
+        for (var _i4 = 0; _i4 < Math.pow(2, this.vars - 2); _i4++) {
           for (var _j3 = 0; _j3 < 4; _j3++) {
+            console.log("checking horizontals");
             // Horizontal pairs
             var _rootPoint2 = this.get(_i4, _j3);
-            if (_rootPoint2.status == "1" && this.isAlreadyMatched(marked, new Point(_rootPoint2.x, _rootPoint2.y))) continue;
+            console.log(this.get(_i4, _j3) + " is the root point");
+            if (_rootPoint2.status == "1" && this.isAlreadyMatched(marked, new _Point2.default(_rootPoint2.x, _rootPoint2.y))) continue;
             var _secondPoint2 = this.get(_i4 + 1, _j3);
             if (_rootPoint2.status != "0" && _secondPoint2.status != "0" && (_rootPoint2.status == "1" || _secondPoint2.status == "1")) {
               var _group3 = [];
-
-              _group3.push(new Point(_rootPoint2.x, _rootPoint2.y));
-              _group3.push(new Point(_secondPoint2.x, _secondPoint2.y));
+              console.log("here");
+              _group3.push(new _Point2.default(_rootPoint2.x, _rootPoint2.y));
+              _group3.push(new _Point2.default(_secondPoint2.x, _secondPoint2.y));
 
               if (this.isGroupUnique(marked, _group3)) marked.push(_group3);
             }
@@ -176,16 +183,16 @@ var CellArray = function () {
             var secondPointV = this.get(_i4, _j3 + 1);
             if (_rootPoint2.status != "0" && secondPointV.status != "0" && (_rootPoint2.status == "1" || secondPointV.status == "1")) {
               var _group4 = [];
-
-              _group4.push(new Point(_rootPoint2.x, _rootPoint2.y));
-              _group4.push(new Point(secondPointV.x, secondPointV.y));
+              console.log("here");
+              _group4.push(new _Point2.default(_rootPoint2.x, _rootPoint2.y));
+              _group4.push(new _Point2.default(secondPointV.x, secondPointV.y));
 
               if (this.isGroupUnique(marked, _group4)) marked.push(_group4);
             }
           }
         }
       }
-      // console.log(marked);
+      console.log(marked);
 
       return marked;
     }
@@ -193,12 +200,12 @@ var CellArray = function () {
     // mods coords for overflow and swaps them because array xy and map xy are flipped
 
   }, {
-    key: "get",
+    key: 'get',
     value: function get(x, y) {
-      return this.cells[y % 4][x % Math.pow(2, numVars - 2)];
+      return this.cells[y % 4][x % Math.pow(2, this.vars - 2)];
     }
   }, {
-    key: "isAlreadyMatched",
+    key: 'isAlreadyMatched',
     value: function isAlreadyMatched(marked, point) {
       for (var i = 0; i < marked.length; i++) {
         for (var j = 0; j < marked[i].length; j++) {
@@ -210,7 +217,7 @@ var CellArray = function () {
       return false;
     }
   }, {
-    key: "isGroupUnique",
+    key: 'isGroupUnique',
     value: function isGroupUnique(marked, group) {
       if (typeof marked === 'undefined' || marked === null) {
         console.log("marked is empty");
@@ -239,3 +246,5 @@ var CellArray = function () {
 
   return CellArray;
 }();
+
+exports.default = CellArray;

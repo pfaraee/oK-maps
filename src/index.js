@@ -1,3 +1,6 @@
+import CellArray from './classes/CellArray';
+import * as drawer from './classes/Drawer';
+
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
 
@@ -6,7 +9,6 @@ var minterms = [];
 var numVars = 3;
 
 var cellArray = new CellArray(numVars);
-var drawer;
 
 var slider = document.getElementById('num-vars');
 
@@ -16,16 +18,13 @@ noUiSlider.create(slider, {
  step: 1,
  range: {
    'min': [3],
-   'max': [6]
+   'max': [4]
  },
  pips: {
    mode: 'steps',
    density: 30
  }
 });
-
-slider.setAttribute('disabled', true);
-
 
 slider.noUiSlider.on('update', function () {
   var truthTable = document.getElementById('truth-table');
@@ -86,7 +85,7 @@ slider.noUiSlider.on('update', function () {
     var binArray = bin.split("");
 
     for (let i = 0; i < binArray.length; i++) {
-      var td = document.createElement('td');
+      let td = document.createElement('td');
       td.appendChild(document.createTextNode(binArray[i]));
       tr.appendChild(td);
     }
@@ -136,9 +135,9 @@ slider.noUiSlider.on('update', function () {
   tbl.appendChild(tbody);
   truthTable.appendChild(tbl);
 
-  resetkmap();
-  var numVars = Number(slider.noUiSlider.get());
+  numVars = Number(slider.noUiSlider.get());
   cellArray = new CellArray(numVars);
+  console.log(numVars);
 
   //rewdraws map
   resetkmap();
@@ -169,7 +168,6 @@ slider.noUiSlider.on('update', function () {
 //   [new Point(0,0), new Point(-1,0), new Point(-1,-1), new Point(0,-1)]
 // ];
 
-// TODO: add switching for 3-4 (5-6)
 draw3varkmap();
 
 document.addEventListener('keypress', function(e) {
@@ -177,6 +175,7 @@ document.addEventListener('keypress', function(e) {
   if(e.keyCode == 13) {
     //resets the canvas
     resetkmap();
+    console.log(numVars);
     switch(numVars) {
       case 3:
         draw3varkmap();
@@ -199,15 +198,11 @@ document.addEventListener('keypress', function(e) {
     cellArray.reset();
 
     minterms = getMinterms();
-    // cleanArray(minterms);
-    // marks every cell as active or not based on minterms
     cellArray.mark(minterms);
     console.log(cellArray.cells);
-    cellArray.drawTerms();
-
-    drawer = new Drawer(cellArray.getGroups());
-    console.log(drawer.points);
-    drawer.drawPoints();
+    drawer.drawTerms(ctx, scale, cellArray.cells);
+    console.log(cellArray.getGroups());
+    drawer.drawPoints(ctx, scale, cellArray.getGroups());
   }
 });
 
@@ -227,18 +222,6 @@ function getMinterms() {
 
   return temp;
 }
-
-// // Cleans all empty values in the array and turns each string into an int
-// function cleanArray(arr) {
-//   // removes all empty values
-//   for(var i = 0; i < arr.length; i++) {
-//     if(arr[i] == "") {
-//       arr.splice(i, 1);
-//       i--;
-//     }
-//     arr[i] = parseInt(arr[i]);
-//   }
-// }
 
 function resetkmap() {
   ctx.clearRect(0, 0, c.width, c.width);

@@ -1,6 +1,10 @@
-class CellArray {
+import Cell from './Cell';
+import Point from './Point';
+
+export default class CellArray {
 
   constructor(vars) {
+    this.vars = vars;
     this.cells = new Array();
 
     this.cells[0] = new Array();
@@ -19,7 +23,7 @@ class CellArray {
     this.cells[3].push(new Cell(2, 0, 3));
     this.cells[3].push(new Cell(6, 1, 3));
 
-    if (vars > 3) {
+    if (this.vars > 3) {
 
       this.cells.push(new Cell(8, 3, 0, false));
       this.cells.push(new Cell(9, 3, 1, false));
@@ -62,19 +66,10 @@ class CellArray {
     }
   }
 
-  drawTerms() {
-    ctx.font = '20pt Roboto';
-
-    for(let i = 0; i < this.cells.length; i ++) {
-      for(let j = 0; j < this.cells[i].length; j++) {
-        ctx.fillText(this.cells[i][j].status, scale * (this.cells[i][j].x + 1)+ scale / 2, scale * (this.cells[i][j].y + 1) + scale / 2);
-      }
-    }
-  }
-
   //Writing this near midnight
   // TODO: write it better later
   getGroups() {
+    console.log("getgroups called");
     var marked = [];
     // used to skip some group checks
     var numActive = 0;
@@ -141,18 +136,20 @@ class CellArray {
         }
       }
     }
-    console.log(this.cells);
     // TODO: remove verbose searches
     if(numActive >= 2) {
-      for(let i = 0; i < Math.pow(2, numVars - 2); i ++) {
+      console.log("two or more active");
+      for(let i = 0; i < Math.pow(2, this.vars - 2); i ++) {
         for(let j = 0; j < 4;  j++) {
+          console.log("checking horizontals");
           // Horizontal pairs
           let rootPoint = this.get(i, j);
+          console.log(this.get(i, j)+ " is the root point");
           if(rootPoint.status == "1" && this.isAlreadyMatched(marked, new Point(rootPoint.x, rootPoint.y))) continue;
           let secondPoint = this.get(i + 1, j);
           if(((rootPoint.status != "0") && (secondPoint.status != "0")) && (rootPoint.status == "1" || secondPoint.status == "1")) {
             let group = [];
-
+            console.log("here");
             group.push(new Point(rootPoint.x , rootPoint.y));
             group.push(new Point((secondPoint.x), secondPoint.y));
 
@@ -163,7 +160,7 @@ class CellArray {
           let secondPointV = this.get(i, j + 1);
           if(((rootPoint.status != "0") && (secondPointV.status != "0")) &&(rootPoint.status == "1" || secondPointV.status == "1")) {
             let group = [];
-
+            console.log("here");
             group.push(new Point(rootPoint.x, rootPoint.y));
             group.push(new Point(secondPointV.x, secondPointV.y));
 
@@ -172,14 +169,14 @@ class CellArray {
         }
       }
     }
-    // console.log(marked);
+     console.log(marked);
 
     return marked;
   }
 
   // mods coords for overflow and swaps them because array xy and map xy are flipped
   get(x, y){
-    return this.cells[y % 4][x % Math.pow(2, numVars - 2)];
+    return this.cells[y % 4][x % Math.pow(2, this.vars - 2)];
   }
 
   isAlreadyMatched(marked, point) {
