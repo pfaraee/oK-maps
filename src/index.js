@@ -83,7 +83,7 @@ noUiSlider.create(slider, {
  }
 });
 
-noUiSlider.slider.enabed('false');
+slider.setAttribute('disabled', true);
 
 slider.noUiSlider.on('update', function () {
   var truthTable = document.getElementById('truth-table');
