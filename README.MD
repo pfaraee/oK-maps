@@ -2,13 +2,11 @@
 
 Online K-map generator for 3-6 vars, featuring real 3D visualization.
 
-
 ## Todo:
-- [x] fix gulpfile so browser refreshes on file change
-- [x] add tests for all current functions
-- [ ] research and impliment simpler js bundling pipeline
-- [ ] fully refractor all code to es6
-- [ ] merge branches
+- [ ] 3 vars
+- [ ] 4 vars
+- [ ] 5 vars
+- [ ] 6 vars
 
 
 <!-- ### Prerequisites
@@ -83,10 +81,7 @@ See also the list of [contributors](https://github.com/your/project/contributors
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details-->
 
 ## Acknowledgments
-
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc -->
+* Professor Wilkinson ( Mentoring me through this project ) 
