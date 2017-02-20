@@ -104,8 +104,8 @@ export default class CellArray {
         let thirdPoint = this.get(i, 2);
         let fourthPoint = this.get(i, 3);
 
-        if(((rootPoint.status != '0') && (secondPoint.status != '0') && (thirdPoint.status != '0') &&
-        (fourthPoint.status != '0')) && (rootPoint.status == '1' || secondPoint.status == '1' || thirdPoint.status == '1' || fourthPoint.status == '1' )) {
+        if(((rootPoint.status !== '0') && (secondPoint.status !== '0') && (thirdPoint.status !== '0') &&
+        (fourthPoint.status !== '0')) && (rootPoint.status === '1' || secondPoint.status === '1' || thirdPoint.status === '1' || fourthPoint.status === '1' )) {
           let group = [];
 
           group.push(rootPoint);
@@ -124,8 +124,8 @@ export default class CellArray {
         let thirdPoint = this.get(0, i+1);
         let fourthPoint = this.get(1, i+1);
 
-        if(((rootPoint.status != '0') && (secondPoint.status != '0') && (thirdPoint.status != '0') &&
-        (fourthPoint.status != '0')) && (rootPoint.status == '1' || secondPoint.status == '1' || thirdPoint.status == '1' || fourthPoint.status == '1' )) {
+        if(((rootPoint.status !== '0') && (secondPoint.status !== '0') && (thirdPoint.status !== '0') &&
+        (fourthPoint.status !== '0')) && (rootPoint.status === '1' || secondPoint.status === '1' || thirdPoint.status === '1' || fourthPoint.status === '1' )) {
           let group = [];
 
           group.push(rootPoint);
@@ -146,7 +146,7 @@ export default class CellArray {
 
           //horizontal
           let secondPoint = this.get(i + 1, j);
-          if(((rootPoint.status != '0') && (secondPoint.status != '0')) && (rootPoint.status == '1' || secondPoint.status == '1')) {
+          if(((rootPoint.status !== '0') && (secondPoint.status !== '0')) && (rootPoint.status === '1' || secondPoint.status === '1')) {
             let group = [];
             group.push(rootPoint);
             group.push(secondPoint);
@@ -156,7 +156,7 @@ export default class CellArray {
 
           //vertical
           let secondPointV = this.get(i, j + 1);
-          if(((rootPoint.status != '0') && (secondPointV.status != '0')) &&(rootPoint.status == '1' || secondPointV.status == '1')) {
+          if(((rootPoint.status !== '0') && (secondPointV.status !== '0')) &&(rootPoint.status === '1' || secondPointV.status === '1')) {
             let group = [];
             group.push(rootPoint);
             group.push(secondPointV);
@@ -166,7 +166,7 @@ export default class CellArray {
         }
       }
     }
-
+    console.log(marked);
     return marked;
   }
 
@@ -209,12 +209,16 @@ export default class CellArray {
 
         // check every 1 in the array of groups for matching (x & y's) and
         // increment matches if it is in a different group than the current group
-        for(let k = 0; k < groups.length; k++) {
-          for(let l = 0; l < groups[k].length; l++) {
-            if(groups[k][l].status === '1' && groups[i][j].x === groups[k][l].x
-            && groups[i][j].y === groups[k][l].y && i !== k) matches++;
+        pairing:
+          for(let k = 0; k < groups.length; k++) {
+            for(let l = 0; l < groups[k].length; l++) {
+              if(groups[k][l].status === '1' && groups[i][j].x === groups[k][l].x
+              && groups[i][j].y === groups[k][l].y && i !== k) {
+                matches++;
+                break pairing; // used to break out of both loops
+              }
+            }
           }
-        }
       }
 
       // removes the group and decrements the count by 1
@@ -223,7 +227,6 @@ export default class CellArray {
         i--;
       }
     }
-
     //TODO: ask professor if this is good
     return groups.map((group) => {
       return group.map((cell) => {

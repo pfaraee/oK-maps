@@ -130,7 +130,7 @@ var CellArray = function () {
           var thirdPoint = this.get(_i2, 2);
           var fourthPoint = this.get(_i2, 3);
 
-          if (rootPoint.status != '0' && secondPoint.status != '0' && thirdPoint.status != '0' && fourthPoint.status != '0' && (rootPoint.status == '1' || secondPoint.status == '1' || thirdPoint.status == '1' || fourthPoint.status == '1')) {
+          if (rootPoint.status !== '0' && secondPoint.status !== '0' && thirdPoint.status !== '0' && fourthPoint.status !== '0' && (rootPoint.status === '1' || secondPoint.status === '1' || thirdPoint.status === '1' || fourthPoint.status === '1')) {
             var _group = [];
 
             _group.push(rootPoint);
@@ -149,7 +149,7 @@ var CellArray = function () {
           var _thirdPoint = this.get(0, _i3 + 1);
           var _fourthPoint = this.get(1, _i3 + 1);
 
-          if (_rootPoint.status != '0' && _secondPoint.status != '0' && _thirdPoint.status != '0' && _fourthPoint.status != '0' && (_rootPoint.status == '1' || _secondPoint.status == '1' || _thirdPoint.status == '1' || _fourthPoint.status == '1')) {
+          if (_rootPoint.status !== '0' && _secondPoint.status !== '0' && _thirdPoint.status !== '0' && _fourthPoint.status !== '0' && (_rootPoint.status === '1' || _secondPoint.status === '1' || _thirdPoint.status === '1' || _fourthPoint.status === '1')) {
             var _group2 = [];
 
             _group2.push(_rootPoint);
@@ -170,7 +170,7 @@ var CellArray = function () {
 
             //horizontal
             var _secondPoint2 = this.get(_i4 + 1, _j2);
-            if (_rootPoint2.status != '0' && _secondPoint2.status != '0' && (_rootPoint2.status == '1' || _secondPoint2.status == '1')) {
+            if (_rootPoint2.status !== '0' && _secondPoint2.status !== '0' && (_rootPoint2.status === '1' || _secondPoint2.status === '1')) {
               var _group3 = [];
               _group3.push(_rootPoint2);
               _group3.push(_secondPoint2);
@@ -180,7 +180,7 @@ var CellArray = function () {
 
             //vertical
             var secondPointV = this.get(_i4, _j2 + 1);
-            if (_rootPoint2.status != '0' && secondPointV.status != '0' && (_rootPoint2.status == '1' || secondPointV.status == '1')) {
+            if (_rootPoint2.status !== '0' && secondPointV.status !== '0' && (_rootPoint2.status === '1' || secondPointV.status === '1')) {
               var _group4 = [];
               _group4.push(_rootPoint2);
               _group4.push(secondPointV);
@@ -190,7 +190,7 @@ var CellArray = function () {
           }
         }
       }
-
+      console.log(marked);
       return marked;
     }
 
@@ -243,9 +243,12 @@ var CellArray = function () {
 
           // check every 1 in the array of groups for matching (x & y's) and
           // increment matches if it is in a different group than the current group
-          for (var k = 0; k < groups.length; k++) {
+          pairing: for (var k = 0; k < groups.length; k++) {
             for (var l = 0; l < groups[k].length; l++) {
-              if (groups[k][l].status === '1' && groups[i][j].x === groups[k][l].x && groups[i][j].y === groups[k][l].y && i !== k) matches++;
+              if (groups[k][l].status === '1' && groups[i][j].x === groups[k][l].x && groups[i][j].y === groups[k][l].y && i !== k) {
+                matches++;
+                break pairing; // used to break out of both loops
+              }
             }
           }
         }
@@ -256,7 +259,6 @@ var CellArray = function () {
           i--;
         }
       }
-
       //TODO: ask professor if this is good
       return groups.map(function (group) {
         return group.map(function (cell) {

@@ -135,7 +135,6 @@ describe('Cell Array Class', function () {
   describe('simplifyGroups(groups)', function () {
     it('returns simplified array of groups as cells', function () {
       const cellArray = new CellArray(3);
-
       cellArray.mark(['1', '1', '1', '0', '0', '1', '0', '1']);
 
       let simplifiedArray = [];
@@ -156,6 +155,34 @@ describe('Cell Array Class', function () {
       simplifiedArray.push(group3);
 
       expect(cellArray.simplifyGroups(cellArray.getGroups())).to.deep.equal(simplifiedArray);
+
+      const cellArray2 = new CellArray(3);
+      cellArray2.mark(['1', '1', '1', '1', '1', '1', '1', '0']);
+
+      let simplifiedArray2 = [];
+
+      let group12 = [];
+      group12.push(new Point(0, 0));
+      group12.push(new Point(0, 1));
+      group12.push(new Point(0, 2));
+      group12.push(new Point(0, 3));
+      simplifiedArray2.push(group12);
+
+      let group22 = [];
+      group22.push(new Point(0, 0));
+      group22.push(new Point(1, 0));
+      group22.push(new Point(0, 1));
+      group22.push(new Point(1, 1));
+      simplifiedArray2.push(group22);
+
+      let group32 = [];
+      group32.push(new Point(0, 3));
+      group32.push(new Point(1, 3));
+      group32.push(new Point(0, 0));
+      group32.push(new Point(1, 0));
+      simplifiedArray2.push(group32);
+
+      expect(cellArray2.simplifyGroups(cellArray2.getGroups())).to.deep.equal(simplifiedArray2);
     });
   });
 });
