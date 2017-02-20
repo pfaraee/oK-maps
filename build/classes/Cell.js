@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Point2 = require("./Point");
+var _Point2 = require('./Point');
 
 var _Point3 = _interopRequireDefault(_Point2);
 
@@ -24,10 +24,12 @@ var Cell = function (_Point) {
   function Cell(val, x, y) {
     _classCallCheck(this, Cell);
 
+    if (typeof val !== 'number' || val % 1 !== 0 || val < 0) throw new Error('val must be a valid positive integer.');
+
     var _this = _possibleConstructorReturn(this, (Cell.__proto__ || Object.getPrototypeOf(Cell)).call(this, x, y));
 
-    _this.val = val;
-    _this.status = "";
+    _this.val = Number(val);
+    _this.status = '';
     return _this;
   }
 
