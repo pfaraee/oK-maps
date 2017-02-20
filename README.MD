@@ -8,10 +8,12 @@ Online K-map generator for 3-6 vars, featuring real 3D visualization.
 - [ ] 4 vars
 - [ ] 5 vars
 - [ ] 6 vars
+
 #### Expansions
 - [ ] Display Expansion
 - [ ] Add option to switch between SOP and POS
 - [ ] Display options when they arise
+
 #### Misc:
 - [ ] Display numbers in truth table
 
