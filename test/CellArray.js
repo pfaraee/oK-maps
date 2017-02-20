@@ -5,7 +5,7 @@ import Point from '../src/classes/Point';
 describe('Cell Array Class', function () {
   describe('mark()', function () {
     it('marks the cells with the given terms', function () {
-      let cellArray = new CellArray(3);
+      const cellArray = new CellArray(3);
 
       cellArray.mark(['0', '1', 'X', '0', '1', 'X', '1', '0']);
 
@@ -23,7 +23,7 @@ describe('Cell Array Class', function () {
 
   describe('reset()', function () {
     it('resets all cells to an empty string', function () {
-      let cellArray = new CellArray(3);
+      const cellArray = new CellArray(3);
 
       cellArray.mark(['0', '1', 'X', '0', '1', 'X', '1', '0']);
 
@@ -44,7 +44,7 @@ describe('Cell Array Class', function () {
 
   describe('get()', function () {
     it('returns cell in respect of the cells array', function () {
-      let cellArray = new CellArray(3);
+      const cellArray = new CellArray(3);
 
       let cell1 = cellArray.get(1, 1);
       expect(cell1.val).to.equal(5);
@@ -58,7 +58,7 @@ describe('Cell Array Class', function () {
     });
 
     it('mods coordinates that overflow the range of the map', function () {
-      let cellArray = new CellArray(3);
+      const cellArray = new CellArray(3);
 
       let cell1 = cellArray.get(1, 4); //tests y overflow
       expect(cell1.val).to.equal(4);
@@ -74,7 +74,7 @@ describe('Cell Array Class', function () {
 
   describe('isGroupUnique()', function () {
     it('returns true if marked is empty', function () {
-      let cellArray = new CellArray(3);
+      const cellArray = new CellArray(3);
 
       let marked = [];
 
@@ -87,7 +87,7 @@ describe('Cell Array Class', function () {
     });
 
     it('returns whether or not the group is inside a different group', function () {
-      let cellArray = new CellArray(3);
+      const cellArray = new CellArray(3);
 
       let marked = [];
 
@@ -129,6 +129,33 @@ describe('Cell Array Class', function () {
 
   describe('getGroups()', function () {
     // TODO: write this test
-    it('returns best groups from the possible minterms');
+    it('returns array of \'unique\' groups');
+  });
+
+  describe('simplifyGroups(groups)', function () {
+    it('returns simplified array of groups as cells', function () {
+      const cellArray = new CellArray(3);
+
+      cellArray.mark(['1', '1', '1', '0', '0', '1', '0', '1']);
+
+      let simplifiedArray = [];
+
+      let group1 = [];
+      group1.push(new Point(0, 1));
+      group1.push(new Point(1, 1));
+      simplifiedArray.push(group1);
+
+      let group2 = [];
+      group2.push(new Point(0, 3));
+      group2.push(new Point(0, 0));
+      simplifiedArray.push(group2);
+
+      let group3 = [];
+      group3.push(new Point(1, 1));
+      group3.push(new Point(1, 2));
+      simplifiedArray.push(group3);
+
+      expect(cellArray.simplifyGroups(cellArray.getGroups())).to.deep.equal(simplifiedArray);
+    });
   });
 });

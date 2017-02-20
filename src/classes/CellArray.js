@@ -70,7 +70,6 @@ export default class CellArray {
   //Writing this near midnight
   // TODO: write it better later
   getGroups() {
-    console.log('getgroups called');
     var marked = [];
     // used to skip some group checks
     var numActive = 0;
@@ -88,7 +87,7 @@ export default class CellArray {
 
       for(let i = 0; i < this.cells.length; i++) {
         for(let j = 0; j < this.cells[i].length; j++) {
-          group.push(new Point(this.cells[i][j].x, this.cells[i][j].y));
+          group.push(this.cells[i][j]);
         }
       }
 
@@ -109,9 +108,10 @@ export default class CellArray {
         (fourthPoint.status != '0')) && (rootPoint.status == '1' || secondPoint.status == '1' || thirdPoint.status == '1' || fourthPoint.status == '1' )) {
           let group = [];
 
-          for(let j = 0; j < 4; j++) {
-            group.push(new Point(i,j));
-          }
+          group.push(rootPoint);
+          group.push(secondPoint);
+          group.push(thirdPoint);
+          group.push(fourthPoint);
 
           marked.push(group);
         }
@@ -128,18 +128,18 @@ export default class CellArray {
         (fourthPoint.status != '0')) && (rootPoint.status == '1' || secondPoint.status == '1' || thirdPoint.status == '1' || fourthPoint.status == '1' )) {
           let group = [];
 
-          group.push(new Point(rootPoint.x, rootPoint.y));
-          group.push(new Point(secondPoint.x, secondPoint.y));
-          group.push(new Point(thirdPoint.x, thirdPoint.y));
-          group.push(new Point(fourthPoint.x, fourthPoint.y));
+          group.push(rootPoint);
+          group.push(secondPoint);
+          group.push(thirdPoint);
+          group.push(fourthPoint);
 
           marked.push(group);
         }
       }
     }
+
     // TODO: remove verbose searches
     if(numActive >= 2) {
-      console.log('two or more active');
       for(let i = 0; i < Math.pow(2, this.vars - 2); i ++) {
         for(let j = 0; j < 4;  j++) {
           let rootPoint = this.get(i, j);
@@ -148,9 +148,8 @@ export default class CellArray {
           let secondPoint = this.get(i + 1, j);
           if(((rootPoint.status != '0') && (secondPoint.status != '0')) && (rootPoint.status == '1' || secondPoint.status == '1')) {
             let group = [];
-            console.log('here');
-            group.push(new Point(rootPoint.x , rootPoint.y));
-            group.push(new Point((secondPoint.x), secondPoint.y));
+            group.push(rootPoint);
+            group.push(secondPoint);
 
             if(this.isGroupUnique(marked, group)) marked.push(group);
           }
@@ -159,16 +158,14 @@ export default class CellArray {
           let secondPointV = this.get(i, j + 1);
           if(((rootPoint.status != '0') && (secondPointV.status != '0')) &&(rootPoint.status == '1' || secondPointV.status == '1')) {
             let group = [];
-            console.log('here');
-            group.push(new Point(rootPoint.x, rootPoint.y));
-            group.push(new Point(secondPointV.x, secondPointV.y));
+            group.push(rootPoint);
+            group.push(secondPointV);
 
             if(this.isGroupUnique(marked, group)) marked.push(group);
           }
         }
       }
     }
-     console.log(marked);
 
     return marked;
   }
@@ -198,5 +195,40 @@ export default class CellArray {
     }
 
     return true;
+  }
+
+  simplifyGroups(groups) {
+    for(let i = 0; i < groups.length; i++) { // for each group
+      let numberOfOnes = 0;
+      let matches = 0;
+
+      for(let j = 0; j < groups[i].length; j++) { // for each point in the group
+        // if it is a 1 increment number of ones otherwise skip this loop
+        if(groups[i][j].status !== '1') continue;
+        numberOfOnes++;
+
+        // check every 1 in the array of groups for matching (x & y's) and
+        // increment matches if it is in a different group than the current group
+        for(let k = 0; k < groups.length; k++) {
+          for(let l = 0; l < groups[k].length; l++) {
+            if(groups[k][l].status === '1' && groups[i][j].x === groups[k][l].x
+            && groups[i][j].y === groups[k][l].y && i !== k) matches++;
+          }
+        }
+      }
+
+      // removes the group and decrements the count by 1
+      if(matches && numberOfOnes && numberOfOnes === matches) {
+        groups.splice(i, 1);
+        i--;
+      }
+    }
+
+    //TODO: ask professor if this is good
+    return groups.map((group) => {
+      return group.map((cell) => {
+        return new Point(cell.x, cell.y);
+      });
+    });
   }
 }

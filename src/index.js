@@ -10,6 +10,63 @@ var numVars = 3;
 
 var cellArray = new CellArray(numVars);
 
+draw3varkmap();
+
+document.addEventListener('keypress', function(e) {
+  //grabs minterms on enter key
+  if(e.keyCode == 13) {
+    //resets the canvas
+    resetkmap();
+
+    switch(numVars) {
+      case 3:
+        draw3varkmap();
+        break;
+      case 4:
+        draw4varkmap();
+        break;
+      case 5:
+        console.log('5 vars');
+        break;
+      case 6:
+        console.log('6 vars');
+        break;
+      default:
+        console.log('You did it Professor.');
+        break;
+    }
+
+    //resets cell array
+    cellArray.reset();
+
+    minterms = getMinterms();
+    cellArray.mark(minterms);
+    drawer.drawTerms(ctx, scale, cellArray.cells);
+    drawer.drawPoints(ctx, scale, cellArray.simplifyGroups(cellArray.getGroups()));
+  }
+});
+
+function getMinterms() {
+  var temp = [];
+  //TODO: change it to work for more minterms instead of hardcoding the 8
+  //gets minterms from html form
+  for(let i = 0; i < Math.pow(2, numVars); i++) {
+    var formGroup = document.getElementsByName('group' + i);
+
+    for(let j = 0; j < formGroup.length; j++) {
+      if(formGroup[j].checked == true) {
+        temp[i] = formGroup[j].value;
+      }
+    }
+  }
+
+  return temp;
+}
+
+function resetkmap() {
+  ctx.clearRect(0, 0, c.width, c.width);
+}
+
 var slider = document.getElementById('num-vars');
 
 noUiSlider.create(slider, {
@@ -154,78 +211,6 @@ slider.noUiSlider.on('update', function () {
   }
 });
 
-// var pairPatterns = [
-//   [new Point(0,0), new Point(0,-1)],
-//   [new Point(0,0), new Point(1,0)],
-//   [new Point(0,0), new Point(0,1)],
-//   [new Point(0,0), new Point(-1,0)]
-// ];
-//
-// var quadPatterns = [
-//   [new Point(0,0), new Point(0,-1), new Point(1,-1), new Point(1,0)],
-//   [new Point(0,0), new Point(1,0), new Point(1,1), new Point(0,1)],
-//   [new Point(0,0), new Point(0,1), new Point(-1,1), new Point(-1,0)],
-//   [new Point(0,0), new Point(-1,0), new Point(-1,-1), new Point(0,-1)]
-// ];
-
-draw3varkmap();
-
-document.addEventListener('keypress', function(e) {
-  //grabs minterms on enter key
-  if(e.keyCode == 13) {
-    //resets the canvas
-    resetkmap();
-    console.log(numVars);
-    switch(numVars) {
-      case 3:
-        draw3varkmap();
-        break;
-      case 4:
-        draw4varkmap();
-        break;
-      case 5:
-        console.log('5 vars');
-        break;
-      case 6:
-        console.log('6 vars');
-        break;
-      default:
-        console.log('You did it Professor.');
-        break;
-    }
-
-    //resets cell array
-    cellArray.reset();
-
-    minterms = getMinterms();
-    cellArray.mark(minterms);
-    console.log(cellArray.cells);
-    drawer.drawTerms(ctx, scale, cellArray.cells);
-    console.log(cellArray.getGroups());
-    drawer.drawPoints(ctx, scale, cellArray.getGroups());
-  }
-});
-
-function getMinterms() {
-  var temp = [];
-  //TODO: change it to work for more minterms instead of hardcoding the 8
-  //gets minterms from html form
-  for(let i = 0; i < Math.pow(2, numVars); i++) {
-    var formGroup = document.getElementsByName('group' + i);
-
-    for(let j = 0; j < formGroup.length; j++) {
-      if(formGroup[j].checked == true) {
-        temp[i] = formGroup[j].value;
-      }
-    }
-  }
-
-  return temp;
-}
-
-function resetkmap() {
-  ctx.clearRect(0, 0, c.width, c.width);
-}
 
 function draw4varkmap() {
   ctx.beginPath();
