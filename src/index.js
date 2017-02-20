@@ -1,8 +1,8 @@
 import CellArray from './classes/CellArray';
 import * as drawer from './classes/Drawer';
 
-var c = document.getElementById("canvas");
-var ctx = c.getContext("2d");
+var c = document.getElementById('canvas');
+var ctx = c.getContext('2d');
 
 var scale = c.width / 5;
 var minterms = [];
@@ -61,11 +61,11 @@ slider.noUiSlider.on('update', function () {
   }
 
   let off = document.createElement('th');
-  off.appendChild(document.createTextNode("0"));
+  off.appendChild(document.createTextNode('0'));
   let on = document.createElement('th');
-  on.appendChild(document.createTextNode("1"));
+  on.appendChild(document.createTextNode('1'));
   let dontCare = document.createElement('th');
-  dontCare.appendChild(document.createTextNode("X"));
+  dontCare.appendChild(document.createTextNode('X'));
 
   tr.appendChild(off);
   tr.appendChild(on);
@@ -78,11 +78,11 @@ slider.noUiSlider.on('update', function () {
   for(let i = 0; i < Math.pow(2, slider.noUiSlider.get()); i++) {
     let tr = document.createElement('tr');
 
-    var num = "" + i.toString(2);
+    var num = '' + i.toString(2);
     var pad = '0'.repeat(slider.noUiSlider.get()); // its just 5 0's for the max var nums
     var bin = pad.substring(0, pad.length - num.length) + num;
 
-    var binArray = bin.split("");
+    var binArray = bin.split('');
 
     for (let i = 0; i < binArray.length; i++) {
       let td = document.createElement('td');
@@ -131,7 +131,7 @@ slider.noUiSlider.on('update', function () {
     tbody.appendChild(tr);
   }
 
-  tbody.style.overflowY = "scroll";
+  tbody.style.overflowY = 'scroll';
   tbl.appendChild(tbody);
   truthTable.appendChild(tbl);
 
@@ -149,7 +149,7 @@ slider.noUiSlider.on('update', function () {
       draw4varkmap();
       break;
     default:
-      console.log("You did it Professor.");
+      console.log('You did it Professor.');
       break;
   }
 });
@@ -184,13 +184,13 @@ document.addEventListener('keypress', function(e) {
         draw4varkmap();
         break;
       case 5:
-        console.log("5 vars");
+        console.log('5 vars');
         break;
       case 6:
-        console.log("6 vars");
+        console.log('6 vars');
         break;
       default:
-        console.log("You did it Professor.");
+        console.log('You did it Professor.');
         break;
     }
 
@@ -211,7 +211,7 @@ function getMinterms() {
   //TODO: change it to work for more minterms instead of hardcoding the 8
   //gets minterms from html form
   for(let i = 0; i < Math.pow(2, numVars); i++) {
-    var formGroup = document.getElementsByName("group" + i);
+    var formGroup = document.getElementsByName('group' + i);
 
     for(let j = 0; j < formGroup.length; j++) {
       if(formGroup[j].checked == true) {

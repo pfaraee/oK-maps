@@ -62,7 +62,7 @@ export default class CellArray {
     // console.log(this.cells);
     for(let i = 0; i < this.cells.length; i ++) {
       for(let j = 0; j < this.cells[i].length; j++ ) {
-        this.cells[i][j].status = "";
+        this.cells[i][j].status = '';
       }
     }
   }
@@ -70,7 +70,7 @@ export default class CellArray {
   //Writing this near midnight
   // TODO: write it better later
   getGroups() {
-    console.log("getgroups called");
+    console.log('getgroups called');
     var marked = [];
     // used to skip some group checks
     var numActive = 0;
@@ -78,7 +78,7 @@ export default class CellArray {
     // TODO: refractor to work with maxterms
     for(let i = 0; i < this.cells.length; i++) {
       for(let j = 0; j < this.cells[i].length; j++) {
-        if(this.cells[i][j].status != "0") numActive++;
+        if(this.cells[i][j].status != '0') numActive++;
       }
     }
 
@@ -98,15 +98,15 @@ export default class CellArray {
     }
 
     if(numActive >= 4) {
-      //marks "quads"
+      //marks 'quads'
       for(let i = 0; i < 2; i++) {
         let rootPoint = this.get(i, 0);
         let secondPoint = this.get(i, 1);
         let thirdPoint = this.get(i, 2);
         let fourthPoint = this.get(i, 3);
 
-        if(((rootPoint.status != "0") && (secondPoint.status != "0") && (thirdPoint.status != "0") &&
-        (fourthPoint.status != "0")) && (rootPoint.status == "1" || secondPoint.status == "1" || thirdPoint.status == "1" || fourthPoint.status == "1" )) {
+        if(((rootPoint.status != '0') && (secondPoint.status != '0') && (thirdPoint.status != '0') &&
+        (fourthPoint.status != '0')) && (rootPoint.status == '1' || secondPoint.status == '1' || thirdPoint.status == '1' || fourthPoint.status == '1' )) {
           let group = [];
 
           for(let j = 0; j < 4; j++) {
@@ -117,15 +117,15 @@ export default class CellArray {
         }
       }
 
-      //marks "boxes"
+      //marks 'boxes'
       for(let i = 0; i < 4; i++) {
         let rootPoint = this.get(0,i);
         let secondPoint = this.get(1,i);
         let thirdPoint = this.get(0, i+1);
         let fourthPoint = this.get(1, i+1);
 
-        if(((rootPoint.status != "0") && (secondPoint.status != "0") && (thirdPoint.status != "0") &&
-        (fourthPoint.status != "0")) && (rootPoint.status == "1" || secondPoint.status == "1" || thirdPoint.status == "1" || fourthPoint.status == "1" )) {
+        if(((rootPoint.status != '0') && (secondPoint.status != '0') && (thirdPoint.status != '0') &&
+        (fourthPoint.status != '0')) && (rootPoint.status == '1' || secondPoint.status == '1' || thirdPoint.status == '1' || fourthPoint.status == '1' )) {
           let group = [];
 
           group.push(new Point(rootPoint.x, rootPoint.y));
@@ -139,29 +139,27 @@ export default class CellArray {
     }
     // TODO: remove verbose searches
     if(numActive >= 2) {
-      console.log("two or more active");
+      console.log('two or more active');
       for(let i = 0; i < Math.pow(2, this.vars - 2); i ++) {
         for(let j = 0; j < 4;  j++) {
-          console.log("checking horizontals");
-          // Horizontal pairs
           let rootPoint = this.get(i, j);
-          console.log(this.get(i, j)+ " is the root point");
-          if(rootPoint.status == "1" && this.isAlreadyMatched(marked, new Point(rootPoint.x, rootPoint.y))) continue;
+
+          //horizontal
           let secondPoint = this.get(i + 1, j);
-          if(((rootPoint.status != "0") && (secondPoint.status != "0")) && (rootPoint.status == "1" || secondPoint.status == "1")) {
+          if(((rootPoint.status != '0') && (secondPoint.status != '0')) && (rootPoint.status == '1' || secondPoint.status == '1')) {
             let group = [];
-            console.log("here");
+            console.log('here');
             group.push(new Point(rootPoint.x , rootPoint.y));
             group.push(new Point((secondPoint.x), secondPoint.y));
 
             if(this.isGroupUnique(marked, group)) marked.push(group);
           }
 
-          //vertical                                                  // temp fix just because it is hardcoded for 2 rn
+          //vertical
           let secondPointV = this.get(i, j + 1);
-          if(((rootPoint.status != "0") && (secondPointV.status != "0")) &&(rootPoint.status == "1" || secondPointV.status == "1")) {
+          if(((rootPoint.status != '0') && (secondPointV.status != '0')) &&(rootPoint.status == '1' || secondPointV.status == '1')) {
             let group = [];
-            console.log("here");
+            console.log('here');
             group.push(new Point(rootPoint.x, rootPoint.y));
             group.push(new Point(secondPointV.x, secondPointV.y));
 
@@ -180,20 +178,9 @@ export default class CellArray {
     return this.cells[y % 4][x % Math.pow(2, this.vars - 2)];
   }
 
-  isAlreadyMatched(marked, point) {
-    for(let i = 0; i < marked.length; i ++) {
-      for(let j = 0; j < marked[i].length; j++) {
-        if(marked[i][j].x == point.x && marked[i][j].y == point.y) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   isGroupUnique(marked, group) {
     if(typeof marked === 'undefined' || marked === null ) {
-      console.log("marked is empty");
+      console.log('marked is empty');
       return true;
     }
     for(let i = 0; i < marked.length; i++) { //for each marked group

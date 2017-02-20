@@ -19,7 +19,7 @@ export function drawTerms(ctx, scale, cells) {
 
 //draws a color on the matching cell
 export function mark(ctx, scale, x, y, rotation, color) {
-  console.log("hello");
+  console.log('hello');
   // saves current context state
   ctx.save();
 
@@ -31,7 +31,7 @@ export function mark(ctx, scale, x, y, rotation, color) {
   //draws match color
   ctx.beginPath();
 
-  ctx.fillStyle = "rgba("+color[0]+","+color[1]+","+color[2]+",0.3)";
+  ctx.fillStyle = 'rgba('+color[0]+','+color[1]+','+color[2]+',0.3)';
   // subtracts to center the match color
   ctx.fillRect(-scale / 2, -scale / 2, scale, scale /*- 10*/);
   ctx.fillStyle = '#000';
