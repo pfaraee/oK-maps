@@ -96,7 +96,6 @@ var CellArray = function () {
   }, {
     key: 'getGroups',
     value: function getGroups() {
-      console.log('getgroups called');
       var marked = [];
       // used to skip some group checks
       var numActive = 0;
@@ -114,7 +113,7 @@ var CellArray = function () {
 
         for (var _i = 0; _i < this.cells.length; _i++) {
           for (var _j = 0; _j < this.cells[_i].length; _j++) {
-            group.push(new _Point2.default(this.cells[_i][_j].x, this.cells[_i][_j].y));
+            group.push(this.cells[_i][_j]);
           }
         }
 
@@ -134,9 +133,10 @@ var CellArray = function () {
           if (rootPoint.status != '0' && secondPoint.status != '0' && thirdPoint.status != '0' && fourthPoint.status != '0' && (rootPoint.status == '1' || secondPoint.status == '1' || thirdPoint.status == '1' || fourthPoint.status == '1')) {
             var _group = [];
 
-            for (var _j2 = 0; _j2 < 4; _j2++) {
-              _group.push(new _Point2.default(_i2, _j2));
-            }
+            _group.push(rootPoint);
+            _group.push(secondPoint);
+            _group.push(thirdPoint);
+            _group.push(fourthPoint);
 
             marked.push(_group);
           }
@@ -152,47 +152,44 @@ var CellArray = function () {
           if (_rootPoint.status != '0' && _secondPoint.status != '0' && _thirdPoint.status != '0' && _fourthPoint.status != '0' && (_rootPoint.status == '1' || _secondPoint.status == '1' || _thirdPoint.status == '1' || _fourthPoint.status == '1')) {
             var _group2 = [];
 
-            _group2.push(new _Point2.default(_rootPoint.x, _rootPoint.y));
-            _group2.push(new _Point2.default(_secondPoint.x, _secondPoint.y));
-            _group2.push(new _Point2.default(_thirdPoint.x, _thirdPoint.y));
-            _group2.push(new _Point2.default(_fourthPoint.x, _fourthPoint.y));
+            _group2.push(_rootPoint);
+            _group2.push(_secondPoint);
+            _group2.push(_thirdPoint);
+            _group2.push(_fourthPoint);
 
             marked.push(_group2);
           }
         }
       }
+
       // TODO: remove verbose searches
       if (numActive >= 2) {
-        console.log('two or more active');
         for (var _i4 = 0; _i4 < Math.pow(2, this.vars - 2); _i4++) {
-          for (var _j3 = 0; _j3 < 4; _j3++) {
-            var _rootPoint2 = this.get(_i4, _j3);
+          for (var _j2 = 0; _j2 < 4; _j2++) {
+            var _rootPoint2 = this.get(_i4, _j2);
 
             //horizontal
-            var _secondPoint2 = this.get(_i4 + 1, _j3);
+            var _secondPoint2 = this.get(_i4 + 1, _j2);
             if (_rootPoint2.status != '0' && _secondPoint2.status != '0' && (_rootPoint2.status == '1' || _secondPoint2.status == '1')) {
               var _group3 = [];
-              console.log('here');
-              _group3.push(new _Point2.default(_rootPoint2.x, _rootPoint2.y));
-              _group3.push(new _Point2.default(_secondPoint2.x, _secondPoint2.y));
+              _group3.push(_rootPoint2);
+              _group3.push(_secondPoint2);
 
               if (this.isGroupUnique(marked, _group3)) marked.push(_group3);
             }
 
             //vertical
-            var secondPointV = this.get(_i4, _j3 + 1);
+            var secondPointV = this.get(_i4, _j2 + 1);
             if (_rootPoint2.status != '0' && secondPointV.status != '0' && (_rootPoint2.status == '1' || secondPointV.status == '1')) {
               var _group4 = [];
-              console.log('here');
-              _group4.push(new _Point2.default(_rootPoint2.x, _rootPoint2.y));
-              _group4.push(new _Point2.default(secondPointV.x, secondPointV.y));
+              _group4.push(_rootPoint2);
+              _group4.push(secondPointV);
 
               if (this.isGroupUnique(marked, _group4)) marked.push(_group4);
             }
           }
         }
       }
-      console.log(marked);
 
       return marked;
     }
@@ -229,6 +226,43 @@ var CellArray = function () {
       }
 
       return true;
+    }
+  }, {
+    key: 'simplifyGroups',
+    value: function simplifyGroups(groups) {
+      for (var i = 0; i < groups.length; i++) {
+        // for each group
+        var numberOfOnes = 0;
+        var matches = 0;
+
+        for (var j = 0; j < groups[i].length; j++) {
+          // for each point in the group
+          // if it is a 1 increment number of ones otherwise skip this loop
+          if (groups[i][j].status !== '1') continue;
+          numberOfOnes++;
+
+          // check every 1 in the array of groups for matching (x & y's) and
+          // increment matches if it is in a different group than the current group
+          for (var k = 0; k < groups.length; k++) {
+            for (var l = 0; l < groups[k].length; l++) {
+              if (groups[k][l].status === '1' && groups[i][j].x === groups[k][l].x && groups[i][j].y === groups[k][l].y && i !== k) matches++;
+            }
+          }
+        }
+
+        // removes the group and decrements the count by 1
+        if (matches && numberOfOnes && numberOfOnes === matches) {
+          groups.splice(i, 1);
+          i--;
+        }
+      }
+
+      //TODO: ask professor if this is good
+      return groups.map(function (group) {
+        return group.map(function (cell) {
+          return new _Point2.default(cell.x, cell.y);
+        });
+      });
     }
   }]);
 
