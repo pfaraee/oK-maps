@@ -23,7 +23,7 @@ document.addEventListener('keypress', function(e) {
         draw3varkmap();
         break;
       case 4:
-        draw4varkmap();
+        console.log('4 vars');
         break;
       case 5:
         console.log('5 vars');
@@ -82,6 +82,8 @@ noUiSlider.create(slider, {
    density: 30
  }
 });
+
+noUiSlider.slider.enabed('false');
 
 slider.noUiSlider.on('update', function () {
   var truthTable = document.getElementById('truth-table');
