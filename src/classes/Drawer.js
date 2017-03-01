@@ -19,7 +19,6 @@ export function drawTerms(ctx, scale, cells) {
 
 //draws a color on the matching cell
 export function mark(ctx, scale, x, y, rotation, color) {
-  console.log('hello');
   // saves current context state
   ctx.save();
 

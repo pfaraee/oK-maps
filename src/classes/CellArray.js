@@ -93,7 +93,7 @@ export default class CellArray {
 
     if(numActive >= 8 && this.vars > 3) {
       //mark 2x4's
-      for(let i = 0; i < Math.pow(2, this.vars - 1); i++) {
+      for(let i = 0; i < Math.pow(2, this.vars - 2); i++) {
         let rootPoint = this.get(i, 0);
         let secondPoint = this.get(i, 1);
         let thirdPoint = this.get(i, 2);
@@ -123,7 +123,7 @@ export default class CellArray {
       }
 
       //mark 4x2's
-      for(let i = 0; i < Math.pow(2, this.vars - 1); i++) {
+      for(let i = 0; i < Math.pow(2, this.vars - 2); i++) {
         let rootPoint = this.get(0, i);
         let secondPoint = this.get(1, i);
         let thirdPoint = this.get(2, i);
@@ -156,11 +156,11 @@ export default class CellArray {
     if(numActive >= 4) {
       //marks horizontal 'quads'
       if(this.vars > 3) {
-        for(let i = 0; i < Math.pow(2, this.vars - 1); i++) {
-          let rootPoint = this.get(i, 0);
-          let secondPoint = this.get(i, 1);
-          let thirdPoint = this.get(i, 2);
-          let fourthPoint = this.get(i, 3);
+        for(let i = 0; i < Math.pow(2, this.vars - 2); i++) {
+          let rootPoint = this.get(0, i);
+          let secondPoint = this.get(1, i);
+          let thirdPoint = this.get(2, i);
+          let fourthPoint = this.get(3, i);
 
           if(((rootPoint.status !== '0') && (secondPoint.status !== '0') && (thirdPoint.status !== '0') &&
           (fourthPoint.status !== '0')) && (rootPoint.status === '1' || secondPoint.status === '1' || thirdPoint.status === '1' || fourthPoint.status === '1' )) {
@@ -177,11 +177,11 @@ export default class CellArray {
       }
 
       //marks vertical 'quads'
-      for(let i = 0; i < Math.pow(2, this.vars - 1); i++) {
-        let rootPoint = this.get(0, i);
-        let secondPoint = this.get(1, i);
-        let thirdPoint = this.get(2, i);
-        let fourthPoint = this.get(3, i);
+      for(let i = 0; i < Math.pow(2, this.vars - 2); i++) {
+        let rootPoint = this.get(i, 0);
+        let secondPoint = this.get(i, 1);
+        let thirdPoint = this.get(i, 2);
+        let fourthPoint = this.get(i, 3);
 
         if(((rootPoint.status !== '0') && (secondPoint.status !== '0') && (thirdPoint.status !== '0') &&
         (fourthPoint.status !== '0')) && (rootPoint.status === '1' || secondPoint.status === '1' || thirdPoint.status === '1' || fourthPoint.status === '1' )) {
