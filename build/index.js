@@ -15,7 +15,27 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var c = document.getElementById('canvas');
 var ctx = c.getContext('2d');
 
-var scale = c.width / 5;
+var scale = c.width / 5; //scale of the cells;
+
+
+var devicePixelRatio = window.devicePixelRatio || 1,
+    backingStoreRatio = ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1,
+    ratio = devicePixelRatio / backingStoreRatio;
+
+var oldWidth = c.width;
+var oldHeight = c.height;
+
+c.width = oldWidth * ratio + 1;
+c.height = oldHeight * ratio + 1;
+
+c.style.width = oldWidth + 'px';
+c.style.height = oldHeight + 'px';
+
+// now scale the context to counter
+// the fact that we've manually scaled
+// our c element
+ctx.scale(ratio, ratio);
+
 var minterms = [];
 var numVars = 3;
 
@@ -34,6 +54,7 @@ document.addEventListener('keypress', function (e) {
         draw3varkmap();
         break;
       case 4:
+        draw4varkmap();
         console.log('4 vars');
         break;
       case 5:
@@ -53,7 +74,9 @@ document.addEventListener('keypress', function (e) {
     minterms = getMinterms();
     cellArray.mark(minterms);
     drawer.drawTerms(ctx, scale, cellArray.cells);
-    drawer.drawPoints(ctx, scale, cellArray.simplifyGroups(cellArray.getGroups()));
+    var groups = cellArray.simplifyGroups(cellArray.getGroups());
+    console.log(groups);
+    drawer.drawPoints(ctx, scale, groups);
   }
 });
 
@@ -93,8 +116,6 @@ noUiSlider.create(slider, {
     density: 30
   }
 });
-
-slider.setAttribute('disabled', true);
 
 slider.noUiSlider.on('update', function () {
   var truthTable = document.getElementById('truth-table');
@@ -285,18 +306,6 @@ function draw4varkmap() {
 function draw3varkmap() {
   //draws table
   ctx.beginPath();
-
-  // ctx.moveTo(0,0);
-  // ctx.lineTo(c.width, 0);
-  //
-  // ctx.moveTo(c.width,0);
-  // ctx.lineTo(c.width, c.width);
-  //
-  // ctx.moveTo(c.width, c.width);
-  // ctx.lineTo(0, c.width);
-  //
-  // ctx.moveTo(0, c.width);
-  // ctx.lineTo(0, 0);
 
   ctx.moveTo(0, 0);
   ctx.lineTo(scale, scale);
