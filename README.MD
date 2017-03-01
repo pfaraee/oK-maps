@@ -4,7 +4,7 @@ Online K-map generator for 3-6 vars, featuring real 3D visualization.
 
 ## Todo
 #### Vars
-- [x]  3 vars
+- [x] 3 vars
 - [x] 4 vars
 - [ ] 5 vars
 - [ ] 6 vars
@@ -17,6 +17,7 @@ Online K-map generator for 3-6 vars, featuring real 3D visualization.
 #### Misc:
 - [ ] Display numbers in truth table
 - [ ] Mark unary pairs
+- [ ] Clean up Gulpfile and build system
 
 <!--## License
 

@@ -282,7 +282,7 @@ export default class CellArray {
   }
 
   simplifyGroups(groups) {
-    for(let i = 0; i < groups.length; i++) { // for each group
+    for(let i = groups.length - 1; i >= 0; i--) { // for each group
       let numberOfOnes = 0;
       let matches = 0;
 
