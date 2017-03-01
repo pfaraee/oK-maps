@@ -5,7 +5,7 @@ Online K-map generator for 3-6 vars, featuring real 3D visualization.
 ## Todo
 #### Vars
 - [x]  3 vars
-- [ ] 4 vars
+- [x] 4 vars
 - [ ] 5 vars
 - [ ] 6 vars
 
