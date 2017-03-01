@@ -119,7 +119,7 @@ var CellArray = function () {
 
       if (numActive >= 8 && this.vars > 3) {
         //mark 2x4's
-        for (var _i2 = 0; _i2 < Math.pow(2, this.vars - 1); _i2++) {
+        for (var _i2 = 0; _i2 < Math.pow(2, this.vars - 2); _i2++) {
           var rootPoint = this.get(_i2, 0);
           var secondPoint = this.get(_i2, 1);
           var thirdPoint = this.get(_i2, 2);
@@ -146,7 +146,7 @@ var CellArray = function () {
         }
 
         //mark 4x2's
-        for (var _i3 = 0; _i3 < Math.pow(2, this.vars - 1); _i3++) {
+        for (var _i3 = 0; _i3 < Math.pow(2, this.vars - 2); _i3++) {
           var _rootPoint = this.get(0, _i3);
           var _secondPoint = this.get(1, _i3);
           var _thirdPoint = this.get(2, _i3);
@@ -176,11 +176,11 @@ var CellArray = function () {
       if (numActive >= 4) {
         //marks horizontal 'quads'
         if (this.vars > 3) {
-          for (var _i4 = 0; _i4 < Math.pow(2, this.vars - 1); _i4++) {
-            var _rootPoint2 = this.get(_i4, 0);
-            var _secondPoint2 = this.get(_i4, 1);
-            var _thirdPoint2 = this.get(_i4, 2);
-            var _fourthPoint2 = this.get(_i4, 3);
+          for (var _i4 = 0; _i4 < Math.pow(2, this.vars - 2); _i4++) {
+            var _rootPoint2 = this.get(0, _i4);
+            var _secondPoint2 = this.get(1, _i4);
+            var _thirdPoint2 = this.get(2, _i4);
+            var _fourthPoint2 = this.get(3, _i4);
 
             if (_rootPoint2.status !== '0' && _secondPoint2.status !== '0' && _thirdPoint2.status !== '0' && _fourthPoint2.status !== '0' && (_rootPoint2.status === '1' || _secondPoint2.status === '1' || _thirdPoint2.status === '1' || _fourthPoint2.status === '1')) {
               var _group3 = [];
@@ -196,11 +196,11 @@ var CellArray = function () {
         }
 
         //marks vertical 'quads'
-        for (var _i5 = 0; _i5 < Math.pow(2, this.vars - 1); _i5++) {
-          var _rootPoint3 = this.get(0, _i5);
-          var _secondPoint3 = this.get(1, _i5);
-          var _thirdPoint3 = this.get(2, _i5);
-          var _fourthPoint3 = this.get(3, _i5);
+        for (var _i5 = 0; _i5 < Math.pow(2, this.vars - 2); _i5++) {
+          var _rootPoint3 = this.get(_i5, 0);
+          var _secondPoint3 = this.get(_i5, 1);
+          var _thirdPoint3 = this.get(_i5, 2);
+          var _fourthPoint3 = this.get(_i5, 3);
 
           if (_rootPoint3.status !== '0' && _secondPoint3.status !== '0' && _thirdPoint3.status !== '0' && _fourthPoint3.status !== '0' && (_rootPoint3.status === '1' || _secondPoint3.status === '1' || _thirdPoint3.status === '1' || _fourthPoint3.status === '1')) {
             var _group4 = [];
