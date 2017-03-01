@@ -307,7 +307,7 @@ var CellArray = function () {
   }, {
     key: 'simplifyGroups',
     value: function simplifyGroups(groups) {
-      for (var i = 0; i < groups.length; i++) {
+      for (var i = groups.length - 1; i >= 0; i--) {
         // for each group
         var numberOfOnes = 0;
         var matches = 0;
