@@ -24,23 +24,17 @@ export default class CellArray {
 
     if (this.vars > 3) {
 
-      this.cells.push(new Cell(8, 3, 0, false));
-      this.cells.push(new Cell(9, 3, 1, false));
-      this.cells.push(new Cell(10, 3, 3, false));
-      this.cells.push(new Cell(11, 3, 2, false));
-      this.cells.push(new Cell(12, 2, 0, false));
-      this.cells.push(new Cell(13, 2, 1, false));
-      this.cells.push(new Cell(14, 2, 3, false));
-      this.cells.push(new Cell(15, 2, 2, false));
+      this.cells[0].push(new Cell(12, 2, 0));
+      this.cells[0].push(new Cell(8, 3, 0));
 
-      //TODO: add virtual cells for 4 var kmap
-      this.cells.push(new Cell(0, 4, 0, true));
-      this.cells.push(new Cell(1, 4, 1, true));
-      this.cells.push(new Cell(3, 4, 2, true));
-      this.cells.push(new Cell(2, 4, 3, true));
-      this.cells.push(new Cell(0, 4, 4, true));
-      this.cells.push(new Cell(8, 2, 3, true));
-      this.cells.push(new Cell(12, 2, 2, true));
+      this.cells[1].push(new Cell(13, 2, 1));
+      this.cells[1].push(new Cell(9, 3, 1));
+
+      this.cells[2].push(new Cell(15, 2, 2));
+      this.cells[2].push(new Cell(11, 3, 2));
+
+      this.cells[3].push(new Cell(14, 2, 3));
+      this.cells[3].push(new Cell(10, 3, 3));
     }
     // holds all marked groups
   }
@@ -81,7 +75,8 @@ export default class CellArray {
       }
     }
 
-    if(numActive >= 8) {
+    // marks every cell and returns early to save proccessing time
+    if(numActive >= Math.pow(2, this.vars)) {
       // draws if all are on
       let group = [];
 
@@ -96,13 +91,97 @@ export default class CellArray {
       return marked; // all are marked
     }
 
-    if(numActive >= 4) {
-      //marks 'quads'
-      for(let i = 0; i < 2; i++) {
+    if(numActive >= 8 && this.vars > 3) {
+      //mark 2x4's
+      for(let i = 0; i < Math.pow(2, this.vars - 1); i++) {
         let rootPoint = this.get(i, 0);
         let secondPoint = this.get(i, 1);
         let thirdPoint = this.get(i, 2);
         let fourthPoint = this.get(i, 3);
+        let fifthPoint = this.get(i + 1, 0);
+        let sixthPoint = this.get(i + 1, 1);
+        let seventhPoint = this.get(i + 1, 2);
+        let eighthPoint = this.get(i + 1, 3);
+
+        if(((rootPoint.status !== '0') && (secondPoint.status !== '0') && (thirdPoint.status !== '0') &&
+        (fourthPoint.status !== '0') && (fifthPoint.status !== '0') && (sixthPoint.status !== '0') && (seventhPoint.status !== '0') &&
+        (eighthPoint.status !== '0'))
+        && (rootPoint.status === '1' || secondPoint.status === '1' || thirdPoint.status === '1' || fourthPoint.status === '1' || fifthPoint.status === '1' || sixthPoint.status === '1' || seventhPoint.status === '1' || eighthPoint.status === '1')) {
+          let group = [];
+
+          group.push(rootPoint);
+          group.push(secondPoint);
+          group.push(thirdPoint);
+          group.push(fourthPoint);
+          group.push(fifthPoint);
+          group.push(sixthPoint);
+          group.push(seventhPoint);
+          group.push(eighthPoint);
+
+          if(this.isGroupUnique(marked, group)) marked.push(group);
+        }
+      }
+
+      //mark 4x2's
+      for(let i = 0; i < Math.pow(2, this.vars - 1); i++) {
+        let rootPoint = this.get(0, i);
+        let secondPoint = this.get(1, i);
+        let thirdPoint = this.get(2, i);
+        let fourthPoint = this.get(3 , i);
+        let fifthPoint = this.get(0, i + 1);
+        let sixthPoint = this.get(1, i + 1);
+        let seventhPoint = this.get(2, i + 1);
+        let eighthPoint = this.get(3, i + 1);
+
+        if(((rootPoint.status !== '0') && (secondPoint.status !== '0') && (thirdPoint.status !== '0') &&
+        (fourthPoint.status !== '0') && (fifthPoint.status !== '0') && (sixthPoint.status !== '0') && (seventhPoint.status !== '0') &&
+        (eighthPoint.status !== '0'))
+        && (rootPoint.status === '1' || secondPoint.status === '1' || thirdPoint.status === '1' || fourthPoint.status === '1' || fifthPoint.status === '1' || sixthPoint.status === '1' || seventhPoint.status === '1' || eighthPoint.status === '1')) {
+          let group = [];
+
+          group.push(rootPoint);
+          group.push(secondPoint);
+          group.push(thirdPoint);
+          group.push(fourthPoint);
+          group.push(fifthPoint);
+          group.push(sixthPoint);
+          group.push(seventhPoint);
+          group.push(eighthPoint);
+
+          if(this.isGroupUnique(marked, group)) marked.push(group);
+        }
+      }
+    }
+
+    if(numActive >= 4) {
+      //marks horizontal 'quads'
+      if(this.vars > 3) {
+        for(let i = 0; i < Math.pow(2, this.vars - 1); i++) {
+          let rootPoint = this.get(i, 0);
+          let secondPoint = this.get(i, 1);
+          let thirdPoint = this.get(i, 2);
+          let fourthPoint = this.get(i, 3);
+
+          if(((rootPoint.status !== '0') && (secondPoint.status !== '0') && (thirdPoint.status !== '0') &&
+          (fourthPoint.status !== '0')) && (rootPoint.status === '1' || secondPoint.status === '1' || thirdPoint.status === '1' || fourthPoint.status === '1' )) {
+            let group = [];
+
+            group.push(rootPoint);
+            group.push(secondPoint);
+            group.push(thirdPoint);
+            group.push(fourthPoint);
+
+            if(this.isGroupUnique(marked, group)) marked.push(group);
+          }
+        }
+      }
+
+      //marks vertical 'quads'
+      for(let i = 0; i < Math.pow(2, this.vars - 1); i++) {
+        let rootPoint = this.get(0, i);
+        let secondPoint = this.get(1, i);
+        let thirdPoint = this.get(2, i);
+        let fourthPoint = this.get(3, i);
 
         if(((rootPoint.status !== '0') && (secondPoint.status !== '0') && (thirdPoint.status !== '0') &&
         (fourthPoint.status !== '0')) && (rootPoint.status === '1' || secondPoint.status === '1' || thirdPoint.status === '1' || fourthPoint.status === '1' )) {
@@ -113,27 +192,30 @@ export default class CellArray {
           group.push(thirdPoint);
           group.push(fourthPoint);
 
-          marked.push(group);
+          if(this.isGroupUnique(marked, group)) marked.push(group);
         }
       }
 
       //marks 'boxes'
       for(let i = 0; i < 4; i++) {
-        let rootPoint = this.get(0,i);
-        let secondPoint = this.get(1,i);
-        let thirdPoint = this.get(0, i+1);
-        let fourthPoint = this.get(1, i+1);
+        // TODO: MAKE MATH.POW STUFF A CONSTANT
+        for(let j = 0; j < Math.pow(2, this.vars - 2); j++) {
+          let rootPoint = this.get(j, i);
+          let secondPoint = this.get(j + 1, i);
+          let thirdPoint = this.get(j, i + 1);
+          let fourthPoint = this.get(j + 1, i + 1);
 
-        if(((rootPoint.status !== '0') && (secondPoint.status !== '0') && (thirdPoint.status !== '0') &&
-        (fourthPoint.status !== '0')) && (rootPoint.status === '1' || secondPoint.status === '1' || thirdPoint.status === '1' || fourthPoint.status === '1' )) {
-          let group = [];
+          if(((rootPoint.status !== '0') && (secondPoint.status !== '0') && (thirdPoint.status !== '0') &&
+          (fourthPoint.status !== '0')) && (rootPoint.status === '1' || secondPoint.status === '1' || thirdPoint.status === '1' || fourthPoint.status === '1' )) {
+            let group = [];
 
-          group.push(rootPoint);
-          group.push(secondPoint);
-          group.push(thirdPoint);
-          group.push(fourthPoint);
+            group.push(rootPoint);
+            group.push(secondPoint);
+            group.push(thirdPoint);
+            group.push(fourthPoint);
 
-          marked.push(group);
+            if(this.isGroupUnique(marked, group)) marked.push(group);
+          }
         }
       }
     }
@@ -166,6 +248,7 @@ export default class CellArray {
         }
       }
     }
+
     console.log(marked);
     return marked;
   }
@@ -180,6 +263,7 @@ export default class CellArray {
       console.log('marked is empty');
       return true;
     }
+
     for(let i = 0; i < marked.length; i++) { //for each marked group
       var matches = [];
 

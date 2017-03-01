@@ -4,25 +4,53 @@ import Point from '../src/classes/Point';
 
 describe('Cell Array Class', function () {
   describe('mark()', function () {
-    it('marks the cells with the given terms', function () {
+    it('marks 3var cellArray correctly', function () {
       const cellArray = new CellArray(3);
 
       cellArray.mark(['0', '1', 'X', '0', '1', 'X', '1', '0']);
 
       // mind the order of the cells
       expect(cellArray.cells[0][0].status).to.equal('0'); // 0
-      expect(cellArray.cells[0][1].status).to.equal('1'); // 4
       expect(cellArray.cells[1][0].status).to.equal('1'); // 1
-      expect(cellArray.cells[1][1].status).to.equal('X'); // 5
       expect(cellArray.cells[2][0].status).to.equal('0'); // 3
-      expect(cellArray.cells[2][1].status).to.equal('0'); // 7
       expect(cellArray.cells[3][0].status).to.equal('X'); // 2
+
+      expect(cellArray.cells[0][1].status).to.equal('1'); // 4
+      expect(cellArray.cells[1][1].status).to.equal('X'); // 5
+      expect(cellArray.cells[2][1].status).to.equal('0'); // 7
       expect(cellArray.cells[3][1].status).to.equal('1'); // 6
+    });
+
+    it('marks 4var cellArray correctly', function () {
+      const cellArray = new CellArray(4);
+
+      cellArray.mark(['0', '1', 'X', '0', '1', 'X', '1', '0', '0', '1', 'X', '0', '1', 'X', '1', '0']);
+
+      // mind the order of the cells
+      expect(cellArray.cells[0][0].status).to.equal('0'); // 0
+      expect(cellArray.cells[1][0].status).to.equal('1'); // 1
+      expect(cellArray.cells[2][0].status).to.equal('0'); // 3
+      expect(cellArray.cells[3][0].status).to.equal('X'); // 2
+
+      expect(cellArray.cells[0][1].status).to.equal('1'); // 4
+      expect(cellArray.cells[1][1].status).to.equal('X'); // 5
+      expect(cellArray.cells[2][1].status).to.equal('0'); // 7
+      expect(cellArray.cells[3][1].status).to.equal('1'); // 6
+
+      expect(cellArray.cells[0][2].status).to.equal('1'); // 12
+      expect(cellArray.cells[1][2].status).to.equal('X'); // 13
+      expect(cellArray.cells[2][2].status).to.equal('0'); // 15
+      expect(cellArray.cells[3][2].status).to.equal('1'); // 14
+
+      expect(cellArray.cells[0][3].status).to.equal('0'); // 8
+      expect(cellArray.cells[1][3].status).to.equal('1'); // 9
+      expect(cellArray.cells[2][3].status).to.equal('0'); // 11
+      expect(cellArray.cells[3][3].status).to.equal('X'); // 10
     });
   });
 
   describe('reset()', function () {
-    it('resets all cells to an empty string', function () {
+    it('resets all cells in 3var kmap to an empty string', function () {
       const cellArray = new CellArray(3);
 
       cellArray.mark(['0', '1', 'X', '0', '1', 'X', '1', '0']);
@@ -39,6 +67,36 @@ describe('Cell Array Class', function () {
       expect(cellArray.cells[2][1].status).to.equal(''); // 7
       expect(cellArray.cells[3][0].status).to.equal(''); // 2
       expect(cellArray.cells[3][1].status).to.equal(''); // 6
+    });
+
+    it('resets all cells in 4var kmap to an empty string', function () {
+      const cellArray = new CellArray(4);
+
+      cellArray.mark(['0', '1', 'X', '0', '1', 'X', '1', '0', '0', '1', 'X', '0', '1', 'X', '1', '0']);
+
+      // TODO: Should I first prove that the cells were marked?
+
+      cellArray.reset();
+
+      expect(cellArray.cells[0][0].status).to.equal(''); // 0
+      expect(cellArray.cells[0][1].status).to.equal(''); // 4
+      expect(cellArray.cells[0][2].status).to.equal(''); // 0
+      expect(cellArray.cells[0][3].status).to.equal(''); // 4
+
+      expect(cellArray.cells[1][0].status).to.equal(''); // 1
+      expect(cellArray.cells[1][1].status).to.equal(''); // 5
+      expect(cellArray.cells[1][2].status).to.equal(''); // 1
+      expect(cellArray.cells[1][3].status).to.equal(''); // 5
+
+      expect(cellArray.cells[2][0].status).to.equal(''); // 3
+      expect(cellArray.cells[2][1].status).to.equal(''); // 7
+      expect(cellArray.cells[2][2].status).to.equal(''); // 3
+      expect(cellArray.cells[2][3].status).to.equal(''); // 7
+
+      expect(cellArray.cells[3][0].status).to.equal(''); // 2
+      expect(cellArray.cells[3][1].status).to.equal(''); // 6
+      expect(cellArray.cells[3][2].status).to.equal(''); // 2
+      expect(cellArray.cells[3][3].status).to.equal(''); // 6
     });
   });
 
@@ -57,7 +115,7 @@ describe('Cell Array Class', function () {
       expect(cell2.y).to.equal(3);
     });
 
-    it('mods coordinates that overflow the range of the map', function () {
+    it('mods coordinates that overflow the range of a 3var map', function () {
       const cellArray = new CellArray(3);
 
       let cell1 = cellArray.get(1, 4); //tests y overflow
@@ -70,11 +128,38 @@ describe('Cell Array Class', function () {
       expect(cell2.x).to.equal(1);
       expect(cell2.y).to.equal(2);
     });
+
+    it('mods coordinates that overflow the range of a 4var kmap', function () {
+      const cellArray = new CellArray(4);
+
+      let cell1 = cellArray.get(5, 4); //tests y overflow
+      expect(cell1.val).to.equal(4);
+      expect(cell1.x).to.equal(1);
+      expect(cell1.y).to.equal(0);
+
+      let cell2 = cellArray.get(3, 4); //tests  xoverflow
+      expect(cell2.val).to.equal(8);
+      expect(cell2.x).to.equal(3);
+      expect(cell2.y).to.equal(0);
+    });
   });
 
   describe('isGroupUnique()', function () {
-    it('returns true if marked is empty', function () {
+    it('returns true if marked is empty for 3vars', function () {
       const cellArray = new CellArray(3);
+
+      let marked = [];
+
+      let group = [];
+      group.push(new Point(0, 1));
+      group.push(new Point(4, 5));
+
+      expect(marked).to.be.empty;
+      expect(cellArray.isGroupUnique(marked, group)).to.be.true;
+    });
+
+    it('returns true if marked is empty for 4vars', function () {
+      const cellArray = new CellArray(4);
 
       let marked = [];
 

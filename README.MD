@@ -16,6 +16,7 @@ Online K-map generator for 3-6 vars, featuring real 3D visualization.
 
 #### Misc:
 - [ ] Display numbers in truth table
+- [ ] Mark unary pairs
 
 <!--## License
 
