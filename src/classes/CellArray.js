@@ -249,7 +249,18 @@ export default class CellArray {
       }
     }
 
-    console.log(marked);
+    if(numActive >= 1) {
+      for(let i = 0; i < Math.pow(2, this.vars - 2); i++) {
+        for(let j = 0; j < 4; j++) {
+          let group = [];
+          let point = this.get(i, j);
+          group.push(point);
+
+          if(point.status === '1' && this.isGroupUnique(marked, group)) marked.push(group);
+        }
+      }
+    }
+
     return marked;
   }
 
@@ -312,6 +323,10 @@ export default class CellArray {
       }
     }
     //TODO: ask professor if this is good
+    return groups;
+  }
+
+  cellsToPoints(groups) {
     return groups.map((group) => {
       return group.map((cell) => {
         return new Point(cell.x, cell.y);

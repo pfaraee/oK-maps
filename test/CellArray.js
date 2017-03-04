@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import CellArray from '../src/classes/CellArray';
+import Cell from '../src/classes/Cell';
 import Point from '../src/classes/Point';
 
 describe('Cell Array Class', function () {
@@ -225,19 +226,25 @@ describe('Cell Array Class', function () {
       let simplifiedArray = [];
 
       let group1 = [];
-      group1.push(new Point(0, 1));
-      group1.push(new Point(1, 1));
+      group1.push(new Cell(0, 0, 0));
+      group1.push(new Cell(1, 0, 1));
       simplifiedArray.push(group1);
 
       let group2 = [];
-      group2.push(new Point(0, 3));
-      group2.push(new Point(0, 0));
+      group2.push(new Cell(2, 0, 3));
+      group2.push(new Cell(0, 0, 0));
       simplifiedArray.push(group2);
 
       let group3 = [];
-      group3.push(new Point(1, 1));
-      group3.push(new Point(1, 2));
+      group3.push(new Cell(5, 1, 1));
+      group3.push(new Cell(7, 1, 2));
       simplifiedArray.push(group3);
+
+      for(let i = 0; i < simplifiedArray.length; i++) {
+        for(let j = 0; j < simplifiedArray[i].length; j++) {
+          simplifiedArray[i][j].status = '1';
+        }
+      }
 
       expect(cellArray.simplifyGroups(cellArray.getGroups())).to.deep.equal(simplifiedArray);
 
@@ -247,25 +254,31 @@ describe('Cell Array Class', function () {
       let simplifiedArray2 = [];
 
       let group12 = [];
-      group12.push(new Point(0, 0));
-      group12.push(new Point(0, 1));
-      group12.push(new Point(0, 2));
-      group12.push(new Point(0, 3));
+      group12.push(new Cell(0, 0, 0));
+      group12.push(new Cell(1, 0, 1));
+      group12.push(new Cell(3, 0, 2));
+      group12.push(new Cell(2, 0, 3));
       simplifiedArray2.push(group12);
 
       let group22 = [];
-      group22.push(new Point(0, 0));
-      group22.push(new Point(1, 0));
-      group22.push(new Point(0, 1));
-      group22.push(new Point(1, 1));
+      group22.push(new Cell(0, 0, 0));
+      group22.push(new Cell(4, 1, 0));
+      group22.push(new Cell(1, 0, 1));
+      group22.push(new Cell(5, 1, 1));
       simplifiedArray2.push(group22);
 
       let group32 = [];
-      group32.push(new Point(0, 3));
-      group32.push(new Point(1, 3));
-      group32.push(new Point(0, 0));
-      group32.push(new Point(1, 0));
+      group32.push(new Cell(2, 0, 3));
+      group32.push(new Cell(6, 1, 3));
+      group32.push(new Cell(0, 0, 0));
+      group32.push(new Cell(4, 1, 0));
       simplifiedArray2.push(group32);
+
+      for(let i = 0; i < simplifiedArray2.length; i++) {
+        for(let j = 0; j < simplifiedArray2[i].length; j++) {
+          simplifiedArray2[i][j].status = '1';
+        }
+      }
 
       expect(cellArray2.simplifyGroups(cellArray2.getGroups())).to.deep.equal(simplifiedArray2);
     });

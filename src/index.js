@@ -1,5 +1,6 @@
 import CellArray from './classes/CellArray';
 import * as drawer from './classes/Drawer';
+import { getExpansionFormula } from './classes/BinaryFunctions';
 
 var c = document.getElementById('canvas');
 var ctx = c.getContext('2d');
@@ -71,6 +72,10 @@ document.addEventListener('keypress', function(e) {
     var groups = cellArray.simplifyGroups(cellArray.getGroups());
     console.log(groups);
     drawer.drawPoints(ctx, scale, groups);
+
+    //draw formula
+    var formulaBox = document.getElementById('expansion');
+    formulaBox.innerHTML = getExpansionFormula(groups, numVars);
   }
 });
 
@@ -222,7 +227,6 @@ slider.noUiSlider.on('update', function () {
 
   numVars = Number(slider.noUiSlider.get());
   cellArray = new CellArray(numVars);
-  console.log(numVars);
 
   //rewdraws map
   resetkmap();

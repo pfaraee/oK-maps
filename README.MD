@@ -10,14 +10,16 @@ Online K-map generator for 3-6 vars, featuring real 3D visualization.
 - [ ] 6 vars
 
 #### Expansions
-- [ ] Display Expansion
+- [x] Display Expansion
 - [ ] Add option to switch between SOP and POS
-- [ ] Display options when they arise
+- [ ] Display expansion options when they arise
 
 #### Misc:
 - [ ] Display numbers in truth table
-- [ ] Mark unary pairs
+- [x] Mark unary "pairs"
 - [ ] Clean up Gulpfile and build system
+- [ ] Use GoogleWebFontLoader to assure Robot is loaded before drawing text in the canvas
+- [ ] Draw a big shape for every group instead of a block for each point
 
 <!--## License
 
