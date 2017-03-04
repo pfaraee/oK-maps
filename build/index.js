@@ -8,6 +8,8 @@ var _Drawer = require('./classes/Drawer');
 
 var drawer = _interopRequireWildcard(_Drawer);
 
+var _BinaryFunctions = require('./classes/BinaryFunctions');
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -77,6 +79,10 @@ document.addEventListener('keypress', function (e) {
     var groups = cellArray.simplifyGroups(cellArray.getGroups());
     console.log(groups);
     drawer.drawPoints(ctx, scale, groups);
+
+    //draw formula
+    var formulaBox = document.getElementById('expansion');
+    formulaBox.innerHTML = (0, _BinaryFunctions.getExpansionFormula)(groups, numVars);
   }
 });
 
@@ -228,7 +234,6 @@ slider.noUiSlider.on('update', function () {
 
   numVars = Number(slider.noUiSlider.get());
   cellArray = new _CellArray2.default(numVars);
-  console.log(numVars);
 
   //rewdraws map
   resetkmap();

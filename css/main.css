@@ -6459,3 +6459,11 @@ table {
 
 .container {
   height: 100%; }
+
+.switch {
+  margin-top: 50px;
+  margin-bottom: 30px; }
+
+#expansion {
+  width: 100%;
+  text-align: center; }

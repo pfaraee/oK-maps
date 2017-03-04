@@ -266,7 +266,18 @@ var CellArray = function () {
         }
       }
 
-      console.log(marked);
+      if (numActive >= 1) {
+        for (var _i8 = 0; _i8 < Math.pow(2, this.vars - 2); _i8++) {
+          for (var _j4 = 0; _j4 < 4; _j4++) {
+            var _group8 = [];
+            var point = this.get(_i8, _j4);
+            _group8.push(point);
+
+            if (point.status === '1' && this.isGroupUnique(marked, _group8)) marked.push(_group8);
+          }
+        }
+      }
+
       return marked;
     }
 
@@ -337,6 +348,11 @@ var CellArray = function () {
         }
       }
       //TODO: ask professor if this is good
+      return groups;
+    }
+  }, {
+    key: 'cellsToPoints',
+    value: function cellsToPoints(groups) {
       return groups.map(function (group) {
         return group.map(function (cell) {
           return new _Point2.default(cell.x, cell.y);
