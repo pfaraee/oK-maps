@@ -20,6 +20,8 @@ Online K-map generator for 3-6 vars, featuring real 3D visualization.
 - [ ] Clean up Gulpfile and build system
 - [ ] Use GoogleWebFontLoader to assure Robot is loaded before drawing text in the canvas
 - [ ] Draw a big shape for every group instead of a block for each point
+- [ ] Add chroma js for more beautiful group colors
+- [ ] Add linting
 
 <!--## License
 

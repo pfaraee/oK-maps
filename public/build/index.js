@@ -19,7 +19,7 @@ var ctx = c.getContext('2d');
 
 var scale = c.width / 5; //scale of the cells;
 
-
+// fixes problem with browsers making my canvas look bad
 var devicePixelRatio = window.devicePixelRatio || 1,
     backingStoreRatio = ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1,
     ratio = devicePixelRatio / backingStoreRatio;
@@ -38,6 +38,7 @@ c.style.height = oldHeight + 'px';
 // our c element
 ctx.scale(ratio, ratio);
 
+//kmap stuff
 var minterms = [];
 var numVars = 3;
 
@@ -73,9 +74,13 @@ document.addEventListener('keypress', function (e) {
     //resets cell array
     cellArray.reset();
 
+    // marks the values from the truth table
     minterms = getMinterms();
     cellArray.mark(minterms);
     drawer.drawTerms(ctx, scale, cellArray.cells);
+
+    //TODO: make simplify groups just part of the get groups function
+    // marks the groups
     var groups = cellArray.simplifyGroups(cellArray.getGroups());
     console.log(groups);
     drawer.drawPoints(ctx, scale, groups);

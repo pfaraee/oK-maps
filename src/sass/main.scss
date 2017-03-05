@@ -37,9 +37,14 @@ table {
 .switch {
   margin-top: 50px;
   margin-bottom: 30px;
+  color: $accent-color !important;
 }
 
 #expansion {
   width: 100%;
   text-align: center;
+}
+
+.noUi-connect {
+  background-color: $secondary-color !important;
 }
