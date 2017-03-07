@@ -8,6 +8,8 @@ exports.eliminateTerms = eliminateTerms;
 exports.solveGroup = solveGroup;
 exports.binaryTermToVarTerm = binaryTermToVarTerm;
 exports.getExpansionFormula = getExpansionFormula;
+exports.getMintermExpansionFormula = getMintermExpansionFormula;
+exports.getMaxtermExpansionFormula = getMaxtermExpansionFormula;
 /*
 * Returns the binary representation of the number left padded to the number of vars
 * @param {number} num -  a number to be converted
@@ -75,8 +77,7 @@ function solveGroup(group, vars) {
 /*
 * Returns a variable representation of a term
 * @param {string} term
-* @return {string} the convertedterm
-*
+* @return {string} the converted term
 */
 function binaryTermToVarTerm(term) {
   if (term === "") return "Undefined Term";
@@ -84,9 +85,9 @@ function binaryTermToVarTerm(term) {
   var string = "";
 
   for (var i = 0; i < term.length; i++) {
-    if (term[i] == "-") continue;
+    if (term[i] === "-") continue;
     string += String.fromCharCode(65 + i);
-    if (term[i] == 0) string += "'";
+    if (term[i] === "0") string += "'";
   }
 
   return string;
@@ -98,7 +99,21 @@ function binaryTermToVarTerm(term) {
 * @param {number} vars - number of vars in the map
 * @return {string} the expansionFormula
 */
-function getExpansionFormula(groups, vars) {
+function getExpansionFormula(groups, vars, expansionType) {
+  switch (expansionType) {
+    case 1:
+      return getMintermExpansionFormula(groups, vars);
+      break;
+    case 0:
+      return getMaxtermExpansionFormula(groups, vars);
+      break;
+    default:
+      return "Undefined Formula";
+      break;
+  }
+}
+
+function getMintermExpansionFormula(groups, vars) {
   var formula = "F = ";
 
   for (var i = 0; i < groups.length; i++) {
@@ -113,6 +128,37 @@ function getExpansionFormula(groups, vars) {
     formula += binaryTermToVarTerm(term);
 
     if (i != groups.length - 1) formula += " + ";
+  }
+
+  return formula;
+}
+
+function getMaxtermExpansionFormula(groups, vars) {
+  var formula = "F = ";
+
+  for (var i = 0; i < groups.length; i++) {
+    formula += "(";
+    var term;
+
+    if (groups[i].length > 1) {
+      term = solveGroup(groups[i], vars);
+    } else {
+      term = decToBin(groups[i][0].val, vars);
+    }
+
+    term = binaryTermToVarTerm(term).split('');
+
+    for (var j = 0; j < term.length; j++) {
+      formula += term[j];
+      if (term[j + 1] === "'") {
+        formula += term[j + 1];
+        j++;
+      }
+      console.log(term[j]);
+      if (j != term.length - 1) formula += " + ";
+    }
+
+    formula += ")";
   }
 
   return formula;
