@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import * as Drawer from '../src/classes/Drawer';
+import * as DrawingFunctions from '../src/classes/DrawingFunctions';
 
 describe('Drawing Functions', function () {
   describe('drawPoints(ctx, scale, points)', function () {
