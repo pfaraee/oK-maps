@@ -39,51 +39,6 @@ var cellArray = new CellArray(numVars, expansionType);
 
 draw3varkmap();
 
-document.addEventListener('keypress', render);
-
-function render() {
-  var formulaBox = document.getElementById('expansion');
-  //grabs minterms on enter key
-  //resets the canvas
-  resetkmap();
-
-  switch(numVars) {
-    case 3:
-      draw3varkmap();
-      break;
-    case 4:
-      draw4varkmap();
-      console.log('4 vars');
-      break;
-    case 5:
-      console.log('5 vars');
-      break;
-    case 6:
-      console.log('6 vars');
-      break;
-    default:
-      console.log('You did it Professor.');
-      break;
-  }
-
-  //resets cell array
-  cellArray.reset();
-
-  // marks the values from the truth table
-  minterms = getMinterms();
-  cellArray.mark(minterms);
-  drawer.drawTerms(ctx, scale, cellArray.cells);
-
-  //TODO: make simplify groups just part of the get groups function
-  // marks the groups
-  var groups = cellArray.simplifyGroups(cellArray.getGroups());
-  console.log(groups);
-  drawer.drawPoints(ctx, scale, groups);
-
-  //draw formula
-  formulaBox.innerHTML = getExpansionFormula(groups, numVars, cellArray.expansionType);
-}
-
 function getMinterms() {
   var temp = [];
   //TODO: change it to work for more minterms instead of hardcoding the 8
@@ -112,6 +67,12 @@ expansionTypeSwitch.addEventListener('change', function (event) {
   expansionType = Number(!event.target.checked);
   cellArray.expansionType = expansionType;
   render();
+});
+
+document.addEventListener('keypress', function (event) {
+  if(event.keyCode == 13) {
+    render();
+  }
 });
 
 noUiSlider.create(slider, {
@@ -255,8 +216,54 @@ slider.noUiSlider.on('update', function () {
       console.log('You did it Professor.');
       break;
   }
+
+  $('input:radio').click(function() {
+    render();
+  });
 });
 
+function render() {
+  var formulaBox = document.getElementById('expansion');
+  //grabs minterms on enter key
+  //resets the canvas
+  resetkmap();
+
+  switch(numVars) {
+    case 3:
+      draw3varkmap();
+      break;
+    case 4:
+      draw4varkmap();
+      console.log('4 vars');
+      break;
+    case 5:
+      console.log('5 vars');
+      break;
+    case 6:
+      console.log('6 vars');
+      break;
+    default:
+      console.log('You did it Professor.');
+      break;
+  }
+
+  //resets cell array
+  cellArray.reset();
+
+  // marks the values from the truth table
+  minterms = getMinterms();
+  cellArray.mark(minterms);
+  drawer.drawTerms(ctx, scale, cellArray.cells);
+
+  //TODO: make simplify groups just part of the get groups function
+  // marks the groups
+  var groups = cellArray.simplifyGroups(cellArray.getGroups());
+  console.log(groups);
+  drawer.drawPoints(ctx, scale, groups);
+
+  //draw formula
+  formulaBox.innerHTML = getExpansionFormula(groups, numVars, cellArray.expansionType);
+}
 
 function draw4varkmap() {
   ctx.beginPath();
