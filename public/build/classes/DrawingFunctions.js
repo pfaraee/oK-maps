@@ -6,12 +6,24 @@ Object.defineProperty(exports, "__esModule", {
 exports.drawPoints = drawPoints;
 exports.drawTerms = drawTerms;
 exports.mark = mark;
-exports.randomRGB = randomRGB;
+exports.hexToRGB = hexToRGB;
+
+var _chromaJs = require('chroma-js');
+
+var _chromaJs2 = _interopRequireDefault(_chromaJs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function drawPoints(ctx, scale, points) {
+  var colors = _chromaJs2.default.scale(['#f44336', '#9c27b0', '#3f51b5', '#03a9f4', '#009688', '#8bc34a', '#ffeb3b', '#ff9800']).colors(12);
+
   for (var i = 0; i < points.length; i++) {
-    var color = randomRGB();
+    var color = colors.splice(Math.floor(Math.random() * colors.length - 1), 1);
+
     for (var j = 0; j < points[i].length; j++) {
-      mark(ctx, scale, points[i][j].x, points[i][j].y, 0, color);
+      var rgb = hexToRGB(color[0], 0.5);
+      console.log(rgb);
+      mark(ctx, scale, points[i][j].x, points[i][j].y, 0, rgb);
     }
   }
 }
@@ -39,7 +51,7 @@ function mark(ctx, scale, x, y, rotation, color) {
   //draws match color
   ctx.beginPath();
 
-  ctx.fillStyle = 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',0.3)';
+  ctx.fillStyle = color;
   // subtracts to center the match color
   ctx.fillRect(-scale / 2, -scale / 2, scale, scale /*- 10*/);
   ctx.fillStyle = '#000';
@@ -47,10 +59,21 @@ function mark(ctx, scale, x, y, rotation, color) {
   ctx.restore();
 }
 
-function randomRGB() {
-  var red = Math.floor(Math.random() * 256);
-  var green = Math.floor(Math.random() * 256);
-  var blue = Math.floor(Math.random() * 256);
+function hexToRGB(hex, alpha) {
+  var r = parseInt(hex.slice(1, 3), 16),
+      g = parseInt(hex.slice(3, 5), 16),
+      b = parseInt(hex.slice(5, 7), 16);
 
-  return [red, green, blue];
+  if (alpha) {
+    return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+  } else {
+    return "rgb(" + r + ", " + g + ", " + b + ")";
+  }
 }
+
+// export function randomRGB(length) {
+//   var color = Math.floor(Math.random() * length);
+//   var colors = chroma.scale(['#f44336', '#9c27b0', '#3f51b5', '#03a9f4', '#009688', '#8bc34a', '#ffeb3b', '#ff9800']).colors(length);
+//   var hex = colors[color];
+//   return hexToRGB(hex, 0.5);
+// }

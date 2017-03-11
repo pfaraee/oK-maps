@@ -6,7 +6,7 @@ import Point from '../src/classes/Point';
 describe('Cell Array Class', function () {
   describe('mark()', function () {
     it('marks 3var cellArray correctly', function () {
-      const cellArray = new CellArray(3);
+      const cellArray = new CellArray(3, 1);
 
       cellArray.mark(['0', '1', 'X', '0', '1', 'X', '1', '0']);
 
@@ -23,7 +23,7 @@ describe('Cell Array Class', function () {
     });
 
     it('marks 4var cellArray correctly', function () {
-      const cellArray = new CellArray(4);
+      const cellArray = new CellArray(4, 1);
 
       cellArray.mark(['0', '1', 'X', '0', '1', 'X', '1', '0', '0', '1', 'X', '0', '1', 'X', '1', '0']);
 
@@ -52,7 +52,7 @@ describe('Cell Array Class', function () {
 
   describe('reset()', function () {
     it('resets all cells in 3var kmap to an empty string', function () {
-      const cellArray = new CellArray(3);
+      const cellArray = new CellArray(3, 1);
 
       cellArray.mark(['0', '1', 'X', '0', '1', 'X', '1', '0']);
 
@@ -71,7 +71,7 @@ describe('Cell Array Class', function () {
     });
 
     it('resets all cells in 4var kmap to an empty string', function () {
-      const cellArray = new CellArray(4);
+      const cellArray = new CellArray(4, 1);
 
       cellArray.mark(['0', '1', 'X', '0', '1', 'X', '1', '0', '0', '1', 'X', '0', '1', 'X', '1', '0']);
 
@@ -103,7 +103,7 @@ describe('Cell Array Class', function () {
 
   describe('get()', function () {
     it('returns cell in respect of the cells array', function () {
-      const cellArray = new CellArray(3);
+      const cellArray = new CellArray(3, 1);
 
       let cell1 = cellArray.get(1, 1);
       expect(cell1.val).to.equal(5);
@@ -117,7 +117,7 @@ describe('Cell Array Class', function () {
     });
 
     it('mods coordinates that overflow the range of a 3var map', function () {
-      const cellArray = new CellArray(3);
+      const cellArray = new CellArray(3, 1);
 
       let cell1 = cellArray.get(1, 4); //tests y overflow
       expect(cell1.val).to.equal(4);
@@ -131,7 +131,7 @@ describe('Cell Array Class', function () {
     });
 
     it('mods coordinates that overflow the range of a 4var kmap', function () {
-      const cellArray = new CellArray(4);
+      const cellArray = new CellArray(4, 1);
 
       let cell1 = cellArray.get(5, 4); //tests y overflow
       expect(cell1.val).to.equal(4);
@@ -147,7 +147,7 @@ describe('Cell Array Class', function () {
 
   describe('isGroupUnique()', function () {
     it('returns true if marked is empty for 3vars', function () {
-      const cellArray = new CellArray(3);
+      const cellArray = new CellArray(3, 1);
 
       let marked = [];
 
@@ -160,7 +160,7 @@ describe('Cell Array Class', function () {
     });
 
     it('returns true if marked is empty for 4vars', function () {
-      const cellArray = new CellArray(4);
+      const cellArray = new CellArray(4, 1);
 
       let marked = [];
 
@@ -173,7 +173,7 @@ describe('Cell Array Class', function () {
     });
 
     it('returns whether or not the group is inside a different group', function () {
-      const cellArray = new CellArray(3);
+      const cellArray = new CellArray(3, 1);
 
       let marked = [];
 
@@ -220,7 +220,7 @@ describe('Cell Array Class', function () {
 
   describe('simplifyGroups(groups)', function () {
     it('returns simplified array of groups as cells', function () {
-      const cellArray = new CellArray(3);
+      const cellArray = new CellArray(3, 1);
       cellArray.mark(['1', '1', '1', '0', '0', '1', '0', '1']);
 
       let simplifiedArray = [];
@@ -248,7 +248,7 @@ describe('Cell Array Class', function () {
 
       expect(cellArray.simplifyGroups(cellArray.getGroups())).to.deep.equal(simplifiedArray);
 
-      const cellArray2 = new CellArray(3);
+      const cellArray2 = new CellArray(3, 1);
       cellArray2.mark(['1', '1', '1', '1', '1', '1', '1', '0']);
 
       let simplifiedArray2 = [];

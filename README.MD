@@ -11,7 +11,7 @@ Online K-map generator for 3-6 vars, featuring real 3D visualization.
 
 #### Expansions
 - [x] Display Expansion
-- [ ] Add option to switch between SOP and POS
+- [x] Add option to switch between SOP and POS
 - [ ] Display expansion options when they arise
 
 #### Misc:
@@ -22,6 +22,8 @@ Online K-map generator for 3-6 vars, featuring real 3D visualization.
 - [ ] Draw a big shape for every group instead of a block for each point
 - [ ] Add chroma js for more beautiful group colors
 - [ ] Add linting
+- [ ] Make responsive to mobile and tablets
+- [ ] Use intro js for mobile to show how to use the hidden truth table
 
 <!--## License
 

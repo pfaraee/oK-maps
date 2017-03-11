@@ -110,12 +110,12 @@ describe('Binary Functions', function () {
 
   describe('getExpansionFormula(groups, vars)', function () {
     it('gets the expansion for an array of term groups', function () {
-      const cellArray = new CellArray(3);
+      const cellArray = new CellArray(3, '1');
       cellArray.mark(['1', '1', '1', '1', '1', '1', '1', '0']);
 
       var groupArray = cellArray.simplifyGroups(cellArray.getGroups());
 
-      var formula = getExpansionFormula(groupArray, 3);
+      var formula = getExpansionFormula(groupArray, 3, 1);
 
       expect(formula).to.equal("F = A' + B' + C'");
     });

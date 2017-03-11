@@ -298,7 +298,7 @@ export default class CellArray {
 
       for(let j = 0; j < groups[i].length; j++) { // for each point in the group
         // if it is a 1 increment number of ones otherwise skip this loop
-        if(groups[i][j].status !== this.expansionType) continue;
+        if(groups[i][j].status != this.expansionType) continue;
         numberOfOnes++;
 
         // check every 1 in the array of groups for matching (x & y's) and
@@ -306,7 +306,7 @@ export default class CellArray {
         pairing:
           for(let k = 0; k < groups.length; k++) {
             for(let l = 0; l < groups[k].length; l++) {
-              if(groups[k][l].status === this.expansionType && groups[i][j].x === groups[k][l].x
+              if(groups[k][l].status == this.expansionType && groups[i][j].x === groups[k][l].x
               && groups[i][j].y === groups[k][l].y && i !== k) {
                 matches++;
                 break pairing; // used to break out of both loops

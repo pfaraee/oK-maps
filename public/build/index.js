@@ -261,13 +261,13 @@ function render() {
   // marks the values from the truth table
   minterms = getMinterms();
   cellArray.mark(minterms);
-  drawer.drawTerms(ctx, scale, cellArray.cells);
 
   //TODO: make simplify groups just part of the get groups function
   // marks the groups
   var groups = cellArray.simplifyGroups(cellArray.getGroups());
   console.log(groups);
   drawer.drawPoints(ctx, scale, groups);
+  drawer.drawTerms(ctx, scale, cellArray.cells);
 
   //draw formula
   formulaBox.innerHTML = (0, _BinaryFunctions.getExpansionFormula)(groups, numVars, cellArray.expansionType);
