@@ -1,5 +1,6 @@
 import Cell from './Cell';
 import Point from './Point';
+import Group from './Group';
 
 export default class CellArray {
   constructor(vars, expansionType) {
@@ -85,7 +86,7 @@ export default class CellArray {
         }
       }
 
-      marked.push(group);
+      marked.push(new Group(group, "full"));
 
       return marked; // all are marked
     }
@@ -117,7 +118,8 @@ export default class CellArray {
           group.push(seventhPoint);
           group.push(eighthPoint);
 
-          if(this.isGroupUnique(marked, group)) marked.push(group);
+          let wrapper = new Group(group, "2x4")
+          if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
         }
       }
 
@@ -147,7 +149,8 @@ export default class CellArray {
           group.push(seventhPoint);
           group.push(eighthPoint);
 
-          if(this.isGroupUnique(marked, group)) marked.push(group);
+          let wrapper = new Group(group, "4x2");
+          if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
         }
       }
     }
@@ -170,7 +173,8 @@ export default class CellArray {
             group.push(thirdPoint);
             group.push(fourthPoint);
 
-            if(this.isGroupUnique(marked, group)) marked.push(group);
+            let wrapper = new Group(group, "4x1");
+            if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
           }
         }
       }
@@ -191,7 +195,8 @@ export default class CellArray {
           group.push(thirdPoint);
           group.push(fourthPoint);
 
-          if(this.isGroupUnique(marked, group)) marked.push(group);
+          let wrapper = new Group(group, "1x4");
+          if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
         }
       }
 
@@ -213,7 +218,8 @@ export default class CellArray {
             group.push(thirdPoint);
             group.push(fourthPoint);
 
-            if(this.isGroupUnique(marked, group)) marked.push(group);
+            let wrapper = new Group(group, "2x2")
+            if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
           }
         }
       }
@@ -232,7 +238,8 @@ export default class CellArray {
             group.push(rootPoint);
             group.push(secondPoint);
 
-            if(this.isGroupUnique(marked, group)) marked.push(group);
+            let wrapper = new Group(group, "2x1");
+            if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
           }
 
           //vertical
@@ -242,7 +249,8 @@ export default class CellArray {
             group.push(rootPoint);
             group.push(secondPointV);
 
-            if(this.isGroupUnique(marked, group)) marked.push(group);
+            let wrapper = new Group(group, "1x2")
+            if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
           }
         }
       }
@@ -255,7 +263,8 @@ export default class CellArray {
           let point = this.get(i, j);
           group.push(point);
 
-          if(point.status == this.expansionType && this.isGroupUnique(marked, group)) marked.push(group);
+          let wrapper = new Group(group, "1x1");
+          if(point.status == this.expansionType && this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
         }
       }
     }
@@ -277,15 +286,15 @@ export default class CellArray {
     for(let i = 0; i < marked.length; i++) { //for each marked group
       var matches = [];
 
-      for(let j = 0; j < group.length; j++) { // for each point in the group
-        for(let k = 0; k < marked[i].length; k ++) { // for each point in the marked group
-          if((marked[i][k].x == group[j].x) && (marked[i][k].y == group[j].y)){
+      for(let j = 0; j < group.cellArray.length; j++) { // for each point in the group
+        for(let k = 0; k < marked[i].cellArray.length; k ++) { // for each point in the marked group
+          if((marked[i].cellArray[k].x == group.cellArray[j].x) && (marked[i].cellArray[k].y == group.cellArray[j].y)){
               matches.push(group[j]);
           }
         }
       }
 
-      if(matches.length > group.length / 2) return false;
+      if(matches.length > group.cellArray.length / 2) return false;
     }
 
     return true;
@@ -296,18 +305,19 @@ export default class CellArray {
       let numberOfOnes = 0;
       let matches = 0;
 
-      for(let j = 0; j < groups[i].length; j++) { // for each point in the group
+      for(let j = 0; j < groups[i].cellArray.length; j++) { // for each point in the group
         // if it is a 1 increment number of ones otherwise skip this loop
-        if(groups[i][j].status != this.expansionType) continue;
+        if(groups[i].cellArray[j].status != this.expansionType) continue;
+
         numberOfOnes++;
 
         // check every 1 in the array of groups for matching (x & y's) and
         // increment matches if it is in a different group than the current group
         pairing:
           for(let k = 0; k < groups.length; k++) {
-            for(let l = 0; l < groups[k].length; l++) {
-              if(groups[k][l].status == this.expansionType && groups[i][j].x === groups[k][l].x
-              && groups[i][j].y === groups[k][l].y && i !== k) {
+            for(let l = 0; l < groups[k].cellArray.length; l++) {
+              if(groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[j].x === groups[k].cellArray[l].x
+              && groups[i].cellArray[j].y === groups[k].cellArray[l].y && i !== k) {
                 matches++;
                 break pairing; // used to break out of both loops
               }

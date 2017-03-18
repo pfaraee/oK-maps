@@ -25,35 +25,32 @@
         </div>
       </div>
     </nav>
-    <div class="container">
+    <div class="row">
+      <div class="col s2 l3">
+        <div class="tt-wrapper">
+          <h4 class="title">Truth Table</h4>
+          <form action="#">
+            <div id="num-vars" class="noUi-extended">
+            </div>
+            <div class="switch">
+              <label>
+                SOP
+                <input type="checkbox" id="expansionType">
+                <span class="lever"></span>
+                POS
+              </label>
+            </div>
+          </form>
+          <table id="truth-table">
 
-      <div class="row">
-        <div class="col s4">
-          <div class="tt-wrapper">
-            <h4 class="title">Truth Table</h4>
-            <form action="#">
-              <div id="num-vars" >
-              </div>
-              <div class="switch">
-                <label>
-                  SOP
-                  <input type="checkbox" id="expansionType">
-                  <span class="lever"></span>
-                  POS
-                </label>
-              </div>
-            </form>
-            <table id="truth-table">
-
-            </table>
-          </div>
+          </table>
         </div>
-        <div class="col s8 canvas-wrapper">
-          <canvas class="z-depth-0" id="canvas" width="400" height="400">
-            hello
-          </canvas>
-          <h5 id="expansion">F = </h5>
-        </div>
+      </div>
+      <div class="col s10 l9 canvas-wrapper">
+        <canvas class="z-depth-0" id="canvas" width="400" height="400">
+          hello
+        </canvas>
+        <h5 id="expansion">F = </h5>
       </div>
     </div>
 

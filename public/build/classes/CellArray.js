@@ -14,6 +14,10 @@ var _Point = require('./Point');
 
 var _Point2 = _interopRequireDefault(_Point);
 
+var _Group = require('./Group');
+
+var _Group2 = _interopRequireDefault(_Group);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -111,7 +115,7 @@ var CellArray = function () {
           }
         }
 
-        marked.push(group);
+        marked.push(new _Group2.default(group, "full"));
 
         return marked; // all are marked
       }
@@ -140,7 +144,8 @@ var CellArray = function () {
             _group.push(seventhPoint);
             _group.push(eighthPoint);
 
-            if (this.isGroupUnique(marked, _group)) marked.push(_group);
+            var wrapper = new _Group2.default(_group, "2x4");
+            if (this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
           }
         }
 
@@ -167,7 +172,8 @@ var CellArray = function () {
             _group2.push(_seventhPoint);
             _group2.push(_eighthPoint);
 
-            if (this.isGroupUnique(marked, _group2)) marked.push(_group2);
+            var _wrapper = new _Group2.default(_group2, "4x2");
+            if (this.isGroupUnique(marked, _wrapper)) marked.push(_wrapper);
           }
         }
       }
@@ -189,7 +195,8 @@ var CellArray = function () {
               _group3.push(_thirdPoint2);
               _group3.push(_fourthPoint2);
 
-              if (this.isGroupUnique(marked, _group3)) marked.push(_group3);
+              var _wrapper2 = new _Group2.default(_group3, "4x1");
+              if (this.isGroupUnique(marked, _wrapper2)) marked.push(_wrapper2);
             }
           }
         }
@@ -209,7 +216,8 @@ var CellArray = function () {
             _group4.push(_thirdPoint3);
             _group4.push(_fourthPoint3);
 
-            if (this.isGroupUnique(marked, _group4)) marked.push(_group4);
+            var _wrapper3 = new _Group2.default(_group4, "1x4");
+            if (this.isGroupUnique(marked, _wrapper3)) marked.push(_wrapper3);
           }
         }
 
@@ -230,7 +238,8 @@ var CellArray = function () {
               _group5.push(_thirdPoint4);
               _group5.push(_fourthPoint4);
 
-              if (this.isGroupUnique(marked, _group5)) marked.push(_group5);
+              var _wrapper4 = new _Group2.default(_group5, "2x2");
+              if (this.isGroupUnique(marked, _wrapper4)) marked.push(_wrapper4);
             }
           }
         }
@@ -249,7 +258,8 @@ var CellArray = function () {
               _group6.push(_rootPoint5);
               _group6.push(_secondPoint5);
 
-              if (this.isGroupUnique(marked, _group6)) marked.push(_group6);
+              var _wrapper5 = new _Group2.default(_group6, "2x1");
+              if (this.isGroupUnique(marked, _wrapper5)) marked.push(_wrapper5);
             }
 
             //vertical
@@ -259,7 +269,8 @@ var CellArray = function () {
               _group7.push(_rootPoint5);
               _group7.push(secondPointV);
 
-              if (this.isGroupUnique(marked, _group7)) marked.push(_group7);
+              var _wrapper6 = new _Group2.default(_group7, "1x2");
+              if (this.isGroupUnique(marked, _wrapper6)) marked.push(_wrapper6);
             }
           }
         }
@@ -272,7 +283,8 @@ var CellArray = function () {
             var point = this.get(_i8, _j4);
             _group8.push(point);
 
-            if (point.status == this.expansionType && this.isGroupUnique(marked, _group8)) marked.push(_group8);
+            var _wrapper7 = new _Group2.default(_group8, "1x1");
+            if (point.status == this.expansionType && this.isGroupUnique(marked, _wrapper7)) marked.push(_wrapper7);
           }
         }
       }
@@ -299,17 +311,17 @@ var CellArray = function () {
         //for each marked group
         var matches = [];
 
-        for (var j = 0; j < group.length; j++) {
+        for (var j = 0; j < group.cellArray.length; j++) {
           // for each point in the group
-          for (var k = 0; k < marked[i].length; k++) {
+          for (var k = 0; k < marked[i].cellArray.length; k++) {
             // for each point in the marked group
-            if (marked[i][k].x == group[j].x && marked[i][k].y == group[j].y) {
+            if (marked[i].cellArray[k].x == group.cellArray[j].x && marked[i].cellArray[k].y == group.cellArray[j].y) {
               matches.push(group[j]);
             }
           }
         }
 
-        if (matches.length > group.length / 2) return false;
+        if (matches.length > group.cellArray.length / 2) return false;
       }
 
       return true;
@@ -322,17 +334,18 @@ var CellArray = function () {
         var numberOfOnes = 0;
         var matches = 0;
 
-        for (var j = 0; j < groups[i].length; j++) {
+        for (var j = 0; j < groups[i].cellArray.length; j++) {
           // for each point in the group
           // if it is a 1 increment number of ones otherwise skip this loop
-          if (groups[i][j].status != this.expansionType) continue;
+          if (groups[i].cellArray[j].status != this.expansionType) continue;
+
           numberOfOnes++;
 
           // check every 1 in the array of groups for matching (x & y's) and
           // increment matches if it is in a different group than the current group
           pairing: for (var k = 0; k < groups.length; k++) {
-            for (var l = 0; l < groups[k].length; l++) {
-              if (groups[k][l].status == this.expansionType && groups[i][j].x === groups[k][l].x && groups[i][j].y === groups[k][l].y && i !== k) {
+            for (var l = 0; l < groups[k].cellArray.length; l++) {
+              if (groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[j].x === groups[k].cellArray[l].x && groups[i].cellArray[j].y === groups[k].cellArray[l].y && i !== k) {
                 matches++;
                 break pairing; // used to break out of both loops
               }

@@ -17,6 +17,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var c = document.getElementById('canvas');
 var ctx = c.getContext('2d');
 
+// c.height = window.innerHeight / 8 * 5;
+// c.width = window.innerHeight / 8 * 5;
+
 var scale = c.width / 5; //scale of the cells;
 
 // fixes problem with browsers making my canvas look bad
@@ -202,7 +205,6 @@ slider.noUiSlider.on('update', function () {
     tbody.appendChild(_tr);
   }
 
-  tbody.style.overflowY = 'scroll';
   tbl.appendChild(tbody);
   truthTable.appendChild(tbl);
 

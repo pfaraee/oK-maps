@@ -1,13 +1,49 @@
 @import "materialize";
 
 div#num-vars {
-
   margin-bottom: 40px;
 }
 
 .tt-wrapper {
-  margin-top: 20px;
-  height: 100%;
+  max-height: calc(100vh - #{$navbar-height} - 20px) !important;
+  display: flex;
+  flex-direction: column;
+}
+
+table {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  width: 100%;
+}
+
+thead {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+tbody {
+  flex: 1 1 auto;
+  display: block;
+  overflow-y: scroll !important;
+}
+
+table tbody tr {
+    width: 100%;
+}
+table thead, table tbody tr {
+    display: table;
+    table-layout: fixed;
+}
+
+.noUi-horizontal.noUi-extended {
+  padding-right: 32px;
+}
+.noUi-horizontal.noUi-extended .noUi-handle {
+  left: -1px;
+}
+.noUi-horizontal.noUi-extended .noUi-origin  {
+  right: -32px;
 }
 
 h4.title {
@@ -26,8 +62,6 @@ canvas#canvas {
 
 table {
   width: 100%;
-  height: 100%;
-  overflow: scroll !important;
 }
 
 .container {

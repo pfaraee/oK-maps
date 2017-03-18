@@ -107,10 +107,10 @@ export function getMintermExpansionFormula(groups, vars) {
   for(let i = 0; i < groups.length; i++) {
     var term;
 
-    if(groups[i].length > 1)  {
-      term = solveGroup(groups[i], vars);
+    if(groups[i].cellArray.length > 1)  {
+      term = solveGroup(groups[i].cellArray, vars);
     } else {
-      term = decToBin(groups[i][0].val, vars);
+      term = decToBin(groups[i].cellArray[0].val, vars);
     }
 
     formula += binaryTermToVarTerm(term);
@@ -128,10 +128,10 @@ export function getMaxtermExpansionFormula(groups, vars) {
     formula += "(";
     var term;
 
-    if(groups[i].length > 1)  {
-      term = solveGroup(groups[i], vars);
+    if(groups[i].cellArray.length > 1)  {
+      term = solveGroup(groups[i].cellArray, vars);
     } else {
-      term = decToBin(groups[i][0].val, vars);
+      term = decToBin(groups[i].cellArray[0].val, vars);
     }
 
     term = binaryTermToVarTerm(term).split('');

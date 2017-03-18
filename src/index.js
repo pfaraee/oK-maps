@@ -5,6 +5,9 @@ import { getExpansionFormula } from './classes/BinaryFunctions';
 var c = document.getElementById('canvas');
 var ctx = c.getContext('2d');
 
+// c.height = window.innerHeight / 8 * 5;
+// c.width = window.innerHeight / 8 * 5;
+
 var scale = c.width / 5 //scale of the cells;
 
 // fixes problem with browsers making my canvas look bad
@@ -194,7 +197,6 @@ slider.noUiSlider.on('update', function () {
     tbody.appendChild(tr);
   }
 
-  tbody.style.overflowY = 'scroll';
   tbl.appendChild(tbody);
   truthTable.appendChild(tbl);
 

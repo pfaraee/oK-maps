@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import CellArray from '../src/classes/CellArray';
 import Cell from '../src/classes/Cell';
 import Point from '../src/classes/Point';
+import Group from '../src/classes/Group';
 
 describe('Cell Array Class', function () {
   describe('mark()', function () {
@@ -156,7 +157,7 @@ describe('Cell Array Class', function () {
       group.push(new Point(4, 5));
 
       expect(marked).to.be.empty;
-      expect(cellArray.isGroupUnique(marked, group)).to.be.true;
+      expect(cellArray.isGroupUnique(marked, new Group(group, "2x1"))).to.be.true;
     });
 
     it('returns true if marked is empty for 4vars', function () {
@@ -169,7 +170,7 @@ describe('Cell Array Class', function () {
       group.push(new Point(4, 5));
 
       expect(marked).to.be.empty;
-      expect(cellArray.isGroupUnique(marked, group)).to.be.true;
+      expect(cellArray.isGroupUnique(marked, new Group(group, "1x2"))).to.be.true;
     });
 
     it('returns whether or not the group is inside a different group', function () {
@@ -180,14 +181,14 @@ describe('Cell Array Class', function () {
       let group1 = [];
       group1.push(new Point(0, 0));
       group1.push(new Point(0, 1));
-      marked.push(group1);
+      marked.push(new Group(group1, "")); // just ommiting the group type now because it aint matta
 
       let group2 = [];
       group2.push(new Point(0, 1));
       group2.push(new Point(0, 2));
       group2.push(new Point(1, 1));
       group2.push(new Point(1, 2));
-      marked.push(group2);
+      marked.push(new Group(group2, ""));
 
       let testGroup1 = [];
       testGroup1.push(new Point(0, 1));
@@ -206,10 +207,10 @@ describe('Cell Array Class', function () {
       testGroup4.push(new Point(1, 3));
 
 
-      expect(cellArray.isGroupUnique(marked, testGroup1)).to.be.false;
-      expect(cellArray.isGroupUnique(marked, testGroup2)).to.be.false;
-      expect(cellArray.isGroupUnique(marked, testGroup3)).to.be.true;
-      expect(cellArray.isGroupUnique(marked, testGroup4)).to.be.true;
+      expect(cellArray.isGroupUnique(marked, new Group(testGroup1, ""))).to.be.false;
+      expect(cellArray.isGroupUnique(marked, new Group(testGroup2, ""))).to.be.false;
+      expect(cellArray.isGroupUnique(marked, new Group(testGroup3, ""))).to.be.true;
+      expect(cellArray.isGroupUnique(marked, new Group(testGroup4, ""))).to.be.true;
     });
   });
 
@@ -228,21 +229,21 @@ describe('Cell Array Class', function () {
       let group1 = [];
       group1.push(new Cell(0, 0, 0));
       group1.push(new Cell(1, 0, 1));
-      simplifiedArray.push(group1);
+      simplifiedArray.push(new Group(group1, "1x2"));
 
       let group2 = [];
       group2.push(new Cell(2, 0, 3));
       group2.push(new Cell(0, 0, 0));
-      simplifiedArray.push(group2);
+      simplifiedArray.push(new Group(group2, "1x2"));
 
       let group3 = [];
       group3.push(new Cell(5, 1, 1));
       group3.push(new Cell(7, 1, 2));
-      simplifiedArray.push(group3);
+      simplifiedArray.push(new Group(group3, "1x2"));
 
       for(let i = 0; i < simplifiedArray.length; i++) {
-        for(let j = 0; j < simplifiedArray[i].length; j++) {
-          simplifiedArray[i][j].status = '1';
+        for(let j = 0; j < simplifiedArray[i].cellArray.length; j++) {
+          simplifiedArray[i].cellArray[j].status = '1';
         }
       }
 
@@ -258,25 +259,25 @@ describe('Cell Array Class', function () {
       group12.push(new Cell(1, 0, 1));
       group12.push(new Cell(3, 0, 2));
       group12.push(new Cell(2, 0, 3));
-      simplifiedArray2.push(group12);
+      simplifiedArray2.push(new Group(group12, "1x4"));
 
       let group22 = [];
       group22.push(new Cell(0, 0, 0));
       group22.push(new Cell(4, 1, 0));
       group22.push(new Cell(1, 0, 1));
       group22.push(new Cell(5, 1, 1));
-      simplifiedArray2.push(group22);
+      simplifiedArray2.push(new Group(group22, "2x2"));
 
       let group32 = [];
       group32.push(new Cell(2, 0, 3));
       group32.push(new Cell(6, 1, 3));
       group32.push(new Cell(0, 0, 0));
       group32.push(new Cell(4, 1, 0));
-      simplifiedArray2.push(group32);
+      simplifiedArray2.push(new Group(group32, "2x2"));
 
       for(let i = 0; i < simplifiedArray2.length; i++) {
-        for(let j = 0; j < simplifiedArray2[i].length; j++) {
-          simplifiedArray2[i][j].status = '1';
+        for(let j = 0; j < simplifiedArray2[i].cellArray.length; j++) {
+          simplifiedArray2[i].cellArray[j].status = '1';
         }
       }
 
