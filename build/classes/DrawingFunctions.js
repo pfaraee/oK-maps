@@ -19,11 +19,45 @@ function drawPoints(ctx, scale, points) {
 
   for (var i = 0; i < points.length; i++) {
     var color = colors.splice(Math.floor(Math.random() * colors.length - 1), 1);
+    var rgb = hexToRGB(color[0], 0.5);
 
-    for (var j = 0; j < points[i].length; j++) {
-      var rgb = hexToRGB(color[0], 0.5);
+    switch (points[i].type) {
+      case "2x2":
+        draw2x2(ctx, scale, points[i], rgb);
+        continue;
+        break;
+      case "2x4":
+        draw2x4(ctx, scale, points[i], rgb);
+        continue;
+        break;
+      case "1x2":
+        draw1x2(ctx, scale, points[i], rgb);
+        continue;
+        break;
+      case "1x4":
+        draw1x4(ctx, scale, points[i], rgb);
+        continue;
+        break;
+      case "2x1":
+        draw2x1(ctx, scale, points[i], rgb);
+        continue;
+        break;
+      case "4x1":
+        draw4x1(ctx, scale, points[i], rgb);ctx, scale, points[i], rgb;
+        continue;
+        break;
+      case "1x1":
+        mark(ctx, scale, points[i].cellArray[0].x, points[i].cellArray[0].y, 0, rgb);
+        continue;
+        break;
+      default:
+        console.log("error");
+        break;
+    }
+
+    for (var j = 0; j < points[i].cellArray.length; j++) {
       console.log(rgb);
-      mark(ctx, scale, points[i][j].x, points[i][j].y, 0, rgb);
+      mark(ctx, scale, points[i].cellArray[j].x, points[i].cellArray[j].y, 0, rgb);
     }
   }
 }
@@ -53,10 +87,223 @@ function mark(ctx, scale, x, y, rotation, color) {
 
   ctx.fillStyle = color;
   // subtracts to center the match color
-  ctx.fillRect(-scale / 2, -scale / 2, scale, scale /*- 10*/);
+  ctx.fillRect(-scale / 2, -scale / 2, scale, scale);
   ctx.fillStyle = '#000';
 
   ctx.restore();
+}
+
+function markTL(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2 + scale / 10, -scale / 2 + scale / 10, scale - scale / 10, scale - scale / 10);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markTM(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2, -scale / 2 + scale / 10, scale, scale - scale / 10);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markBM(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2, -scale / 2, scale, scale - scale / 10);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markBL(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2 + scale / 10, -scale / 2, scale - scale / 10, scale - scale / 10);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markTR(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2, -scale / 2 + scale / 10, scale - scale / 10, scale - scale / 10);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markLM(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2 + scale / 10, -scale / 2, scale - scale / 10, scale);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markRM(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2, -scale / 2, scale - scale / 10, scale);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markBR(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2, -scale / 2, scale - scale / 10, scale - scale / 10);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markT(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2 + scale / 5, -scale / 2 + scale / 10, scale - scale / 2.5, scale - scale / 10);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markB(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2 + scale / 5, -scale / 2, scale - scale / 2.5, scale - scale / 10);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markMV(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2 + scale / 5, -scale / 2, scale - scale / 2.5, scale);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markMH(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2, -scale / 2 + scale / 5, scale, scale - scale / 2.5);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markL(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2 + scale / 10, -scale / 2 + scale / 5, scale - scale / 10, scale - scale / 2.5);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markR(ctx, scale, x, y, color) {
+  ctx.save();
+  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
+  ctx.fillStyle = color;
+
+  ctx.beginPath();
+  ctx.fillRect(-scale / 2, -scale / 2 + scale / 5, scale - scale / 10, scale - scale / 2.5);
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function draw2x2(ctx, scale, group, color) {
+  markTL(ctx, scale, group.cellArray[0].x, group.cellArray[0].y, color);
+  markTR(ctx, scale, group.cellArray[1].x, group.cellArray[1].y, color);
+  markBL(ctx, scale, group.cellArray[2].x, group.cellArray[2].y, color);
+  markBR(ctx, scale, group.cellArray[3].x, group.cellArray[3].y, color);
+}
+
+function draw2x4(ctx, scale, group, color) {
+  markTL(ctx, scale, group.cellArray[0].x, group.cellArray[0].y, color);
+  markLM(ctx, scale, group.cellArray[1].x, group.cellArray[1].y, color);
+
+  markLM(ctx, scale, group.cellArray[2].x, group.cellArray[2].y, color);
+  markBL(ctx, scale, group.cellArray[3].x, group.cellArray[3].y, color);
+
+  markTR(ctx, scale, group.cellArray[4].x, group.cellArray[4].y, color);
+  markRM(ctx, scale, group.cellArray[5].x, group.cellArray[5].y, color);
+
+  markRM(ctx, scale, group.cellArray[6].x, group.cellArray[6].y, color);
+  markBR(ctx, scale, group.cellArray[7].x, group.cellArray[7].y, color);
+}
+
+function draw1x2(ctx, scale, group, color) {
+  markT(ctx, scale, group.cellArray[0].x, group.cellArray[0].y, color);
+  markB(ctx, scale, group.cellArray[1].x, group.cellArray[1].y, color);
+}
+
+function draw1x4(ctx, scale, group, color) {
+  markT(ctx, scale, group.cellArray[0].x, group.cellArray[0].y, color);
+  markMV(ctx, scale, group.cellArray[1].x, group.cellArray[1].y, color);
+  markMV(ctx, scale, group.cellArray[2].x, group.cellArray[2].y, color);
+  markB(ctx, scale, group.cellArray[3].x, group.cellArray[3].y, color);
+}
+
+function draw4x1(ctx, scale, group, color) {
+  markL(ctx, scale, group.cellArray[0].x, group.cellArray[0].y, color);
+  markMH(ctx, scale, group.cellArray[1].x, group.cellArray[1].y, color);
+  markMH(ctx, scale, group.cellArray[2].x, group.cellArray[2].y, color);
+  markR(ctx, scale, group.cellArray[3].x, group.cellArray[3].y, color);
+}
+
+function draw2x1(ctx, scale, group, color) {
+  markL(ctx, scale, group.cellArray[0].x, group.cellArray[0].y, color);
+  markR(ctx, scale, group.cellArray[1].x, group.cellArray[1].y, color);
 }
 
 function hexToRGB(hex, alpha) {
