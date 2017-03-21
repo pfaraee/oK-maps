@@ -23,6 +23,7 @@ function drawPoints(ctx, scale, points) {
 
     switch (points[i].type) {
       case "2x2":
+
         draw2x2(ctx, scale, points[i], rgb);
         continue;
         break;

@@ -3,27 +3,24 @@
 Online K-map generator for 3-6 vars, featuring real 3D visualization.
 
 ## Todo
-#### Vars
-- [x] 3 vars
-- [x] 4 vars
+#### Variables
 - [ ] 5 vars
 - [ ] 6 vars
 
 #### Expansions
-- [x] Display Expansion
-- [x] Add option to switch between SOP and POS
-- [ ] Display expansion options when they arise
+##### Need
+- [ ] Mark prime implicants
+- [ ] Output every possible formula for a map, and display each map when user hovers over formula
+##### Nice to have
+- [ ] Calc the amount of required for every map, display on hover over tooltip
 
 #### Misc:
 - [ ] Display numbers in truth table
-- [x] Mark unary "pairs"
-- [ ] Clean up Gulpfile and build system
+- [x] Clean up Gulpfile and build system
 - [ ] Use GoogleWebFontLoader to assure Robot is loaded before drawing text in the canvas
-- [ ] Draw a big shape for every group instead of a block for each point
-- [ ] Add chroma js for more beautiful group colors
-- [ ] Add linting
+- [ ] Draw loops for every p-subcube instead of colors
 - [ ] Make responsive to mobile and tablets
-- [ ] Use intro js for mobile to show how to use the hidden truth table
+<!-- - [ ] Use intro js for mobile to show how to use the hidden truth table -->
 
 <!--## License
 

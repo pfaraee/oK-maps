@@ -1,51 +1,68 @@
 var gulp = require('gulp');
 var sass = require('gulp-sass');
-var babel = require('gulp-babel');
-var connect = require('gulp-connect');
 var browserify = require('gulp-browserify');
+var babelify = require('babelify');
+var browserSync = require('browser-sync').create();
 var rename = require('gulp-rename');
-
-
-gulp.task('connect', function(){
-  connect.server({
-    root: 'public',
-    livereload: true
-  });
-});
+var eslint = require('gulp-eslint');
 
 // keeps gulp from crashing for scss errors
 gulp.task('sass', function () {
   return gulp.src('./src/sass/main.scss')
       .pipe(sass({ errLogToConsole: true }))
-      .pipe(gulp.dest('./public/css'));
+      .pipe(gulp.dest('./public/css'))
+      .pipe(browserSync.stream());;
 });
 
-gulp.task('browserify', function () {
-  gulp.src('public/build/index.js')
-        .pipe(browserify({
-          insertGlobals : true,
-          debug : !gulp.env.production
-        }))
-        .pipe(rename('bundle.js'))
-        .pipe(gulp.dest('./public/'));
+gulp.task('lint', () => {
+    // ESLint ignores files with "node_modules" paths.
+    // So, it's best to have gulp ignore the directory as well.
+    // Also, Be sure to return the stream from the task;
+    // Otherwise, the task may end before the stream has finished.
+    return gulp.src(['./src/**/*.js'])
+        // eslint() attaches the lint output to the "eslint" property
+        // of the file object so it can be used by other modules.
+        .pipe(eslint())
+        // eslint.format() outputs the lint results to the console.
+        // Alternatively use eslint.formatEach() (see Docs).
+        .pipe(eslint.format())
+        // To have the process exit with an error code (1) on
+        // lint error, return the stream and pipe to failAfterError last.
+        .pipe(eslint.failAfterError());
 });
 
-gulp.task('livereload', function (){
-  gulp.src('./public/**/*')
-  .pipe(connect.reload());
+gulp.task('js', function() {
+  return gulp.src('./src/index.js')
+    .pipe(browserify({
+      insertGlobals : true,
+      transform: [babelify.configure({
+        presets: ['es2015']
+      })]
+    }))
+    .pipe(rename('bundle.js'))
+    .pipe(gulp.dest('./public/'));
 });
 
-gulp.task('watch', function () {
-  gulp.watch('./src/**/*.js', ['build', 'browserify']);
-  gulp.watch('./src/**/*.scss', ['sass']);
-  gulp.watch('./public/css/*', ['livereload']);
-  gulp.watch('./public/bundle.js', ['livereload']); 
+gulp.task('js-watch', ['js'], function (done) {
+  browserSync.reload();
+  done();
 });
 
-gulp.task('build', function() {
-  return gulp.src('./src/**/*.js')
-    .pipe(babel())
-    .pipe(gulp.dest('public/build'));
+// use default task to launch Browsersync and watch JS files
+gulp.task('serve', ['js'], function () {
+
+    // Serve files from the root of this project
+    browserSync.init({
+        server: {
+            baseDir: "./public/"
+        }
+    });
+
+    // add browserSync.reload to the tasks array to make
+    // all browsers reload after tasks are complete.
+    gulp.watch("./src/**/*.js", ['js-watch']);
+    gulp.watch("./src/sass/**/*.scss", ['sass']);
+    gulp.watch("./public/**/*.html").on('change', browserSync.reload);
 });
 
-gulp.task('default', ['connect', 'watch', 'build', 'browserify', 'sass']);
+gulp.task('default', ['serve']);

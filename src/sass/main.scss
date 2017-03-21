@@ -1,6 +1,8 @@
 @import "materialize";
 
 div#num-vars {
+  margin-left: 20px;
+  margin-right: 20px;
   margin-bottom: 40px;
 }
 
@@ -34,16 +36,6 @@ table tbody tr {
 table thead, table tbody tr {
     display: table;
     table-layout: fixed;
-}
-
-.noUi-horizontal.noUi-extended {
-  padding-right: 32px;
-}
-.noUi-horizontal.noUi-extended .noUi-handle {
-  left: -1px;
-}
-.noUi-horizontal.noUi-extended .noUi-origin  {
-  right: -32px;
 }
 
 h4.title {
