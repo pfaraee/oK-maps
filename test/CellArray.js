@@ -284,4 +284,18 @@ describe('Cell Array Class', function () {
       expect(cellArray2.simplifyGroups(cellArray2.getGroups())).to.deep.equal(simplifiedArray2);
     });
   });
+
+  describe('markPrimeImplicants()', function () {
+    it('marks all prime implicants()', function () {
+      let cellArray = new CellArray(3, 1);
+      cellArray.mark(['1', '0', '1', '0', '1', '1', '0', '1']);
+
+      let groups = cellArray.getGroups();
+
+      let pimps = cellArray.markPrimeImplicants(groups);
+
+      expect(pimps[1].pImp = true);
+      expect(pimps[3].pImp = true);
+    });
+  });
 });

@@ -335,6 +335,37 @@ export default class CellArray {
     return groups;
   }
 
+  markPrimeImplicants(groups) {
+    for(let i = groups.length - 1; i >= 0; i--) { // for each group
+      for(let j = 0; j < groups[i].cellArray.length; j++) { // for each point in the group
+        let matches = 0;
+
+        // if it is a 1 increment number of ones otherwise skip this loop
+        if(groups[i].cellArray[j].status != this.expansionType) continue;
+
+        // check every 1 in the array of groups for matching (x & y's) and
+        // increment matches if it is in a different group than the current group
+        pairing:
+          for(let k = 0; k < groups.length; k++) {
+            for(let l = 0; l < groups[k].cellArray.length; l++) {
+              if(groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[j].x === groups[k].cellArray[l].x
+              && groups[i].cellArray[j].y === groups[k].cellArray[l].y && i !== k) {
+                matches++;
+                break pairing; // used to break out of both loops
+              }
+            }
+          }
+
+        if(!matches) {
+          groups[i].pImp = true;
+          break;
+        }
+      }
+    }
+    //TODO: ask professor if this is good
+    return groups;
+  }
+
   cellsToPoints(groups) {
     return groups.map((group) => {
       return group.map((cell) => {

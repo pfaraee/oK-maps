@@ -4461,6 +4461,38 @@ var CellArray = function () {
       return groups;
     }
   }, {
+    key: 'markPrimeImplicants',
+    value: function markPrimeImplicants(groups) {
+      for (var i = groups.length - 1; i >= 0; i--) {
+        // for each group
+        for (var j = 0; j < groups[i].cellArray.length; j++) {
+          // for each point in the group
+          var matches = 0;
+
+          // if it is a 1 increment number of ones otherwise skip this loop
+          if (groups[i].cellArray[j].status != this.expansionType) continue;
+
+          // check every 1 in the array of groups for matching (x & y's) and
+          // increment matches if it is in a different group than the current group
+          pairing: for (var k = 0; k < groups.length; k++) {
+            for (var l = 0; l < groups[k].cellArray.length; l++) {
+              if (groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[j].x === groups[k].cellArray[l].x && groups[i].cellArray[j].y === groups[k].cellArray[l].y && i !== k) {
+                matches++;
+                break pairing; // used to break out of both loops
+              }
+            }
+          }
+
+          if (!matches) {
+            groups[i].pImp = true;
+            break;
+          }
+        }
+      }
+      //TODO: ask professor if this is good
+      return groups;
+    }
+  }, {
     key: 'cellsToPoints',
     value: function cellsToPoints(groups) {
       return groups.map(function (group) {
@@ -4496,11 +4528,18 @@ var _chromaJs2 = _interopRequireDefault(_chromaJs);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function drawPoints(ctx, scale, points) {
-  var colors = _chromaJs2.default.scale(['#f44336', '#9c27b0', '#3f51b5', '#03a9f4', '#009688', '#8bc34a', '#ffeb3b', '#ff9800']).colors(12);
+  var colors = _chromaJs2.default.scale(['#9c27b0', '#3f51b5', '#03a9f4', '#009688', '#8bc34a', '#ffeb3b', '#ff9800']).colors(12);
 
   for (var i = 0; i < points.length; i++) {
-    var color = colors.splice(Math.floor(Math.random() * colors.length - 1), 1);
-    var rgb = hexToRGB(color[0], 0.5);
+    var rgb = void 0;
+    console.log(points[i]);
+
+    if (points[i].pImp) {
+      rgb = hexToRGB('#f44336', 0.7);
+    } else {
+      var color = colors.splice(Math.floor(Math.random() * colors.length - 1), 1);
+      rgb = hexToRGB(color[0], 0.5);
+    }
 
     switch (points[i].type) {
       case "2x2":
@@ -4823,6 +4862,7 @@ var Group = function Group(cellArray, type) {
 
   this.cellArray = cellArray;
   this.type = type;
+  this.pImp = false;
 };
 
 exports.default = Group;
@@ -5067,8 +5107,10 @@ slider.noUiSlider.on('update', function () {
 
   //rewdraws map
   resetkmap();
+
   var formulaBox = document.getElementById('expansion');
   formulaBox.innerHTML = "F =";
+
   switch (numVars) {
     case 3:
       draw3varkmap();
@@ -5120,7 +5162,12 @@ function render() {
 
   //TODO: make simplify groups just part of the get groups function
   // marks the groups
-  var groups = cellArray.simplifyGroups(cellArray.getGroups());
+  var groups = cellArray.getGroups();
+  groups = cellArray.markPrimeImplicants(groups);
+  groups = cellArray.simplifyGroups(groups);
+
+  // var groups = cellArray.getGroups();
+
   console.log(groups);
   drawer.drawPoints(ctx, scale, groups);
   drawer.drawTerms(ctx, scale, cellArray.cells);
@@ -5238,5 +5285,5 @@ function draw3varkmap() {
   ctx.fillText('10', scale * 0.5 + 5, scale * 4.6);
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_71ab75d.js","/")
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_2e59bc3e.js","/")
 },{"./classes/BinaryFunctions":6,"./classes/CellArray":8,"./classes/DrawingFunctions":9,"buffer":2,"pBGvAp":5}]},{},[12])

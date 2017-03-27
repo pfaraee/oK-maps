@@ -205,8 +205,10 @@ slider.noUiSlider.on('update', function () {
 
   //rewdraws map
   resetkmap();
+
   var formulaBox = document.getElementById('expansion');
   formulaBox.innerHTML = "F =";
+
   switch(numVars) {
     case 3:
       draw3varkmap();
@@ -258,7 +260,12 @@ function render() {
 
   //TODO: make simplify groups just part of the get groups function
   // marks the groups
-  var groups = cellArray.simplifyGroups(cellArray.getGroups());
+  let groups = cellArray.getGroups();
+  groups = cellArray.markPrimeImplicants(groups);
+  groups = cellArray.simplifyGroups(groups);
+
+  // var groups = cellArray.getGroups();
+
   console.log(groups);
   drawer.drawPoints(ctx, scale, groups);
   drawer.drawTerms(ctx, scale, cellArray.cells);

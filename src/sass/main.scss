@@ -44,12 +44,32 @@ h4.title {
 }
 
 .canvas-wrapper {
-
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
 
 canvas#canvas {
-  margin-top: 150px;
-  margin-left: 150px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  position: relative;
+  right: 30px;
+}
+
+.collection.expansion {
+  width: 400px;
+  margin: 0 auto;
+
+  li.collection-item {
+    text-align: left;
+
+    &:hover:not(.active) {
+      background-color: lighten($secondary-color, 15%);
+      cursor: pointer;
+    }
+  }
 }
 
 table {
@@ -64,11 +84,6 @@ table {
   margin-top: 50px;
   margin-bottom: 30px;
   color: $accent-color !important;
-}
-
-#expansion {
-  width: 100%;
-  text-align: center;
 }
 
 .noUi-connect {

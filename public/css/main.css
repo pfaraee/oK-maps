@@ -6473,9 +6473,27 @@ h4.title {
   margin-top: 20px;
   margin-bottom: 20px; }
 
+.canvas-wrapper {
+  display: flex;
+  justify-content: center;
+  flex-direction: column; }
+
 canvas#canvas {
-  margin-top: 150px;
-  margin-left: 150px; }
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  position: relative;
+  right: 30px; }
+
+.collection.expansion {
+  width: 400px;
+  margin: 0 auto; }
+  .collection.expansion li.collection-item {
+    text-align: left; }
+    .collection.expansion li.collection-item:hover:not(.active) {
+      background-color: #d9dfff;
+      cursor: pointer; }
 
 table {
   width: 100%; }
@@ -6487,10 +6505,6 @@ table {
   margin-top: 50px;
   margin-bottom: 30px;
   color: #EF9A9A !important; }
-
-#expansion {
-  width: 100%;
-  text-align: center; }
 
 .noUi-connect {
   background-color: #8c9eff !important; }

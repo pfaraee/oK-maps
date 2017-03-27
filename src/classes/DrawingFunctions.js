@@ -1,11 +1,18 @@
 import chroma from 'chroma-js';
 
 export function drawPoints(ctx, scale, points) {
-  var colors = chroma.scale(['#f44336', '#9c27b0', '#3f51b5', '#03a9f4', '#009688', '#8bc34a', '#ffeb3b', '#ff9800']).colors(12);
+  var colors = chroma.scale(['#9c27b0', '#3f51b5', '#03a9f4', '#009688', '#8bc34a', '#ffeb3b', '#ff9800']).colors(12);
 
   for(let i = 0; i < points.length; i++) {
-    var color = colors.splice(Math.floor(Math.random() * colors.length - 1), 1);
-    var rgb = hexToRGB(color[0], 0.5);
+    let rgb;
+    console.log(points[i]);
+
+    if(points[i].pImp) {
+      rgb = hexToRGB('#f44336', 0.7);
+    } else {
+      let color = colors.splice(Math.floor(Math.random() * colors.length - 1), 1);
+      rgb = hexToRGB(color[0], 0.5);
+    }
 
     switch (points[i].type) {
       case "2x2":
