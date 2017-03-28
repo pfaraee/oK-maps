@@ -4426,9 +4426,13 @@ var CellArray = function () {
     }
   }, {
     key: 'simplifyGroups',
-    value: function simplifyGroups(groups) {
+    value: function simplifyGroups(groups, keep) {
       for (var i = groups.length - 1; i >= 0; i--) {
         // for each group
+        if (keep && JSON.stringify(groups[i]) === JSON.stringify(keep)) {
+          continue;
+        }
+
         var numberOfOnes = 0;
         var matches = 0;
 
@@ -4493,6 +4497,48 @@ var CellArray = function () {
       return groups;
     }
   }, {
+    key: 'getPossibleFormulas',
+    value: function getPossibleFormulas(groups) {
+      var temp = groups.slice();
+      var formulas = [];
+
+      var pImps = [];
+
+      groups.forEach(function (group) {
+        if (group.pImp) pImps.push(group);
+      });
+
+      console.log(pImps);
+
+      var opts = [];
+
+      groups.forEach(function (group) {
+        if (!group.pImp) opts.push(group);
+      });
+
+      console.log(opts);
+
+      for (var i = 0; i < opts.length; i++) {
+        var formula = this.simplifyGroups(temp, opts[i]);
+        formula = this.simplifyGroups(formula); // used to remove hiding opts
+        if (this.isUniqueFormula(formulas, formula)) formulas.push(formula);
+        temp = groups.slice();
+      }
+
+      if (!opts.length) formulas.push(this.simplifyGroups(temp));
+
+      return formulas;
+    }
+  }, {
+    key: 'isUniqueFormula',
+    value: function isUniqueFormula(formulas, formula) {
+      for (var i = 0; i < formulas.length; i++) {
+        if (JSON.stringify(formulas[i]) === JSON.stringify(formula)) return false;
+      }
+
+      return true;
+    }
+  }, {
     key: 'cellsToPoints',
     value: function cellsToPoints(groups) {
       return groups.map(function (group) {
@@ -4532,7 +4578,6 @@ function drawPoints(ctx, scale, points) {
 
   for (var i = 0; i < points.length; i++) {
     var rgb = void 0;
-    console.log(points[i]);
 
     if (points[i].pImp) {
       rgb = hexToRGB('#f44336', 0.7);
@@ -4980,6 +5025,56 @@ document.addEventListener('keypress', function (event) {
   }
 });
 
+var formulaBox = document.getElementById('expansion');
+
+function initializeFormulaBox() {
+  for (var i = 0; i < formulaBox.childNodes.length; i++) {
+    formulaBox.childNodes[i].addEventListener('click', function (event) {
+      console.log("hello");
+      var renderFormula;
+
+      for (var _i = 0; _i < formulaBox.childNodes.length; _i++) {
+        if (!formulaBox.childNodes[_i].className || formulaBox.childNodes[_i].className.includes('active')) {
+          formulaBox.childNodes[_i].className = 'collection-item';
+        }
+      }
+
+      event.target.className += ' active';
+
+      if (!event.target.dataset.formula) return;
+
+      resetkmap();
+
+      switch (numVars) {
+        case 3:
+          draw3varkmap();
+          break;
+        case 4:
+          draw4varkmap();
+          console.log('4 vars');
+          break;
+        case 5:
+          console.log('5 vars');
+          break;
+        case 6:
+          console.log('6 vars');
+          break;
+        default:
+          console.log('You did it Professor.');
+          break;
+      }
+
+      var data = JSON.parse(event.target.dataset.formula);
+
+      renderFormula = (0, _BinaryFunctions.getExpansionFormula)(data, numVars, cellArray.expansionType);
+      console.log(renderFormula);
+
+      drawer.drawPoints(ctx, scale, data);
+      drawer.drawTerms(ctx, scale, cellArray.cells);
+    });
+  }
+}
+
 noUiSlider.create(slider, {
   start: 3,
   connect: [true, false],
@@ -5043,52 +5138,52 @@ slider.noUiSlider.on('update', function () {
   tbl.appendChild(thead);
 
   var tbody = document.createElement('tbody');
-  for (var _i = 0; _i < Math.pow(2, slider.noUiSlider.get()); _i++) {
+  for (var _i2 = 0; _i2 < Math.pow(2, slider.noUiSlider.get()); _i2++) {
     var _tr = document.createElement('tr');
 
-    var num = '' + _i.toString(2);
+    var num = '' + _i2.toString(2);
     var pad = '0'.repeat(slider.noUiSlider.get()); // its just 5 0's for the max var nums
     var bin = pad.substring(0, pad.length - num.length) + num;
 
     var binArray = bin.split('');
 
-    for (var _i2 = 0; _i2 < binArray.length; _i2++) {
+    for (var _i3 = 0; _i3 < binArray.length; _i3++) {
       var _td = document.createElement('td');
-      _td.appendChild(document.createTextNode(binArray[_i2]));
+      _td.appendChild(document.createTextNode(binArray[_i3]));
       _tr.appendChild(_td);
     }
 
     var td = document.createElement('td');
     var input1 = document.createElement('input');
-    input1.setAttribute('name', 'group' + _i);
+    input1.setAttribute('name', 'group' + _i2);
     input1.setAttribute('type', 'radio');
-    input1.setAttribute('id', 'OFF' + _i);
+    input1.setAttribute('id', 'OFF' + _i2);
     input1.setAttribute('value', '0');
     input1.setAttribute('checked', 'checked');
     var label1 = document.createElement('label');
-    label1.setAttribute('for', 'OFF' + _i);
+    label1.setAttribute('for', 'OFF' + _i2);
     td.appendChild(input1);
     td.appendChild(label1);
 
     var td2 = document.createElement('td');
     var input2 = document.createElement('input');
-    input2.setAttribute('name', 'group' + _i);
+    input2.setAttribute('name', 'group' + _i2);
     input2.setAttribute('type', 'radio');
-    input2.setAttribute('id', 'ON' + _i);
+    input2.setAttribute('id', 'ON' + _i2);
     input2.setAttribute('value', '1');
     var label2 = document.createElement('label');
-    label2.setAttribute('for', 'ON' + _i);
+    label2.setAttribute('for', 'ON' + _i2);
     td2.appendChild(input2);
     td2.appendChild(label2);
 
     var td3 = document.createElement('td');
     var input3 = document.createElement('input');
-    input3.setAttribute('name', 'group' + _i);
+    input3.setAttribute('name', 'group' + _i2);
     input3.setAttribute('type', 'radio');
-    input3.setAttribute('id', 'DONTCARE' + _i);
+    input3.setAttribute('id', 'DONTCARE' + _i2);
     input3.setAttribute('value', 'X');
     var label3 = document.createElement('label');
-    label3.setAttribute('for', 'DONTCARE' + _i);
+    label3.setAttribute('for', 'DONTCARE' + _i2);
     td3.appendChild(input3);
     td3.appendChild(label3);
 
@@ -5109,7 +5204,7 @@ slider.noUiSlider.on('update', function () {
   resetkmap();
 
   var formulaBox = document.getElementById('expansion');
-  formulaBox.innerHTML = "F =";
+  // formulaBox.innerHTML = "F =";
 
   switch (numVars) {
     case 3:
@@ -5124,12 +5219,12 @@ slider.noUiSlider.on('update', function () {
   }
 
   $('input:radio').click(function () {
+    initializeFormulaBox();
     render();
   });
 });
 
 function render() {
-  var formulaBox = document.getElementById('expansion');
   //grabs minterms on enter key
   //resets the canvas
   resetkmap();
@@ -5153,6 +5248,10 @@ function render() {
       break;
   }
 
+  redrawMap();
+}
+
+function redrawMap() {
   //resets cell array
   cellArray.reset();
 
@@ -5163,17 +5262,37 @@ function render() {
   //TODO: make simplify groups just part of the get groups function
   // marks the groups
   var groups = cellArray.getGroups();
+  // console.log(groups);
   groups = cellArray.markPrimeImplicants(groups);
-  groups = cellArray.simplifyGroups(groups);
+  // groups = cellArray.simplifyGroups(groups);
+
+  // Add formulas to box
+  var formulas = cellArray.getPossibleFormulas(groups);
+  formulaBox.innerHTML = "";
+
+  for (var i = 0; i < formulas.length; i++) {
+    var li = document.createElement('li');
+
+    li.className = "collection-item";
+    if (i === 0) li.className += " active";
+
+    li.dataset.formula = JSON.stringify(formulas[i]);
+
+    var formula = (0, _BinaryFunctions.getExpansionFormula)(formulas[i], numVars, cellArray.expansionType);
+
+    li.appendChild(document.createTextNode(formula));
+
+    formulaBox.appendChild(li);
+  }
+
+  initializeFormulaBox();
 
   // var groups = cellArray.getGroups();
 
-  console.log(groups);
-  drawer.drawPoints(ctx, scale, groups);
-  drawer.drawTerms(ctx, scale, cellArray.cells);
+  // console.log(groups);
 
-  //draw formula
-  formulaBox.innerHTML = (0, _BinaryFunctions.getExpansionFormula)(groups, numVars, cellArray.expansionType);
+  drawer.drawPoints(ctx, scale, formulas[0]);
+  drawer.drawTerms(ctx, scale, cellArray.cells);
 }
 
 function draw4varkmap() {
@@ -5285,5 +5404,5 @@ function draw3varkmap() {
   ctx.fillText('10', scale * 0.5 + 5, scale * 4.6);
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_2e59bc3e.js","/")
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_aefdb7e.js","/")
 },{"./classes/BinaryFunctions":6,"./classes/CellArray":8,"./classes/DrawingFunctions":9,"buffer":2,"pBGvAp":5}]},{},[12])
