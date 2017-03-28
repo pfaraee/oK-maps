@@ -300,8 +300,12 @@ export default class CellArray {
     return true;
   }
 
-  simplifyGroups(groups) {
+  simplifyGroups(groups, keep) {
     for(let i = groups.length - 1; i >= 0; i--) { // for each group
+      if(keep && JSON.stringify(groups[i]) === JSON.stringify(keep)) {
+        continue;
+      }
+
       let numberOfOnes = 0;
       let matches = 0;
 
@@ -364,6 +368,46 @@ export default class CellArray {
     }
     //TODO: ask professor if this is good
     return groups;
+  }
+
+  getPossibleFormulas(groups) {
+    var temp = groups.slice();
+    let formulas = [];
+
+    let pImps = [];
+
+    groups.forEach(group => {
+      if(group.pImp) pImps.push(group);
+    });
+
+    console.log(pImps);
+
+    let opts = [];
+
+    groups.forEach(group => {
+      if(!group.pImp) opts.push(group);
+    });
+
+    console.log(opts);
+
+    for(let i = 0; i < opts.length; i++) {
+      let formula = this.simplifyGroups(temp, opts[i]);
+      formula = this.simplifyGroups(formula); // used to remove hiding opts
+      if(this.isUniqueFormula(formulas, formula)) formulas.push(formula);
+      temp = groups.slice();
+    }
+
+    if(!opts.length) formulas.push(this.simplifyGroups(temp));
+
+    return formulas;
+  }
+
+  isUniqueFormula(formulas, formula) {
+    for(let i = 0; i < formulas.length; i++) {
+      if(JSON.stringify(formulas[i]) === JSON.stringify(formula)) return false;
+    }
+
+    return true;
   }
 
   cellsToPoints(groups) {

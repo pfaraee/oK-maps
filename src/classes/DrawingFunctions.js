@@ -5,7 +5,6 @@ export function drawPoints(ctx, scale, points) {
 
   for(let i = 0; i < points.length; i++) {
     let rgb;
-    console.log(points[i]);
 
     if(points[i].pImp) {
       rgb = hexToRGB('#f44336', 0.7);

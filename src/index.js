@@ -78,6 +78,56 @@ document.addEventListener('keypress', function (event) {
   }
 });
 
+var formulaBox = document.getElementById('expansion');
+
+function initializeFormulaBox() {
+  for (let i = 0; i < formulaBox.childNodes.length; i++) {
+    formulaBox.childNodes[i].addEventListener('click', function (event) {
+      console.log("hello");
+      var renderFormula;
+
+      for(let i = 0; i < formulaBox.childNodes.length; i++) {
+        if(!formulaBox.childNodes[i].className || formulaBox.childNodes[i].className.includes('active')) {
+          formulaBox.childNodes[i].className = 'collection-item';
+        }
+      }
+
+      event.target.className += ' active';
+
+      if(!event.target.dataset.formula) return;
+
+      resetkmap();
+
+      switch(numVars) {
+        case 3:
+          draw3varkmap();
+          break;
+        case 4:
+          draw4varkmap();
+          console.log('4 vars');
+          break;
+        case 5:
+          console.log('5 vars');
+          break;
+        case 6:
+          console.log('6 vars');
+          break;
+        default:
+          console.log('You did it Professor.');
+          break;
+      }
+
+      let data = JSON.parse(event.target.dataset.formula);
+
+      renderFormula = getExpansionFormula(data, numVars, cellArray.expansionType);
+      console.log(renderFormula);
+
+      drawer.drawPoints(ctx, scale, data);
+      drawer.drawTerms(ctx, scale, cellArray.cells);
+    });
+  }
+}
+
 noUiSlider.create(slider, {
  start: 3,
  connect: [true, false],
@@ -207,7 +257,7 @@ slider.noUiSlider.on('update', function () {
   resetkmap();
 
   var formulaBox = document.getElementById('expansion');
-  formulaBox.innerHTML = "F =";
+  // formulaBox.innerHTML = "F =";
 
   switch(numVars) {
     case 3:
@@ -222,12 +272,12 @@ slider.noUiSlider.on('update', function () {
   }
 
   $('input:radio').click(function() {
+    initializeFormulaBox();
     render();
   });
 });
 
 function render() {
-  var formulaBox = document.getElementById('expansion');
   //grabs minterms on enter key
   //resets the canvas
   resetkmap();
@@ -251,6 +301,10 @@ function render() {
       break;
   }
 
+  redrawMap();
+}
+
+function redrawMap() {
   //resets cell array
   cellArray.reset();
 
@@ -261,17 +315,37 @@ function render() {
   //TODO: make simplify groups just part of the get groups function
   // marks the groups
   let groups = cellArray.getGroups();
+  // console.log(groups);
   groups = cellArray.markPrimeImplicants(groups);
-  groups = cellArray.simplifyGroups(groups);
+  // groups = cellArray.simplifyGroups(groups);
+
+  // Add formulas to box
+  let formulas = cellArray.getPossibleFormulas(groups);
+  formulaBox.innerHTML = "";
+
+  for(let i = 0; i < formulas.length; i ++) {
+    let li = document.createElement('li');
+
+    li.className = "collection-item";
+    if(i === 0) li.className += " active";
+
+    li.dataset.formula = JSON.stringify(formulas[i]);
+
+    let formula = getExpansionFormula(formulas[i], numVars, cellArray.expansionType);
+
+    li.appendChild(document.createTextNode(formula));
+
+    formulaBox.appendChild(li);
+  }
+
+  initializeFormulaBox();
 
   // var groups = cellArray.getGroups();
 
-  console.log(groups);
-  drawer.drawPoints(ctx, scale, groups);
-  drawer.drawTerms(ctx, scale, cellArray.cells);
+  // console.log(groups);
 
-  //draw formula
-  formulaBox.innerHTML = getExpansionFormula(groups, numVars, cellArray.expansionType);
+  drawer.drawPoints(ctx, scale, formulas[0]);
+  drawer.drawTerms(ctx, scale, cellArray.cells);
 }
 
 function draw4varkmap() {
