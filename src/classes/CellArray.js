@@ -393,6 +393,7 @@ export default class CellArray {
     for(let i = 0; i < opts.length; i++) {
       let formula = this.simplifyGroups(temp, opts[i]);
       formula = this.simplifyGroups(formula); // used to remove hiding opts
+      
       if(this.isUniqueFormula(formulas, formula)) formulas.push(formula);
       temp = groups.slice();
     }

@@ -257,7 +257,11 @@ slider.noUiSlider.on('update', function () {
   resetkmap();
 
   var formulaBox = document.getElementById('expansion');
-  // formulaBox.innerHTML = "F =";
+  formulaBox.innerHTML = "";
+  let li = document.createElement('li');
+  li.className = "collection-item active";
+  li.innerHTML = "F =";
+  formulaBox.appendChild(li);
 
   switch(numVars) {
     case 3:
