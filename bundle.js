@@ -3942,7 +3942,7 @@ function eliminateTerms(term1, term2) {
 * @return {string} the simplified group
 */
 function solveGroup(group, vars) {
-  if (group.length & group.length - 1 && group.length != 1 || group.length > Math.pow(2, vars)) throw new Error("Invalid Group");
+  if (group.length & group.length - 1 && group.length != 1 || group.length > Math.pow(2, vars)) throw new Error('Invalid Group');
 
   var term1;
   var term2;
@@ -3967,14 +3967,14 @@ function solveGroup(group, vars) {
 * @return {string} the converted term
 */
 function binaryTermToVarTerm(term) {
-  if (term === "") return "Undefined Term";
+  if (term === '') return 'Undefined Term';
   term = term.split('');
-  var string = "";
+  var string = '';
 
   for (var i = 0; i < term.length; i++) {
-    if (term[i] === "-") continue;
+    if (term[i] === '-') continue;
     string += String.fromCharCode(65 + i);
-    if (term[i] === "0") string += "'";
+    if (term[i] === '0') string += "'";
   }
 
   return string;
@@ -3995,13 +3995,13 @@ function getExpansionFormula(groups, vars, expansionType) {
       return getMaxtermExpansionFormula(groups, vars);
       break;
     default:
-      return "Undefined Formula";
+      return 'Undefined Formula';
       break;
   }
 }
 
 function getMintermExpansionFormula(groups, vars) {
-  var formula = "F = ";
+  var formula = 'F = ';
 
   for (var i = 0; i < groups.length; i++) {
     var term;
@@ -4014,17 +4014,17 @@ function getMintermExpansionFormula(groups, vars) {
 
     formula += binaryTermToVarTerm(term);
 
-    if (i != groups.length - 1) formula += " + ";
+    if (i != groups.length - 1) formula += ' + ';
   }
 
   return formula;
 }
 
 function getMaxtermExpansionFormula(groups, vars) {
-  var formula = "F = ";
+  var formula = 'F = ';
 
   for (var i = 0; i < groups.length; i++) {
-    formula += "(";
+    formula += '(';
     var term;
 
     if (groups[i].cellArray.length > 1) {
@@ -4042,10 +4042,10 @@ function getMaxtermExpansionFormula(groups, vars) {
         j++;
       }
       console.log(term[j]);
-      if (j != term.length - 1) formula += " + ";
+      if (j != term.length - 1) formula += ' + ';
     }
 
-    formula += ")";
+    formula += ')';
   }
 
   return formula;
@@ -4203,7 +4203,7 @@ var CellArray = function () {
       }
 
       // marks every cell and returns early to save proccessing time
-      if (numActive >= Math.pow(2, this.vars)) {
+      if (numActive >= Math.pow(2, this.lets)) {
         // draws if all are on
         var group = [];
 
@@ -4213,7 +4213,7 @@ var CellArray = function () {
           }
         }
 
-        marked.push(new _Group2.default(group, "full"));
+        marked.push(new _Group2.default(group, 'full'));
 
         return marked; // all are marked
       }
@@ -4242,7 +4242,7 @@ var CellArray = function () {
             _group.push(seventhPoint);
             _group.push(eighthPoint);
 
-            var wrapper = new _Group2.default(_group, "2x4");
+            var wrapper = new _Group2.default(_group, '2x4');
             if (this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
           }
         }
@@ -4270,7 +4270,7 @@ var CellArray = function () {
             _group2.push(_seventhPoint);
             _group2.push(_eighthPoint);
 
-            var _wrapper = new _Group2.default(_group2, "4x2");
+            var _wrapper = new _Group2.default(_group2, '4x2');
             if (this.isGroupUnique(marked, _wrapper)) marked.push(_wrapper);
           }
         }
@@ -4293,7 +4293,7 @@ var CellArray = function () {
               _group3.push(_thirdPoint2);
               _group3.push(_fourthPoint2);
 
-              var _wrapper2 = new _Group2.default(_group3, "4x1");
+              var _wrapper2 = new _Group2.default(_group3, '4x1');
               if (this.isGroupUnique(marked, _wrapper2)) marked.push(_wrapper2);
             }
           }
@@ -4314,7 +4314,7 @@ var CellArray = function () {
             _group4.push(_thirdPoint3);
             _group4.push(_fourthPoint3);
 
-            var _wrapper3 = new _Group2.default(_group4, "1x4");
+            var _wrapper3 = new _Group2.default(_group4, '1x4');
             if (this.isGroupUnique(marked, _wrapper3)) marked.push(_wrapper3);
           }
         }
@@ -4336,7 +4336,7 @@ var CellArray = function () {
               _group5.push(_thirdPoint4);
               _group5.push(_fourthPoint4);
 
-              var _wrapper4 = new _Group2.default(_group5, "2x2");
+              var _wrapper4 = new _Group2.default(_group5, '2x2');
               if (this.isGroupUnique(marked, _wrapper4)) marked.push(_wrapper4);
             }
           }
@@ -4356,7 +4356,7 @@ var CellArray = function () {
               _group6.push(_rootPoint5);
               _group6.push(_secondPoint5);
 
-              var _wrapper5 = new _Group2.default(_group6, "2x1");
+              var _wrapper5 = new _Group2.default(_group6, '2x1');
               if (this.isGroupUnique(marked, _wrapper5)) marked.push(_wrapper5);
             }
 
@@ -4367,7 +4367,7 @@ var CellArray = function () {
               _group7.push(_rootPoint5);
               _group7.push(secondPointV);
 
-              var _wrapper6 = new _Group2.default(_group7, "1x2");
+              var _wrapper6 = new _Group2.default(_group7, '1x2');
               if (this.isGroupUnique(marked, _wrapper6)) marked.push(_wrapper6);
             }
           }
@@ -4381,7 +4381,7 @@ var CellArray = function () {
             var point = this.get(_i8, _j4);
             _group8.push(point);
 
-            var _wrapper7 = new _Group2.default(_group8, "1x1");
+            var _wrapper7 = new _Group2.default(_group8, '1x1');
             if (point.status == this.expansionType && this.isGroupUnique(marked, _wrapper7)) marked.push(_wrapper7);
           }
         }
@@ -4427,19 +4427,21 @@ var CellArray = function () {
   }, {
     key: 'simplifyGroups',
     value: function simplifyGroups(groups, keep) {
-      for (var i = groups.length - 1; i >= 0; i--) {
+      checking: for (var i = groups.length - 1; i >= 0; i--) {
         // for each group
-        if (keep && JSON.stringify(groups[i]) === JSON.stringify(keep)) {
-          continue;
+        if (keep) {
+          for (var j = 0; j < keep.length; j++) {
+            if (JSON.stringify(groups[i]) === JSON.stringify(keep[j])) continue checking;
+          }
         }
 
         var numberOfOnes = 0;
         var matches = 0;
 
-        for (var j = 0; j < groups[i].cellArray.length; j++) {
+        for (var _j5 = 0; _j5 < groups[i].cellArray.length; _j5++) {
           // for each point in the group
           // if it is a 1 increment number of ones otherwise skip this loop
-          if (groups[i].cellArray[j].status != this.expansionType) continue;
+          if (groups[i].cellArray[_j5].status != this.expansionType) continue;
 
           numberOfOnes++;
 
@@ -4447,7 +4449,7 @@ var CellArray = function () {
           // increment matches if it is in a different group than the current group
           pairing: for (var k = 0; k < groups.length; k++) {
             for (var l = 0; l < groups[k].cellArray.length; l++) {
-              if (groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[j].x === groups[k].cellArray[l].x && groups[i].cellArray[j].y === groups[k].cellArray[l].y && i !== k) {
+              if (groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[_j5].x === groups[k].cellArray[l].x && groups[i].cellArray[_j5].y === groups[k].cellArray[l].y && i !== k) {
                 matches++;
                 break pairing; // used to break out of both loops
               }
@@ -4459,6 +4461,48 @@ var CellArray = function () {
         if (matches && numberOfOnes && numberOfOnes === matches) {
           groups.splice(i, 1);
           i--;
+        }
+      }
+      //TODO: ask professor if this is good
+      return groups;
+    }
+  }, {
+    key: 'simplifyGroupsR',
+    value: function simplifyGroupsR(groups, keep) {
+      checking: for (var i = 0; i < groups.length; i++) {
+        // for each group
+        if (keep) {
+          for (var j = 0; j < keep.length; j++) {
+            if (JSON.stringify(groups[i]) === JSON.stringify(keep[j])) continue checking;
+          }
+        }
+
+        var numberOfOnes = 0;
+        var matches = 0;
+
+        for (var _j6 = 0; _j6 < groups[i].cellArray.length; _j6++) {
+          // for each point in the group
+          // if it is a 1 increment number of ones otherwise skip this loop
+          if (groups[i].cellArray[_j6].status != this.expansionType) continue;
+
+          numberOfOnes++;
+
+          // check every 1 in the array of groups for matching (x & y's) and
+          // increment matches if it is in a different group than the current group
+          pairing: for (var k = 0; k < groups.length; k++) {
+            for (var l = 0; l < groups[k].cellArray.length; l++) {
+              if (groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[_j6].x === groups[k].cellArray[l].x && groups[i].cellArray[_j6].y === groups[k].cellArray[l].y && i !== k) {
+                matches++;
+                break pairing; // used to break out of both loops
+              }
+            }
+          }
+        }
+
+        // removes the group and decrements the count by 1
+        if (matches && numberOfOnes && numberOfOnes === matches) {
+          groups.splice(i, 1);
+          i++;
         }
       }
       //TODO: ask professor if this is good
@@ -4496,6 +4540,13 @@ var CellArray = function () {
       //TODO: ask professor if this is good
       return groups;
     }
+
+    /**
+     * returns if the formula is unique to the array of formulas
+     * @param {Array.Groups} formulas - an array of simplified groups
+     * @return {boolean} whether the group is unique or not
+     */
+
   }, {
     key: 'getPossibleFormulas',
     value: function getPossibleFormulas(groups) {
@@ -4508,27 +4559,54 @@ var CellArray = function () {
         if (group.pImp) pImps.push(group);
       });
 
-      console.log(pImps);
-
       var opts = [];
 
       groups.forEach(function (group) {
         if (!group.pImp) opts.push(group);
       });
 
-      console.log(opts);
+      console.log("length: " + opts.length);
 
       for (var i = 0; i < opts.length; i++) {
-        var formula = this.simplifyGroups(temp, opts[i]);
-        formula = this.simplifyGroups(formula); // used to remove hiding opts
-        if (this.isUniqueFormula(formulas, formula)) formulas.push(formula);
-        temp = groups.slice();
+        var keeps = [];
+
+        for (var j = i; j < opts.length; j++) {
+          keeps.push(opts[j]);
+
+          var formula = this.simplifyGroups(temp, keeps);
+          formula = this.simplifyGroups(formula); // used to remove hiding opts
+
+          if (this.isUniqueFormula(formulas, formula)) formulas.push(formula);
+          temp = groups.slice();
+        }
+      }
+
+      for (var _i9 = 0; _i9 < opts.length; _i9++) {
+        var _keeps = [];
+
+        for (var _j7 = _i9; _j7 < opts.length; _j7++) {
+          _keeps.push(opts[_j7]);
+
+          var _formula = this.simplifyGroupsR(temp, _keeps);
+          _formula = this.simplifyGroups(_formula); // used to remove hiding opts
+
+          if (this.isUniqueFormula(formulas, _formula)) formulas.push(_formula);
+          temp = groups.slice();
+        }
       }
 
       if (!opts.length) formulas.push(this.simplifyGroups(temp));
 
       return formulas;
     }
+
+    /**
+     * returns if the formula is unique to the array of formulas
+     * @param {Array.Groups} formulas - an array of simplified groups
+     * @param {Group} formulas - a simplified group
+     * @return {boolean} whether the group is unique or not
+     */
+
   }, {
     key: 'isUniqueFormula',
     value: function isUniqueFormula(formulas, formula) {
@@ -4538,6 +4616,13 @@ var CellArray = function () {
 
       return true;
     }
+
+    /**
+     * Converts cells to points
+     * @param {Array.Array.Cells} groups - a 2d array of cells
+     * @return {Array.Array.Point} a 2d array of points
+     */
+
   }, {
     key: 'cellsToPoints',
     value: function cellsToPoints(groups) {
@@ -4562,7 +4647,7 @@ exports.default = CellArray;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.drawPoints = drawPoints;
+exports.drawGroups = drawGroups;
 exports.drawTerms = drawTerms;
 exports.mark = mark;
 exports.hexToRGB = hexToRGB;
@@ -4573,60 +4658,72 @@ var _chromaJs2 = _interopRequireDefault(_chromaJs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function drawPoints(ctx, scale, points) {
+/**
+ * Draws every group onto the kmap
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cells
+ * @param {Array.Cell} groups - array of cells
+ */
+function drawGroups(ctx, scale, groups) {
   var colors = _chromaJs2.default.scale(['#9c27b0', '#3f51b5', '#03a9f4', '#009688', '#8bc34a', '#ffeb3b', '#ff9800']).colors(12);
 
-  for (var i = 0; i < points.length; i++) {
+  for (var i = 0; i < groups.length; i++) {
     var rgb = void 0;
 
-    if (points[i].pImp) {
+    if (groups[i].pImp) {
       rgb = hexToRGB('#f44336', 0.7);
     } else {
       var color = colors.splice(Math.floor(Math.random() * colors.length - 1), 1);
       rgb = hexToRGB(color[0], 0.5);
     }
 
-    switch (points[i].type) {
-      case "2x2":
-        draw2x2(ctx, scale, points[i], rgb);
+    switch (groups[i].type) {
+      case '2x2':
+        draw2x2(ctx, scale, groups[i], rgb);
         continue;
         break;
-      case "2x4":
-        draw2x4(ctx, scale, points[i], rgb);
+      case '2x4':
+        draw2x4(ctx, scale, groups[i], rgb);
         continue;
         break;
-      case "1x2":
-        draw1x2(ctx, scale, points[i], rgb);
+      case '1x2':
+        draw1x2(ctx, scale, groups[i], rgb);
         continue;
         break;
-      case "1x4":
-        draw1x4(ctx, scale, points[i], rgb);
+      case '1x4':
+        draw1x4(ctx, scale, groups[i], rgb);
         continue;
         break;
-      case "2x1":
-        draw2x1(ctx, scale, points[i], rgb);
+      case '2x1':
+        draw2x1(ctx, scale, groups[i], rgb);
         continue;
         break;
-      case "4x1":
-        draw4x1(ctx, scale, points[i], rgb);ctx, scale, points[i], rgb;
+      case '4x1':
+        draw4x1(ctx, scale, groups[i], rgb);
         continue;
         break;
-      case "1x1":
-        mark(ctx, scale, points[i].cellArray[0].x, points[i].cellArray[0].y, 0, rgb);
+      case '1x1':
+        mark(ctx, scale, groups[i].cellArray[0].x, groups[i].cellArray[0].y, 0, rgb);
         continue;
         break;
       default:
-        console.log("error");
+        console.log('error');
         break;
     }
 
-    for (var j = 0; j < points[i].cellArray.length; j++) {
+    for (var j = 0; j < groups[i].cellArray.length; j++) {
       console.log(rgb);
-      mark(ctx, scale, points[i].cellArray[j].x, points[i].cellArray[j].y, 0, rgb);
+      mark(ctx, scale, groups[i].cellArray[j].x, groups[i].cellArray[j].y, 0, rgb);
     }
   }
 }
 
+/**
+ * Marks every cell with its current status
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cells
+ * @param {Array.Cell} cells - array of cells
+ */
 function drawTerms(ctx, scale, cells) {
   ctx.font = '20pt Roboto';
 
@@ -4637,7 +4734,15 @@ function drawTerms(ctx, scale, cells) {
   }
 }
 
-//draws a color on the matching cell
+/**
+ * Marks a cell completely
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {number} rotation - rotation of the cell
+ * @param {string} color - the color of the cell
+ */
 function mark(ctx, scale, x, y, rotation, color) {
   // saves current context state
   ctx.save();
@@ -4647,7 +4752,7 @@ function mark(ctx, scale, x, y, rotation, color) {
   // rotates around the origin
   ctx.rotate(rotation * Math.PI / 180);
 
-  //draws match color
+  // draws match color
   ctx.beginPath();
 
   ctx.fillStyle = color;
@@ -4658,6 +4763,14 @@ function mark(ctx, scale, x, y, rotation, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a top left Cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markTL(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4670,6 +4783,14 @@ function markTL(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a top mid Cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markTM(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4682,6 +4803,14 @@ function markTM(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a bottom mid Cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markBM(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4694,6 +4823,14 @@ function markBM(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a bottom left Cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markBL(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4706,6 +4843,14 @@ function markBL(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a top right Cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markTR(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4718,6 +4863,14 @@ function markTR(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a left mid Cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markLM(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4730,6 +4883,14 @@ function markLM(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a right mid Cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markRM(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4742,6 +4903,14 @@ function markRM(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a bottom right Cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markBR(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4754,6 +4923,14 @@ function markBR(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a top Cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markT(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4766,6 +4943,14 @@ function markT(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a bottom Cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markB(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4778,6 +4963,14 @@ function markB(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a vertical mid cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markMV(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4790,6 +4983,14 @@ function markMV(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a horizontal mid cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markMH(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4802,6 +5003,14 @@ function markMH(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a left Cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markL(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4814,6 +5023,14 @@ function markL(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Marks a right Cell
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale of the cell
+ * @param {number} x - the x coord of the cell
+ * @param {number} y - the y coord of the cell
+ * @param {string} color - the color of the cell
+ */
 function markR(ctx, scale, x, y, color) {
   ctx.save();
   ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
@@ -4826,6 +5043,13 @@ function markR(ctx, scale, x, y, color) {
   ctx.restore();
 }
 
+/**
+ * Draws a 2x2 group
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale for the cell
+ * @param {Group} group - the group to draw
+ * @param {string} color - the color to draw the group
+ */
 function draw2x2(ctx, scale, group, color) {
   markTL(ctx, scale, group.cellArray[0].x, group.cellArray[0].y, color);
   markTR(ctx, scale, group.cellArray[1].x, group.cellArray[1].y, color);
@@ -4833,6 +5057,13 @@ function draw2x2(ctx, scale, group, color) {
   markBR(ctx, scale, group.cellArray[3].x, group.cellArray[3].y, color);
 }
 
+/**
+ * Draws a 2x4 group
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale for the cell
+ * @param {Group} group - the group to draw
+ * @param {string} color - the color to draw the group
+ */
 function draw2x4(ctx, scale, group, color) {
   markTL(ctx, scale, group.cellArray[0].x, group.cellArray[0].y, color);
   markLM(ctx, scale, group.cellArray[1].x, group.cellArray[1].y, color);
@@ -4847,11 +5078,25 @@ function draw2x4(ctx, scale, group, color) {
   markBR(ctx, scale, group.cellArray[7].x, group.cellArray[7].y, color);
 }
 
+/**
+ * Draws a 1x2 group
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale for the cell
+ * @param {Group} group - the group to draw
+ * @param {string} color - the color to draw the group
+ */
 function draw1x2(ctx, scale, group, color) {
   markT(ctx, scale, group.cellArray[0].x, group.cellArray[0].y, color);
   markB(ctx, scale, group.cellArray[1].x, group.cellArray[1].y, color);
 }
 
+/**
+ * Draws a 1x4 group
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale for the cell
+ * @param {Group} group - the group to draw
+ * @param {string} color - the color to draw the group
+ */
 function draw1x4(ctx, scale, group, color) {
   markT(ctx, scale, group.cellArray[0].x, group.cellArray[0].y, color);
   markMV(ctx, scale, group.cellArray[1].x, group.cellArray[1].y, color);
@@ -4859,6 +5104,13 @@ function draw1x4(ctx, scale, group, color) {
   markB(ctx, scale, group.cellArray[3].x, group.cellArray[3].y, color);
 }
 
+/**
+ * Draws a 4x1 group
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale for the cell
+ * @param {Group} group - the group to draw
+ * @param {string} color - the color to draw the group
+ */
 function draw4x1(ctx, scale, group, color) {
   markL(ctx, scale, group.cellArray[0].x, group.cellArray[0].y, color);
   markMH(ctx, scale, group.cellArray[1].x, group.cellArray[1].y, color);
@@ -4866,29 +5118,35 @@ function draw4x1(ctx, scale, group, color) {
   markR(ctx, scale, group.cellArray[3].x, group.cellArray[3].y, color);
 }
 
+/**
+ * Draws a 2x1 group
+ * @param {Object} ctx - the context which you want to draw to
+ * @param {number} scale - the scale for the cell
+ * @param {Group} group - the group to draw
+ * @param {string} color - the color to draw the group
+ */
 function draw2x1(ctx, scale, group, color) {
   markL(ctx, scale, group.cellArray[0].x, group.cellArray[0].y, color);
   markR(ctx, scale, group.cellArray[1].x, group.cellArray[1].y, color);
 }
 
+/**
+ * Converts a hex color to a rgba color and returns it
+ * @param {string} hex - hex string color
+ * @param {string} alpha - opacity for the color
+ * @return {string} converted rgba color
+ */
 function hexToRGB(hex, alpha) {
-  var r = parseInt(hex.slice(1, 3), 16),
-      g = parseInt(hex.slice(3, 5), 16),
-      b = parseInt(hex.slice(5, 7), 16);
+  var r = parseInt(hex.slice(1, 3), 16);
+  var g = parseInt(hex.slice(3, 5), 16);
+  var b = parseInt(hex.slice(5, 7), 16);
 
   if (alpha) {
-    return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+    return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
   } else {
-    return "rgb(" + r + ", " + g + ", " + b + ")";
+    return 'rgb(' + r + ', ' + g + ', ' + b + ')';
   }
 }
-
-// export function randomRGB(length) {
-//   var color = Math.floor(Math.random() * length);
-//   var colors = chroma.scale(['#f44336', '#9c27b0', '#3f51b5', '#03a9f4', '#009688', '#8bc34a', '#ffeb3b', '#ff9800']).colors(length);
-//   var hex = colors[color];
-//   return hexToRGB(hex, 0.5);
-// }
 
 }).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/classes/DrawingFunctions.js","/classes")
 },{"buffer":2,"chroma-js":3,"pBGvAp":5}],10:[function(require,module,exports){
@@ -4901,8 +5159,14 @@ Object.defineProperty(exports, "__esModule", {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-// Group class used for drawing
-var Group = function Group(cellArray, type) {
+/** Class representing a group. */
+var Group =
+/**
+   * Create a dot.
+   * @param {Array.Point} cellArray - array holding all the groups points
+   * @param {string} type - the type of group it is
+   */
+function Group(cellArray, type) {
   _classCallCheck(this, Group);
 
   this.cellArray = cellArray;
@@ -4923,8 +5187,14 @@ Object.defineProperty(exports, "__esModule", {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-// Point class
-var Point = function Point(x, y) {
+/** Class representing a point. */
+var Point =
+/**
+ * Create a point.
+ * @param {number} x - The x value.
+ * @param {number} y - The y value.
+ */
+function Point(x, y) {
   _classCallCheck(this, Point);
 
   if (x < 0 || y < 0) throw new Error('Coordinates must be positive');
@@ -5030,7 +5300,7 @@ var formulaBox = document.getElementById('expansion');
 function initializeFormulaBox() {
   for (var i = 0; i < formulaBox.childNodes.length; i++) {
     formulaBox.childNodes[i].addEventListener('click', function (event) {
-      console.log("hello");
+      console.log('hello');
       var renderFormula;
 
       for (var _i = 0; _i < formulaBox.childNodes.length; _i++) {
@@ -5069,7 +5339,7 @@ function initializeFormulaBox() {
       renderFormula = (0, _BinaryFunctions.getExpansionFormula)(data, numVars, cellArray.expansionType);
       console.log(renderFormula);
 
-      drawer.drawPoints(ctx, scale, data);
+      drawer.drawGroups(ctx, scale, data);
       drawer.drawTerms(ctx, scale, cellArray.cells);
     });
   }
@@ -5110,6 +5380,10 @@ slider.noUiSlider.on('update', function () {
   output.setAttribute('colspan', 3);
   output.appendChild(document.createTextNode('Output'));
 
+  var number = document.createElement('th');
+  number.setAttribute('colspan', 1);
+
+  superHeadRow.appendChild(number);
   superHeadRow.appendChild(input);
   superHeadRow.appendChild(output);
 
@@ -5117,9 +5391,13 @@ slider.noUiSlider.on('update', function () {
 
   var tr = document.createElement('tr');
   // Creates headers for the truth table
-  for (var i = 0; i < slider.noUiSlider.get(); i++) {
+  var numTh = document.createElement('th');
+  numTh.appendChild(document.createTextNode('#'));
+
+  tr.appendChild(numTh);
+  for (var i = 1; i < slider.noUiSlider.get() + 1; i++) {
     var th = document.createElement('th');
-    th.appendChild(document.createTextNode(String.fromCharCode(65 + i)));
+    th.appendChild(document.createTextNode(String.fromCharCode(65 + i - 1)));
     tr.appendChild(th);
   }
 
@@ -5140,6 +5418,10 @@ slider.noUiSlider.on('update', function () {
   var tbody = document.createElement('tbody');
   for (var _i2 = 0; _i2 < Math.pow(2, slider.noUiSlider.get()); _i2++) {
     var _tr = document.createElement('tr');
+
+    var numTd = document.createElement('td');
+    numTd.appendChild(document.createTextNode(_i2));
+    _tr.appendChild(numTd);
 
     var num = '' + _i2.toString(2);
     var pad = '0'.repeat(slider.noUiSlider.get()); // its just 5 0's for the max var nums
@@ -5204,7 +5486,11 @@ slider.noUiSlider.on('update', function () {
   resetkmap();
 
   var formulaBox = document.getElementById('expansion');
-  // formulaBox.innerHTML = "F =";
+  formulaBox.innerHTML = '';
+  var li = document.createElement('li');
+  li.className = 'collection-item active';
+  li.innerHTML = 'F =';
+  formulaBox.appendChild(li);
 
   switch (numVars) {
     case 3:
@@ -5268,13 +5554,13 @@ function redrawMap() {
 
   // Add formulas to box
   var formulas = cellArray.getPossibleFormulas(groups);
-  formulaBox.innerHTML = "";
+  formulaBox.innerHTML = '';
 
   for (var i = 0; i < formulas.length; i++) {
     var li = document.createElement('li');
 
-    li.className = "collection-item";
-    if (i === 0) li.className += " active";
+    li.className = 'collection-item';
+    if (i === 0) li.className += ' active';
 
     li.dataset.formula = JSON.stringify(formulas[i]);
 
@@ -5291,7 +5577,7 @@ function redrawMap() {
 
   // console.log(groups);
 
-  drawer.drawPoints(ctx, scale, formulas[0]);
+  drawer.drawGroups(ctx, scale, formulas[0]);
   drawer.drawTerms(ctx, scale, cellArray.cells);
 }
 
@@ -5404,5 +5690,5 @@ function draw3varkmap() {
   ctx.fillText('10', scale * 0.5 + 5, scale * 4.6);
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_aefdb7e.js","/")
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_b399274.js","/")
 },{"./classes/BinaryFunctions":6,"./classes/CellArray":8,"./classes/DrawingFunctions":9,"buffer":2,"pBGvAp":5}]},{},[12])
