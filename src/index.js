@@ -83,7 +83,7 @@ var formulaBox = document.getElementById('expansion');
 function initializeFormulaBox() {
   for (let i = 0; i < formulaBox.childNodes.length; i++) {
     formulaBox.childNodes[i].addEventListener('click', function (event) {
-      console.log("hello");
+      console.log('hello');
       var renderFormula;
 
       for(let i = 0; i < formulaBox.childNodes.length; i++) {
@@ -122,7 +122,7 @@ function initializeFormulaBox() {
       renderFormula = getExpansionFormula(data, numVars, cellArray.expansionType);
       console.log(renderFormula);
 
-      drawer.drawPoints(ctx, scale, data);
+      drawer.drawGroups(ctx, scale, data);
       drawer.drawTerms(ctx, scale, cellArray.cells);
     });
   }
@@ -163,6 +163,10 @@ slider.noUiSlider.on('update', function () {
   output.setAttribute('colspan', 3);
   output.appendChild(document.createTextNode('Output'));
 
+  let number = document.createElement('th');
+  number.setAttribute('colspan', 1);
+
+  superHeadRow.appendChild(number);
   superHeadRow.appendChild(input);
   superHeadRow.appendChild(output);
 
@@ -170,9 +174,13 @@ slider.noUiSlider.on('update', function () {
 
   var tr = document.createElement('tr');
   // Creates headers for the truth table
-  for(let i = 0; i < slider.noUiSlider.get(); i ++) {
+  let numTh = document.createElement('th');
+  numTh.appendChild(document.createTextNode('#'));
+
+  tr.appendChild(numTh);
+  for(let i = 1; i < slider.noUiSlider.get() + 1; i ++) {
     let th = document.createElement('th');
-    th.appendChild(document.createTextNode(String.fromCharCode(65 + i)));
+    th.appendChild(document.createTextNode(String.fromCharCode(65 + i - 1)));
     tr.appendChild(th);
   }
 
@@ -193,6 +201,10 @@ slider.noUiSlider.on('update', function () {
   var tbody = document.createElement('tbody');
   for(let i = 0; i < Math.pow(2, slider.noUiSlider.get()); i++) {
     let tr = document.createElement('tr');
+
+    let numTd = document.createElement('td');
+    numTd.appendChild(document.createTextNode(i));
+    tr.appendChild(numTd);
 
     var num = '' + i.toString(2);
     var pad = '0'.repeat(slider.noUiSlider.get()); // its just 5 0's for the max var nums
@@ -257,10 +269,10 @@ slider.noUiSlider.on('update', function () {
   resetkmap();
 
   var formulaBox = document.getElementById('expansion');
-  formulaBox.innerHTML = "";
+  formulaBox.innerHTML = '';
   let li = document.createElement('li');
-  li.className = "collection-item active";
-  li.innerHTML = "F =";
+  li.className = 'collection-item active';
+  li.innerHTML = 'F =';
   formulaBox.appendChild(li);
 
   switch(numVars) {
@@ -325,13 +337,13 @@ function redrawMap() {
 
   // Add formulas to box
   let formulas = cellArray.getPossibleFormulas(groups);
-  formulaBox.innerHTML = "";
+  formulaBox.innerHTML = '';
 
   for(let i = 0; i < formulas.length; i ++) {
     let li = document.createElement('li');
 
-    li.className = "collection-item";
-    if(i === 0) li.className += " active";
+    li.className = 'collection-item';
+    if(i === 0) li.className += ' active';
 
     li.dataset.formula = JSON.stringify(formulas[i]);
 
@@ -348,7 +360,7 @@ function redrawMap() {
 
   // console.log(groups);
 
-  drawer.drawPoints(ctx, scale, formulas[0]);
+  drawer.drawGroups(ctx, scale, formulas[0]);
   drawer.drawTerms(ctx, scale, cellArray.cells);
 }
 

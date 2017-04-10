@@ -6488,7 +6488,9 @@ canvas#canvas {
 
 .collection.expansion {
   width: 400px;
-  margin: 0 auto; }
+  max-height: 200px;
+  margin: 0 auto;
+  overflow-y: scroll !important; }
   .collection.expansion li.collection-item {
     text-align: left; }
     .collection.expansion li.collection-item:hover:not(.active) {

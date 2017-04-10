@@ -9,15 +9,14 @@ Online K-map generator for 3-6 vars, featuring real 3D visualization.
 
 #### Expansions
 ##### Need
-- [ ] Mark prime implicants
-- [ ] Output every possible formula for a map, and display each map when user hovers over formula
+- [x] Mark prime implicants
+- [x] Output every possible formula for a map, and display each map when user selects formula
 ##### Nice to have
-- [ ] Calc the amount of required for every map, display on hover over tooltip
+- [ ] Calc the amount of required gates for every map, display on hover over tooltip
 
 #### Misc:
-- [ ] Display numbers in truth table
-- [x] Clean up Gulpfile and build system
-- [ ] Use GoogleWebFontLoader to assure Robot is loaded before drawing text in the canvas
+- [x] Display numbers in truth table
+- [ ] Use GoogleWebFontLoader to assure Roboto is loaded before drawing text in the canvas
 - [ ] Draw loops for every p-subcube instead of colors
 - [ ] Make responsive to mobile and tablets
 <!-- - [ ] Use intro js for mobile to show how to use the hidden truth table -->

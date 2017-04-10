@@ -43,7 +43,7 @@ export function eliminateTerms(term1, term2) {
 * @return {string} the simplified group
 */
 export function solveGroup(group, vars) {
-  if (group.length & (group.length - 1) && group.length != 1 || group.length > Math.pow(2, vars)) throw new Error("Invalid Group");
+  if (group.length & (group.length - 1) && group.length != 1 || group.length > Math.pow(2, vars)) throw new Error('Invalid Group');
 
   var term1;
   var term2;
@@ -68,14 +68,14 @@ export function solveGroup(group, vars) {
 * @return {string} the converted term
 */
 export function binaryTermToVarTerm(term) {
-  if(term === "") return "Undefined Term";
+  if(term === '') return 'Undefined Term';
   term = term.split('');
-  var string = "";
+  var string = '';
 
   for(let i = 0; i < term.length; i++) {
-    if(term[i] === "-") continue;
+    if(term[i] === '-') continue;
     string += String.fromCharCode(65 + i);
-    if(term[i] === "0") string += "'";
+    if(term[i] === '0') string += "'";
   }
 
   return string;
@@ -96,13 +96,13 @@ export function getExpansionFormula(groups, vars, expansionType) {
       return getMaxtermExpansionFormula(groups, vars);
       break;
     default:
-      return "Undefined Formula";
+      return 'Undefined Formula';
       break;
   }
 }
 
 export function getMintermExpansionFormula(groups, vars) {
-  var formula = "F = ";
+  var formula = 'F = ';
 
   for(let i = 0; i < groups.length; i++) {
     var term;
@@ -115,17 +115,17 @@ export function getMintermExpansionFormula(groups, vars) {
 
     formula += binaryTermToVarTerm(term);
 
-    if(i != groups.length - 1) formula += " + ";
+    if(i != groups.length - 1) formula += ' + ';
   }
 
   return formula;
 }
 
 export function getMaxtermExpansionFormula(groups, vars) {
-  var formula = "F = ";
+  var formula = 'F = ';
 
   for(let i = 0; i < groups.length; i++) {
-    formula += "(";
+    formula += '(';
     var term;
 
     if(groups[i].cellArray.length > 1)  {
@@ -143,10 +143,10 @@ export function getMaxtermExpansionFormula(groups, vars) {
         j++;
       }
       console.log(term[j]);
-      if(j != term.length - 1) formula += " + ";
+      if(j != term.length - 1) formula += ' + ';
     }
 
-    formula += ")";
+    formula += ')';
   }
 
   return formula;

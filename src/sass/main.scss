@@ -60,7 +60,9 @@ canvas#canvas {
 
 .collection.expansion {
   width: 400px;
+  max-height: 200px;
   margin: 0 auto;
+  overflow-y: scroll !important;
 
   li.collection-item {
     text-align: left;

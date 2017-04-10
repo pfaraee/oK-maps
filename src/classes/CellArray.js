@@ -64,9 +64,9 @@ export default class CellArray {
   //Writing this near midnight
   // TODO: write it better later
   getGroups() {
-    var marked = [];
+    let marked = [];
     // used to skip some group checks
-    var numActive = 0;
+    let numActive = 0;
 
     // TODO: refractor to work with maxterms
     for(let i = 0; i < this.cells.length; i++) {
@@ -76,7 +76,7 @@ export default class CellArray {
     }
 
     // marks every cell and returns early to save proccessing time
-    if(numActive >= Math.pow(2, this.vars)) {
+    if(numActive >= Math.pow(2, this.lets)) {
       // draws if all are on
       let group = [];
 
@@ -86,7 +86,7 @@ export default class CellArray {
         }
       }
 
-      marked.push(new Group(group, "full"));
+      marked.push(new Group(group, 'full'));
 
       return marked; // all are marked
     }
@@ -118,7 +118,7 @@ export default class CellArray {
           group.push(seventhPoint);
           group.push(eighthPoint);
 
-          let wrapper = new Group(group, "2x4")
+          let wrapper = new Group(group, '2x4')
           if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
         }
       }
@@ -149,7 +149,7 @@ export default class CellArray {
           group.push(seventhPoint);
           group.push(eighthPoint);
 
-          let wrapper = new Group(group, "4x2");
+          let wrapper = new Group(group, '4x2');
           if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
         }
       }
@@ -173,7 +173,7 @@ export default class CellArray {
             group.push(thirdPoint);
             group.push(fourthPoint);
 
-            let wrapper = new Group(group, "4x1");
+            let wrapper = new Group(group, '4x1');
             if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
           }
         }
@@ -195,7 +195,7 @@ export default class CellArray {
           group.push(thirdPoint);
           group.push(fourthPoint);
 
-          let wrapper = new Group(group, "1x4");
+          let wrapper = new Group(group, '1x4');
           if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
         }
       }
@@ -218,7 +218,7 @@ export default class CellArray {
             group.push(thirdPoint);
             group.push(fourthPoint);
 
-            let wrapper = new Group(group, "2x2")
+            let wrapper = new Group(group, '2x2')
             if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
           }
         }
@@ -238,7 +238,7 @@ export default class CellArray {
             group.push(rootPoint);
             group.push(secondPoint);
 
-            let wrapper = new Group(group, "2x1");
+            let wrapper = new Group(group, '2x1');
             if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
           }
 
@@ -249,7 +249,7 @@ export default class CellArray {
             group.push(rootPoint);
             group.push(secondPointV);
 
-            let wrapper = new Group(group, "1x2")
+            let wrapper = new Group(group, '1x2')
             if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
           }
         }
@@ -263,7 +263,7 @@ export default class CellArray {
           let point = this.get(i, j);
           group.push(point);
 
-          let wrapper = new Group(group, "1x1");
+          let wrapper = new Group(group, '1x1');
           if(point.status == this.expansionType && this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
         }
       }
@@ -284,7 +284,7 @@ export default class CellArray {
     }
 
     for(let i = 0; i < marked.length; i++) { //for each marked group
-      var matches = [];
+      let matches = [];
 
       for(let j = 0; j < group.cellArray.length; j++) { // for each point in the group
         for(let k = 0; k < marked[i].cellArray.length; k ++) { // for each point in the marked group
@@ -301,9 +301,12 @@ export default class CellArray {
   }
 
   simplifyGroups(groups, keep) {
+    checking:
     for(let i = groups.length - 1; i >= 0; i--) { // for each group
-      if(keep && JSON.stringify(groups[i]) === JSON.stringify(keep)) {
-        continue;
+      if(keep){
+        for(let j = 0; j < keep.length; j++) {
+          if(JSON.stringify(groups[i]) === JSON.stringify(keep[j])) continue checking;
+        }
       }
 
       let numberOfOnes = 0;
@@ -318,21 +321,63 @@ export default class CellArray {
         // check every 1 in the array of groups for matching (x & y's) and
         // increment matches if it is in a different group than the current group
         pairing:
-          for(let k = 0; k < groups.length; k++) {
-            for(let l = 0; l < groups[k].cellArray.length; l++) {
-              if(groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[j].x === groups[k].cellArray[l].x
-              && groups[i].cellArray[j].y === groups[k].cellArray[l].y && i !== k) {
-                matches++;
-                break pairing; // used to break out of both loops
-              }
+        for(let k = 0; k < groups.length; k++) {
+          for(let l = 0; l < groups[k].cellArray.length; l++) {
+            if(groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[j].x === groups[k].cellArray[l].x
+            && groups[i].cellArray[j].y === groups[k].cellArray[l].y && i !== k) {
+              matches++;
+              break pairing; // used to break out of both loops
             }
           }
+        }
       }
 
       // removes the group and decrements the count by 1
       if(matches && numberOfOnes && numberOfOnes === matches) {
         groups.splice(i, 1);
         i--;
+      }
+    }
+    //TODO: ask professor if this is good
+    return groups;
+  }
+
+  simplifyGroupsR(groups, keep){
+    checking:
+    for(let i = 0; i < groups.length; i++) { // for each group
+      if(keep){
+        for(let j = 0; j < keep.length; j++) {
+          if(JSON.stringify(groups[i]) === JSON.stringify(keep[j])) continue checking;
+        }
+      }
+
+      let numberOfOnes = 0;
+      let matches = 0;
+
+      for(let j = 0; j < groups[i].cellArray.length; j++) { // for each point in the group
+        // if it is a 1 increment number of ones otherwise skip this loop
+        if(groups[i].cellArray[j].status != this.expansionType) continue;
+
+        numberOfOnes++;
+
+        // check every 1 in the array of groups for matching (x & y's) and
+        // increment matches if it is in a different group than the current group
+        pairing:
+        for(let k = 0; k < groups.length; k++) {
+          for(let l = 0; l < groups[k].cellArray.length; l++) {
+            if(groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[j].x === groups[k].cellArray[l].x
+            && groups[i].cellArray[j].y === groups[k].cellArray[l].y && i !== k) {
+              matches++;
+              break pairing; // used to break out of both loops
+            }
+          }
+        }
+      }
+
+      // removes the group and decrements the count by 1
+      if(matches && numberOfOnes && numberOfOnes === matches) {
+        groups.splice(i, 1);
+        i++;
       }
     }
     //TODO: ask professor if this is good
@@ -370,32 +415,55 @@ export default class CellArray {
     return groups;
   }
 
+  /**
+   * returns if the formula is unique to the array of formulas
+   * @param {Array.Groups} formulas - an array of simplified groups
+   * @return {boolean} whether the group is unique or not
+   */
   getPossibleFormulas(groups) {
-    var temp = groups.slice();
+    let temp = groups.slice();
     let formulas = [];
 
     let pImps = [];
 
-    groups.forEach(group => {
+    groups.forEach((group) => {
       if(group.pImp) pImps.push(group);
     });
 
-    console.log(pImps);
-
     let opts = [];
 
-    groups.forEach(group => {
+    groups.forEach((group) => {
       if(!group.pImp) opts.push(group);
     });
 
-    console.log(opts);
+    console.log("length: " + opts.length);
 
     for(let i = 0; i < opts.length; i++) {
-      let formula = this.simplifyGroups(temp, opts[i]);
-      formula = this.simplifyGroups(formula); // used to remove hiding opts
-      
-      if(this.isUniqueFormula(formulas, formula)) formulas.push(formula);
-      temp = groups.slice();
+      let keeps = [];
+
+      for(let j = i; j < opts.length; j++) {
+        keeps.push(opts[j]);
+
+        let formula = this.simplifyGroups(temp, keeps);
+        formula = this.simplifyGroups(formula); // used to remove hiding opts
+
+        if(this.isUniqueFormula(formulas, formula)) formulas.push(formula);
+        temp = groups.slice();
+      }
+    }
+
+    for(let i = 0; i < opts.length; i++) {
+      let keeps = [];
+
+      for(let j = i; j < opts.length; j++) {
+        keeps.push(opts[j]);
+
+        let formula = this.simplifyGroupsR(temp, keeps);
+        formula = this.simplifyGroups(formula); // used to remove hiding opts
+
+        if(this.isUniqueFormula(formulas, formula)) formulas.push(formula);
+        temp = groups.slice();
+      }
     }
 
     if(!opts.length) formulas.push(this.simplifyGroups(temp));
@@ -403,6 +471,12 @@ export default class CellArray {
     return formulas;
   }
 
+  /**
+   * returns if the formula is unique to the array of formulas
+   * @param {Array.Groups} formulas - an array of simplified groups
+   * @param {Group} formulas - a simplified group
+   * @return {boolean} whether the group is unique or not
+   */
   isUniqueFormula(formulas, formula) {
     for(let i = 0; i < formulas.length; i++) {
       if(JSON.stringify(formulas[i]) === JSON.stringify(formula)) return false;
@@ -411,6 +485,11 @@ export default class CellArray {
     return true;
   }
 
+  /**
+   * Converts cells to points
+   * @param {Array.Array.Cells} groups - a 2d array of cells
+   * @return {Array.Array.Point} a 2d array of points
+   */
   cellsToPoints(groups) {
     return groups.map((group) => {
       return group.map((cell) => {
