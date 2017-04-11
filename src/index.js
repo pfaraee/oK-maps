@@ -1,6 +1,6 @@
 import CellArray from './classes/CellArray';
 import * as drawer from './classes/DrawingFunctions';
-import { getExpansionFormula } from './classes/BinaryFunctions';
+import { getExpansionFormula, decToBin, toGrayCode } from './classes/BinaryFunctions';
 
 var c = document.getElementById('canvas');
 var ctx = c.getContext('2d');
@@ -40,7 +40,7 @@ var expansionType = 1;
 
 var cellArray = new CellArray(numVars, expansionType);
 
-draw3varkmap();
+drawMap(numVars, scale);
 
 function getMinterms() {
   var temp = [];
@@ -98,24 +98,7 @@ function initializeFormulaBox() {
 
       resetkmap();
 
-      switch(numVars) {
-        case 3:
-          draw3varkmap();
-          break;
-        case 4:
-          draw4varkmap();
-          console.log('4 vars');
-          break;
-        case 5:
-          console.log('5 vars');
-          break;
-        case 6:
-          console.log('6 vars');
-          break;
-        default:
-          console.log('You did it Professor.');
-          break;
-      }
+      drawMap(numVars, scale);
 
       let data = JSON.parse(event.target.dataset.formula);
 
@@ -134,7 +117,7 @@ noUiSlider.create(slider, {
  step: 1,
  range: {
    'min': [3],
-   'max': [4]
+   'max': [6]
  },
  pips: {
    mode: 'steps',
@@ -275,17 +258,7 @@ slider.noUiSlider.on('update', function () {
   li.innerHTML = 'F =';
   formulaBox.appendChild(li);
 
-  switch(numVars) {
-    case 3:
-      draw3varkmap();
-      break;
-    case 4:
-      draw4varkmap();
-      break;
-    default:
-      console.log('You did it Professor.');
-      break;
-  }
+  drawMap(numVars, scale);
 
   $('input:radio').click(function() {
     initializeFormulaBox();
@@ -298,24 +271,7 @@ function render() {
   //resets the canvas
   resetkmap();
 
-  switch(numVars) {
-    case 3:
-      draw3varkmap();
-      break;
-    case 4:
-      draw4varkmap();
-      console.log('4 vars');
-      break;
-    case 5:
-      console.log('5 vars');
-      break;
-    case 6:
-      console.log('6 vars');
-      break;
-    default:
-      console.log('You did it Professor.');
-      break;
-  }
+  drawMap(numVars, scale);
 
   redrawMap();
 }
@@ -364,111 +320,59 @@ function redrawMap() {
   drawer.drawTerms(ctx, scale, cellArray.cells);
 }
 
-function draw4varkmap() {
-  ctx.beginPath();
+function drawMap(vars, scale) {
+  let xVars = vars - Math.floor(vars / 2) - (vars % 2);
+  let yVars = vars - Math.floor(vars / 2);
 
-  ctx.moveTo(0,0);
-  ctx.lineTo(scale, scale);//
+  let xLength = Math.pow(2, xVars);
+  let yLength = Math.pow(2, yVars);
 
-  ctx.moveTo(scale, scale);
-  ctx.lineTo(scale, c.width);//
+  scale /= (yLength/4);
+  let fontSize = scale / 4;
+  ctx.font = `${fontSize}pt Roboto`;
 
-  ctx.moveTo(scale * 2, scale);
-  ctx.lineTo(scale * 2, c.width);//
+  drawGrid(xLength, yLength, scale);
 
-  ctx.moveTo(scale, scale);
-  ctx.lineTo(c.width, scale);//
+  // Axis Labels
+  let xStr = "";
+  let yStr = "";
+  for(let i = 0; i < xVars; i++) xStr += String.fromCharCode(65 + i);
+  for(let i = 0; i < yVars; i++) yStr += String.fromCharCode(65 + xVars + i);
 
-  ctx.moveTo(scale * 3, scale);
-  ctx.lineTo(scale * 3, c.width);
+  ctx.fillText(xStr, scale * 3 / 4 - ctx.measureText(xStr).width / 2, scale / 4 + fontSize / 2);
+  ctx.fillText(yStr, scale / 4 - ctx.measureText(yStr).width / 2 + 2, scale * 3 / 4 + fontSize / 2);
 
-  ctx.moveTo(scale * 4, scale);
-  ctx.lineTo(scale * 4, c.width);//
+  // Axis numbers
+  for(let i = 0; i < xLength; i++) {
+    let str = decToBin(toGrayCode(i), xVars);
+    let strW = ctx.measureText(str).width;
 
-  ctx.moveTo(scale * 5, scale);
-  ctx.lineTo(scale * 5, c.width);//
+    ctx.fillText(str, scale * (i+1) + scale / 2 - (strW / 2), scale - (strW / 2));
+  }
 
-  ctx.moveTo(scale, scale * 2);
-  ctx.lineTo(c.width, scale * 2);
+  for(let i = 0; i < yLength; i++) {
+    let str = decToBin(toGrayCode(i), yVars);
+    let strW = ctx.measureText(str).width;
 
-  ctx.moveTo(scale, scale * 3);
-  ctx.lineTo(c.width, scale * 3);
-
-  ctx.moveTo(scale, scale * 4);
-  ctx.lineTo(c.width, scale * 4);
-
-  ctx.moveTo(scale, scale * 5);
-  ctx.lineTo(c.width, scale * 5);
-
-  ctx.stroke();
-
-  //draws vars and numbers
-  ctx.font = '20pt Roboto';
-
-  //vars
-  ctx.fillText('AB', scale * 0.6, scale * 0.4);
-
-  ctx.fillText('CD', scale * 0.1, scale * 0.9);
-
-  //numbers
-  ctx.fillText('00', scale * 1.5 - 5, scale - 5);
-  ctx.fillText('01', scale * 2.5 - 5, scale - 5);
-  ctx.fillText('11', scale * 3.5 - 5, scale - 5);
-  ctx.fillText('10', scale * 4.5 - 5, scale - 5);
-
-  ctx.fillText('00', scale * 0.5 + 5, scale * 1.6 );
-  ctx.fillText('01', scale * 0.5 + 5, scale * 2.6 );
-  ctx.fillText('11', scale * 0.5 + 5, scale * 3.6 );
-  ctx.fillText('10', scale * 0.5 + 5, scale * 4.6 );
+    ctx.fillText(str, scale / 2 - fontSize / 2, scale * (i + 1) + scale / 2 + (fontSize / 2));
+  }
 }
 
-function draw3varkmap() {
-  //draws table
+function drawGrid(width, height, scale) {
   ctx.beginPath();
 
   ctx.moveTo(0,0);
   ctx.lineTo(scale, scale);
 
-  ctx.moveTo(scale, scale);
-  ctx.lineTo(scale, c.width);
+  for (let i = 0; i < width + 1; i ++) {
+    ctx.moveTo(scale * (i+1), scale);
+    ctx.lineTo(scale * (i+1), scale * (height + 1));
+  }
 
-  ctx.moveTo(scale * 2, scale);
-  ctx.lineTo(scale * 2, c.width);
-
-  ctx.moveTo(scale, scale);
-  ctx.lineTo(scale * 3, scale);
-
-  ctx.moveTo(scale * 3, scale);
-  ctx.lineTo(scale * 3, c.width);
-
-  ctx.moveTo(scale, scale * 2);
-  ctx.lineTo(scale * 3, scale * 2);
-
-  ctx.moveTo(scale, scale * 3);
-  ctx.lineTo(scale * 3, scale * 3);
-
-  ctx.moveTo(scale, scale * 4);
-  ctx.lineTo(scale * 3, scale * 4);
-
-  ctx.moveTo(scale, scale * 5);
-  ctx.lineTo(scale * 3, scale * 5);
+  for (let i = 0; i < height + 1; i++) {
+    ctx.moveTo(scale, scale * (i+1));
+    ctx.lineTo(scale * (width + 1), scale * (i+1));
+  }
 
   ctx.stroke();
-
-  //draws vars and numbers
-  ctx.font = '20pt Roboto';
-
-  //vars
-  ctx.fillText('A', scale * 0.6, scale * 0.4);
-
-  ctx.fillText('BC', scale * 0.1, scale * 0.9);
-
-  //numbers
-  ctx.fillText('0', scale * 1.5 - 5, scale - 5);
-  ctx.fillText('1', scale * 2.5 - 5, scale - 5);
-
-  ctx.fillText('00', scale * 0.5 + 5, scale * 1.6 );
-  ctx.fillText('01', scale * 0.5 + 5, scale * 2.6 );
-  ctx.fillText('11', scale * 0.5 + 5, scale * 3.6 );
-  ctx.fillText('10', scale * 0.5 + 5, scale * 4.6 );
 }

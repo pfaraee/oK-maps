@@ -3891,6 +3891,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.decToBin = decToBin;
+exports.toGrayCode = toGrayCode;
 exports.eliminateTerms = eliminateTerms;
 exports.solveGroup = solveGroup;
 exports.binaryTermToVarTerm = binaryTermToVarTerm;
@@ -3910,6 +3911,13 @@ function decToBin(num, vars) {
   var pad = '0'.repeat(vars); // its just 5 0's for the max var nums
 
   return pad.substring(0, pad.length - num.length) + num;
+}
+
+function toGrayCode(n) {
+  if (n < 0) {
+    throw new RangeError("cannot convert negative numbers to gray code");
+  }
+  return n ^ n >>> 1;
 }
 
 /*
@@ -5257,7 +5265,7 @@ var expansionType = 1;
 
 var cellArray = new _CellArray2.default(numVars, expansionType);
 
-draw3varkmap();
+drawMap(numVars, scale);
 
 function getMinterms() {
   var temp = [];
@@ -5315,24 +5323,7 @@ function initializeFormulaBox() {
 
       resetkmap();
 
-      switch (numVars) {
-        case 3:
-          draw3varkmap();
-          break;
-        case 4:
-          draw4varkmap();
-          console.log('4 vars');
-          break;
-        case 5:
-          console.log('5 vars');
-          break;
-        case 6:
-          console.log('6 vars');
-          break;
-        default:
-          console.log('You did it Professor.');
-          break;
-      }
+      drawMap(numVars, scale);
 
       var data = JSON.parse(event.target.dataset.formula);
 
@@ -5351,7 +5342,7 @@ noUiSlider.create(slider, {
   step: 1,
   range: {
     'min': [3],
-    'max': [4]
+    'max': [6]
   },
   pips: {
     mode: 'steps',
@@ -5492,17 +5483,7 @@ slider.noUiSlider.on('update', function () {
   li.innerHTML = 'F =';
   formulaBox.appendChild(li);
 
-  switch (numVars) {
-    case 3:
-      draw3varkmap();
-      break;
-    case 4:
-      draw4varkmap();
-      break;
-    default:
-      console.log('You did it Professor.');
-      break;
-  }
+  drawMap(numVars, scale);
 
   $('input:radio').click(function () {
     initializeFormulaBox();
@@ -5515,24 +5496,7 @@ function render() {
   //resets the canvas
   resetkmap();
 
-  switch (numVars) {
-    case 3:
-      draw3varkmap();
-      break;
-    case 4:
-      draw4varkmap();
-      console.log('4 vars');
-      break;
-    case 5:
-      console.log('5 vars');
-      break;
-    case 6:
-      console.log('6 vars');
-      break;
-    default:
-      console.log('You did it Professor.');
-      break;
-  }
+  drawMap(numVars, scale);
 
   redrawMap();
 }
@@ -5581,114 +5545,63 @@ function redrawMap() {
   drawer.drawTerms(ctx, scale, cellArray.cells);
 }
 
-function draw4varkmap() {
-  ctx.beginPath();
+function drawMap(vars, scale) {
+  var xVars = vars - Math.floor(vars / 2) - vars % 2;
+  var yVars = vars - Math.floor(vars / 2);
 
-  ctx.moveTo(0, 0);
-  ctx.lineTo(scale, scale); //
+  var xLength = Math.pow(2, xVars);
+  var yLength = Math.pow(2, yVars);
 
-  ctx.moveTo(scale, scale);
-  ctx.lineTo(scale, c.width); //
+  scale /= yLength / 4;
+  var fontSize = scale / 4;
+  ctx.font = fontSize + 'pt Roboto';
 
-  ctx.moveTo(scale * 2, scale);
-  ctx.lineTo(scale * 2, c.width); //
+  drawGrid(xLength, yLength, scale);
 
-  ctx.moveTo(scale, scale);
-  ctx.lineTo(c.width, scale); //
+  // Axis Labels
+  var xStr = "";
+  var yStr = "";
+  for (var i = 0; i < xVars; i++) {
+    xStr += String.fromCharCode(65 + i);
+  }for (var _i4 = 0; _i4 < yVars; _i4++) {
+    yStr += String.fromCharCode(65 + xVars + _i4);
+  }ctx.fillText(xStr, scale * 3 / 4 - ctx.measureText(xStr).width / 2, scale / 4 + fontSize / 2);
+  ctx.fillText(yStr, scale / 4 - ctx.measureText(yStr).width / 2 + 2, scale * 3 / 4 + fontSize / 2);
 
-  ctx.moveTo(scale * 3, scale);
-  ctx.lineTo(scale * 3, c.width);
+  // Axis numbers
+  for (var _i5 = 0; _i5 < xLength; _i5++) {
+    var str = (0, _BinaryFunctions.decToBin)((0, _BinaryFunctions.toGrayCode)(_i5), xVars);
+    var strW = ctx.measureText(str).width;
 
-  ctx.moveTo(scale * 4, scale);
-  ctx.lineTo(scale * 4, c.width); //
+    ctx.fillText(str, scale * (_i5 + 1) + scale / 2 - strW / 2, scale - strW / 2);
+  }
 
-  ctx.moveTo(scale * 5, scale);
-  ctx.lineTo(scale * 5, c.width); //
+  for (var _i6 = 0; _i6 < yLength; _i6++) {
+    var _str = (0, _BinaryFunctions.decToBin)((0, _BinaryFunctions.toGrayCode)(_i6), yVars);
+    var _strW = ctx.measureText(_str).width;
 
-  ctx.moveTo(scale, scale * 2);
-  ctx.lineTo(c.width, scale * 2);
-
-  ctx.moveTo(scale, scale * 3);
-  ctx.lineTo(c.width, scale * 3);
-
-  ctx.moveTo(scale, scale * 4);
-  ctx.lineTo(c.width, scale * 4);
-
-  ctx.moveTo(scale, scale * 5);
-  ctx.lineTo(c.width, scale * 5);
-
-  ctx.stroke();
-
-  //draws vars and numbers
-  ctx.font = '20pt Roboto';
-
-  //vars
-  ctx.fillText('AB', scale * 0.6, scale * 0.4);
-
-  ctx.fillText('CD', scale * 0.1, scale * 0.9);
-
-  //numbers
-  ctx.fillText('00', scale * 1.5 - 5, scale - 5);
-  ctx.fillText('01', scale * 2.5 - 5, scale - 5);
-  ctx.fillText('11', scale * 3.5 - 5, scale - 5);
-  ctx.fillText('10', scale * 4.5 - 5, scale - 5);
-
-  ctx.fillText('00', scale * 0.5 + 5, scale * 1.6);
-  ctx.fillText('01', scale * 0.5 + 5, scale * 2.6);
-  ctx.fillText('11', scale * 0.5 + 5, scale * 3.6);
-  ctx.fillText('10', scale * 0.5 + 5, scale * 4.6);
+    ctx.fillText(_str, scale / 2 - fontSize / 2, scale * (_i6 + 1) + scale / 2 + fontSize / 2);
+  }
 }
 
-function draw3varkmap() {
-  //draws table
+function drawGrid(width, height, scale) {
   ctx.beginPath();
 
   ctx.moveTo(0, 0);
   ctx.lineTo(scale, scale);
 
-  ctx.moveTo(scale, scale);
-  ctx.lineTo(scale, c.width);
+  for (var i = 0; i < width + 1; i++) {
+    ctx.moveTo(scale * (i + 1), scale);
+    ctx.lineTo(scale * (i + 1), scale * (height + 1));
+  }
 
-  ctx.moveTo(scale * 2, scale);
-  ctx.lineTo(scale * 2, c.width);
-
-  ctx.moveTo(scale, scale);
-  ctx.lineTo(scale * 3, scale);
-
-  ctx.moveTo(scale * 3, scale);
-  ctx.lineTo(scale * 3, c.width);
-
-  ctx.moveTo(scale, scale * 2);
-  ctx.lineTo(scale * 3, scale * 2);
-
-  ctx.moveTo(scale, scale * 3);
-  ctx.lineTo(scale * 3, scale * 3);
-
-  ctx.moveTo(scale, scale * 4);
-  ctx.lineTo(scale * 3, scale * 4);
-
-  ctx.moveTo(scale, scale * 5);
-  ctx.lineTo(scale * 3, scale * 5);
+  for (var _i7 = 0; _i7 < height + 1; _i7++) {
+    ctx.moveTo(scale, scale * (_i7 + 1));
+    ctx.lineTo(scale * (width + 1), scale * (_i7 + 1));
+  }
 
   ctx.stroke();
-
-  //draws vars and numbers
-  ctx.font = '20pt Roboto';
-
-  //vars
-  ctx.fillText('A', scale * 0.6, scale * 0.4);
-
-  ctx.fillText('BC', scale * 0.1, scale * 0.9);
-
-  //numbers
-  ctx.fillText('0', scale * 1.5 - 5, scale - 5);
-  ctx.fillText('1', scale * 2.5 - 5, scale - 5);
-
-  ctx.fillText('00', scale * 0.5 + 5, scale * 1.6);
-  ctx.fillText('01', scale * 0.5 + 5, scale * 2.6);
-  ctx.fillText('11', scale * 0.5 + 5, scale * 3.6);
-  ctx.fillText('10', scale * 0.5 + 5, scale * 4.6);
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_b399274.js","/")
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_8114c1d7.js","/")
 },{"./classes/BinaryFunctions":6,"./classes/CellArray":8,"./classes/DrawingFunctions":9,"buffer":2,"pBGvAp":5}]},{},[12])

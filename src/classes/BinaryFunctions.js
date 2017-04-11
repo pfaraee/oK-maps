@@ -13,6 +13,13 @@ export function decToBin(num, vars) {
   return pad.substring(0, pad.length - num.length) + num;
 }
 
+export function toGrayCode(n) {
+    if (n < 0) {
+        throw new RangeError("cannot convert negative numbers to gray code");
+    }
+    return n ^ (n >>> 1);
+}
+
 /*
 * Returns the result of applying Elimination Theorem to the two terms
 * @param {string} term1 - the first term
