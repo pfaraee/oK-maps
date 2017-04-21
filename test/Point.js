@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import Point from '../src/classes/Point';
+import Point from '../src/modules/Point';
 
 describe('Point Class', function () {
   describe('constructor(x, y)', function() {

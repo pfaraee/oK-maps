@@ -1,4 +1,69 @@
 import chroma from 'chroma-js';
+import { decToBin, toGrayCode } from './BinaryFunctions';
+
+export function drawMap(ctx, vars, scale) {
+  // amount of vars for each Axis
+  let xVars = vars - Math.floor(vars / 2) - (vars % 2);
+  let yVars = vars - Math.floor(vars / 2);
+
+  // cell length for each Axis
+  let xLength = Math.pow(2, xVars);
+  let yLength = Math.pow(2, yVars);
+
+  scale /= (yLength/4);
+  let fontSize = scale / 4;
+  ctx.font = `${fontSize}pt Roboto`;
+
+  drawGrid(ctx, xLength, yLength, scale);
+
+  // Axis Labels
+  let xStr = "";
+  let yStr = "";
+  for(let i = 0; i < xVars; i++) xStr += String.fromCharCode(65 + i);
+  for(let i = 0; i < yVars; i++) yStr += String.fromCharCode(65 + xVars + i);
+
+  ctx.fillText(xStr, scale * 3 / 4 - ctx.measureText(xStr).width / 2, scale / 4 + fontSize / 2);
+  ctx.fillText(yStr, scale / 4 - ctx.measureText(yStr).width / 2 + 2, scale * 3 / 4 + fontSize / 2);
+
+  // Axis numbers
+  for(let i = 0; i < xLength; i++) {
+    let str = decToBin(toGrayCode(i), xVars);
+    let strW = ctx.measureText(str).width;
+
+    ctx.fillText(str, scale * (i+1) + scale / 2 - (strW / 2), scale - (strW / 2));
+  }
+
+  for(let i = 0; i < yLength; i++) {
+    let str = decToBin(toGrayCode(i), yVars);
+    let strW = ctx.measureText(str).width;
+
+    ctx.fillText(str, scale / 2 - fontSize / 2, scale * (i + 1) + scale / 2 + (fontSize / 2));
+  }
+}
+
+function drawGrid(ctx, width, height, scale) {
+  ctx.beginPath();
+
+  ctx.moveTo(0,0);
+  ctx.lineTo(scale, scale);
+
+  for (let i = 0; i < width + 1; i ++) {
+    ctx.moveTo(scale * (i+1), scale);
+    ctx.lineTo(scale * (i+1), scale * (height + 1));
+  }
+
+  for (let i = 0; i < height + 1; i++) {
+    ctx.moveTo(scale, scale * (i+1));
+    ctx.lineTo(scale * (width + 1), scale * (i+1));
+  }
+
+  ctx.stroke();
+}
+
+export function reset(canvas) {
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.width);
+}
 
 /**
  * Draws every group onto the kmap
@@ -52,7 +117,7 @@ export function drawGroups(ctx, scale, groups) {
         continue;
         break;
       default:
-        console.log('error');
+        console.log('error: ' + groups[i].type);
         break;
     }
 

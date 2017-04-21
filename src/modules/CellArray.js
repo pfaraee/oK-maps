@@ -416,9 +416,9 @@ export default class CellArray {
   }
 
   /**
-   * returns if the formula is unique to the array of formulas
-   * @param {Array.Groups} formulas - an array of simplified groups
-   * @return {boolean} whether the group is unique or not
+   * returns all possible formulas
+   * @param {Array.Groups} groups - an array of marked groups
+   * @return {Array.Groups} array of possible groupings
    */
   getPossibleFormulas(groups) {
     let temp = groups.slice();

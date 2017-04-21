@@ -1,16 +1,15 @@
-import CellArray from './classes/CellArray';
-import * as drawer from './classes/DrawingFunctions';
-import { getExpansionFormula, decToBin, toGrayCode } from './classes/BinaryFunctions';
+import CellArray from './modules/CellArray';
+import * as Renderer from './modules/Renderer';
+import { getExpansionFormula, decToBin, toGrayCode } from './modules/BinaryFunctions';
 
 var c = document.getElementById('canvas');
 var ctx = c.getContext('2d');
 
-// c.height = window.innerHeight / 8 * 5;
-// c.width = window.innerHeight / 8 * 5;
-
 var scale = c.width / 5 //scale of the cells;
 
-// fixes problem with browsers making my canvas look bad
+// ----------------------------------------
+// Fixes problem with bad scaling on chrome
+// ----------------------------------------
 var devicePixelRatio = window.devicePixelRatio || 1,
       backingStoreRatio = ctx.webkitBackingStorePixelRatio ||
                           ctx.mozBackingStorePixelRatio ||
@@ -28,88 +27,41 @@ c.height = oldHeight * ratio + 1;
 c.style.width = oldWidth + 'px';
 c.style.height = oldHeight + 'px';
 
-// now scale the context to counter
-// the fact that we've manually scaled
-// our c element
 ctx.scale(ratio, ratio);
 
-//kmap stuff
+// -------------------
+// Initial K-map setup
+// -------------------
 var minterms = [];
 var numVars = 3;
 var expansionType = 1;
 
+Renderer.drawMap(ctx, numVars, scale);
 var cellArray = new CellArray(numVars, expansionType);
-
-drawMap(numVars, scale);
-
-function getMinterms() {
-  var temp = [];
-  //TODO: change it to work for more minterms instead of hardcoding the 8
-  //gets minterms from html form
-  for(let i = 0; i < Math.pow(2, numVars); i++) {
-    var formGroup = document.getElementsByName('group' + i);
-
-    for(let j = 0; j < formGroup.length; j++) {
-      if(formGroup[j].checked == true) {
-        temp[i] = formGroup[j].value;
-      }
-    }
-  }
-
-  return temp;
-}
-
-function resetkmap() {
-  ctx.clearRect(0, 0, c.width, c.width);
-}
-
-var slider = document.getElementById('num-vars');
-var expansionTypeSwitch = document.getElementById('expansionType');
-
-expansionTypeSwitch.addEventListener('change', function (event) {
-  expansionType = Number(!event.target.checked);
-  cellArray.expansionType = expansionType;
-  render();
-});
 
 document.addEventListener('keypress', function (event) {
   if(event.keyCode == 13) {
-    render();
+    renderMap();
   }
 });
 
 var formulaBox = document.getElementById('expansion');
 
-function initializeFormulaBox() {
-  for (let i = 0; i < formulaBox.childNodes.length; i++) {
-    formulaBox.childNodes[i].addEventListener('click', function (event) {
-      console.log('hello');
-      var renderFormula;
+// -----------------------------
+// Sets up expansion type switch
+// -----------------------------
+var expansionTypeSwitch = document.getElementById('expansionType');
 
-      for(let i = 0; i < formulaBox.childNodes.length; i++) {
-        if(!formulaBox.childNodes[i].className || formulaBox.childNodes[i].className.includes('active')) {
-          formulaBox.childNodes[i].className = 'collection-item';
-        }
-      }
+expansionTypeSwitch.addEventListener('change', function (event) {
+  expansionType = Number(!event.target.checked);
+  cellArray.expansionType = expansionType;
+  renderMap();
+});
 
-      event.target.className += ' active';
-
-      if(!event.target.dataset.formula) return;
-
-      resetkmap();
-
-      drawMap(numVars, scale);
-
-      let data = JSON.parse(event.target.dataset.formula);
-
-      renderFormula = getExpansionFormula(data, numVars, cellArray.expansionType);
-      console.log(renderFormula);
-
-      drawer.drawGroups(ctx, scale, data);
-      drawer.drawTerms(ctx, scale, cellArray.cells);
-    });
-  }
-}
+// ----------------------------
+// Slider and truth table setup
+// ----------------------------
+var slider = document.getElementById('num-vars');
 
 noUiSlider.create(slider, {
  start: 3,
@@ -249,8 +201,9 @@ slider.noUiSlider.on('update', function () {
   cellArray = new CellArray(numVars, expansionType);
 
   //rewdraws map
-  resetkmap();
+  renderMap();
 
+  // default state of formula box
   var formulaBox = document.getElementById('expansion');
   formulaBox.innerHTML = '';
   let li = document.createElement('li');
@@ -258,41 +211,19 @@ slider.noUiSlider.on('update', function () {
   li.innerHTML = 'F =';
   formulaBox.appendChild(li);
 
-  drawMap(numVars, scale);
-
+  // rerenders map every time truth tables changes
   $('input:radio').click(function() {
-    initializeFormulaBox();
-    render();
+    renderMap();
   });
 });
 
-function render() {
-  //grabs minterms on enter key
-  //resets the canvas
-  resetkmap();
+function renderMap() {
+  Renderer.reset(canvas);
+  Renderer.drawMap(ctx, numVars, scale);
 
-  drawMap(numVars, scale);
+  // resets map and returns formulas
+  let formulas = calculateMap();
 
-  redrawMap();
-}
-
-function redrawMap() {
-  //resets cell array
-  cellArray.reset();
-
-  // marks the values from the truth table
-  minterms = getMinterms();
-  cellArray.mark(minterms);
-
-  //TODO: make simplify groups just part of the get groups function
-  // marks the groups
-  let groups = cellArray.getGroups();
-  // console.log(groups);
-  groups = cellArray.markPrimeImplicants(groups);
-  // groups = cellArray.simplifyGroups(groups);
-
-  // Add formulas to box
-  let formulas = cellArray.getPossibleFormulas(groups);
   formulaBox.innerHTML = '';
 
   for(let i = 0; i < formulas.length; i ++) {
@@ -310,69 +241,68 @@ function redrawMap() {
     formulaBox.appendChild(li);
   }
 
-  initializeFormulaBox();
+  initializeFormulaBox(formulaBox);
 
-  // var groups = cellArray.getGroups();
+  Renderer.drawGroups(ctx, scale, formulas[0]);
 
-  // console.log(groups);
-
-  drawer.drawGroups(ctx, scale, formulas[0]);
-  drawer.drawTerms(ctx, scale, cellArray.cells);
+  // Terms rendered last so they are not covered by groups
+  Renderer.drawTerms(ctx, scale, cellArray.cells);
 }
 
-function drawMap(vars, scale) {
-  let xVars = vars - Math.floor(vars / 2) - (vars % 2);
-  let yVars = vars - Math.floor(vars / 2);
+function calculateMap() {
+  //resets cell array
+  cellArray.reset();
 
-  let xLength = Math.pow(2, xVars);
-  let yLength = Math.pow(2, yVars);
+  // marks the values from the truth table
+  minterms = getMinterms();
+  cellArray.mark(minterms);
 
-  scale /= (yLength/4);
-  let fontSize = scale / 4;
-  ctx.font = `${fontSize}pt Roboto`;
+  // marks the groups
+  let groups = cellArray.getGroups();
 
-  drawGrid(xLength, yLength, scale);
+  groups = cellArray.markPrimeImplicants(groups);
 
-  // Axis Labels
-  let xStr = "";
-  let yStr = "";
-  for(let i = 0; i < xVars; i++) xStr += String.fromCharCode(65 + i);
-  for(let i = 0; i < yVars; i++) yStr += String.fromCharCode(65 + xVars + i);
-
-  ctx.fillText(xStr, scale * 3 / 4 - ctx.measureText(xStr).width / 2, scale / 4 + fontSize / 2);
-  ctx.fillText(yStr, scale / 4 - ctx.measureText(yStr).width / 2 + 2, scale * 3 / 4 + fontSize / 2);
-
-  // Axis numbers
-  for(let i = 0; i < xLength; i++) {
-    let str = decToBin(toGrayCode(i), xVars);
-    let strW = ctx.measureText(str).width;
-
-    ctx.fillText(str, scale * (i+1) + scale / 2 - (strW / 2), scale - (strW / 2));
-  }
-
-  for(let i = 0; i < yLength; i++) {
-    let str = decToBin(toGrayCode(i), yVars);
-    let strW = ctx.measureText(str).width;
-
-    ctx.fillText(str, scale / 2 - fontSize / 2, scale * (i + 1) + scale / 2 + (fontSize / 2));
-  }
+  return cellArray.getPossibleFormulas(groups);
 }
 
-function drawGrid(width, height, scale) {
-  ctx.beginPath();
+function getMinterms() {
+  var temp = [];
 
-  ctx.moveTo(0,0);
-  ctx.lineTo(scale, scale);
+  for(let i = 0; i < Math.pow(2, numVars); i++) {
+    var formGroup = document.getElementsByName('group' + i);
 
-  for (let i = 0; i < width + 1; i ++) {
-    ctx.moveTo(scale * (i+1), scale);
-    ctx.lineTo(scale * (i+1), scale * (height + 1));
+    for(let j = 0; j < formGroup.length; j++) {
+      if(formGroup[j].checked == true) {
+        temp[i] = formGroup[j].value;
+      }
+    }
   }
 
-  for (let i = 0; i < height + 1; i++) {
-    ctx.moveTo(scale, scale * (i+1));
-    ctx.lineTo(scale * (width + 1), scale * (i+1));
-  }
+  return temp;
+}
 
-  ctx.stroke();
+// Initializes formulas with
+function initializeFormulaBox(formulaBox) {
+  for (let i = 0; i < formulaBox.childNodes.length; i++) {
+    formulaBox.childNodes[i].addEventListener('click', function (event) {
+      for(let i = 0; i < formulaBox.childNodes.length; i++) {
+        if(!formulaBox.childNodes[i].className || formulaBox.childNodes[i].className.includes('active')) {
+          formulaBox.childNodes[i].className = 'collection-item';
+        }
+      }
+
+      event.target.className += ' active';
+
+      if(!event.target.dataset.formula) return;
+
+      Renderer.reset(canvas);
+
+      Renderer.drawMap(ctx, numVars, scale);
+
+      let data = JSON.parse(event.target.dataset.formula);
+
+      Renderer.drawGroups(ctx, scale, data);
+      Renderer.drawTerms(ctx, scale, cellArray.cells);
+    });
+  }
 }

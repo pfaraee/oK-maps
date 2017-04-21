@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import Cell from '../src/classes/Cell';
-import CellArray from '../src/classes/CellArray';
-import { decToBin, eliminateTerms, solveGroup, binaryTermToVarTerm, getExpansionFormula } from '../src/classes/BinaryFunctions';
+import Cell from '../src/modules/Cell';
+import CellArray from '../src/modules/CellArray';
+import { decToBin, eliminateTerms, solveGroup, binaryTermToVarTerm, getExpansionFormula } from '../src/modules/BinaryFunctions';
 
 describe('Binary Functions', function () {
   describe('decToBin(num, vars)', function () {

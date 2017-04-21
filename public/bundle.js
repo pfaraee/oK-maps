@@ -3887,6 +3887,326 @@ process.chdir = function (dir) {
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
 
+var _CellArray = require('./modules/CellArray');
+
+var _CellArray2 = _interopRequireDefault(_CellArray);
+
+var _Renderer = require('./modules/Renderer');
+
+var Renderer = _interopRequireWildcard(_Renderer);
+
+var _BinaryFunctions = require('./modules/BinaryFunctions');
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var c = document.getElementById('canvas');
+var ctx = c.getContext('2d');
+
+var scale = c.width / 5; //scale of the cells;
+
+// ----------------------------------------
+// Fixes problem with bad scaling on chrome
+// ----------------------------------------
+var devicePixelRatio = window.devicePixelRatio || 1,
+    backingStoreRatio = ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1,
+    ratio = devicePixelRatio / backingStoreRatio;
+
+var oldWidth = c.width;
+var oldHeight = c.height;
+
+c.width = oldWidth * ratio + 1;
+c.height = oldHeight * ratio + 1;
+
+c.style.width = oldWidth + 'px';
+c.style.height = oldHeight + 'px';
+
+ctx.scale(ratio, ratio);
+
+// -------------------
+// Initial K-map setup
+// -------------------
+var minterms = [];
+var numVars = 3;
+var expansionType = 1;
+
+Renderer.drawMap(ctx, numVars, scale);
+var cellArray = new _CellArray2.default(numVars, expansionType);
+
+document.addEventListener('keypress', function (event) {
+  if (event.keyCode == 13) {
+    renderMap();
+  }
+});
+
+var formulaBox = document.getElementById('expansion');
+
+// -----------------------------
+// Sets up expansion type switch
+// -----------------------------
+var expansionTypeSwitch = document.getElementById('expansionType');
+
+expansionTypeSwitch.addEventListener('change', function (event) {
+  expansionType = Number(!event.target.checked);
+  cellArray.expansionType = expansionType;
+  renderMap();
+});
+
+// ----------------------------
+// Slider and truth table setup
+// ----------------------------
+var slider = document.getElementById('num-vars');
+
+noUiSlider.create(slider, {
+  start: 3,
+  connect: [true, false],
+  step: 1,
+  range: {
+    'min': [3],
+    'max': [6]
+  },
+  pips: {
+    mode: 'steps',
+    density: 30
+  }
+});
+
+slider.noUiSlider.on('update', function () {
+  var truthTable = document.getElementById('truth-table');
+
+  while (truthTable.firstChild) {
+    truthTable.removeChild(truthTable.firstChild);
+  }
+
+  var tbl = document.createElement('table');
+
+  var thead = document.createElement('thead');
+
+  var superHeadRow = document.createElement('tr');
+
+  var input = document.createElement('th');
+  input.appendChild(document.createTextNode('Input'));
+  input.setAttribute('colspan', slider.noUiSlider.get());
+
+  var output = document.createElement('th');
+  output.setAttribute('colspan', 3);
+  output.appendChild(document.createTextNode('Output'));
+
+  var number = document.createElement('th');
+  number.setAttribute('colspan', 1);
+
+  superHeadRow.appendChild(number);
+  superHeadRow.appendChild(input);
+  superHeadRow.appendChild(output);
+
+  thead.appendChild(superHeadRow);
+
+  var tr = document.createElement('tr');
+  // Creates headers for the truth table
+  var numTh = document.createElement('th');
+  numTh.appendChild(document.createTextNode('#'));
+
+  tr.appendChild(numTh);
+  for (var i = 1; i < slider.noUiSlider.get() + 1; i++) {
+    var th = document.createElement('th');
+    th.appendChild(document.createTextNode(String.fromCharCode(65 + i - 1)));
+    tr.appendChild(th);
+  }
+
+  var off = document.createElement('th');
+  off.appendChild(document.createTextNode('0'));
+  var on = document.createElement('th');
+  on.appendChild(document.createTextNode('1'));
+  var dontCare = document.createElement('th');
+  dontCare.appendChild(document.createTextNode('X'));
+
+  tr.appendChild(off);
+  tr.appendChild(on);
+  tr.appendChild(dontCare);
+
+  thead.appendChild(tr);
+  tbl.appendChild(thead);
+
+  var tbody = document.createElement('tbody');
+  for (var _i = 0; _i < Math.pow(2, slider.noUiSlider.get()); _i++) {
+    var _tr = document.createElement('tr');
+
+    var numTd = document.createElement('td');
+    numTd.appendChild(document.createTextNode(_i));
+    _tr.appendChild(numTd);
+
+    var num = '' + _i.toString(2);
+    var pad = '0'.repeat(slider.noUiSlider.get()); // its just 5 0's for the max var nums
+    var bin = pad.substring(0, pad.length - num.length) + num;
+
+    var binArray = bin.split('');
+
+    for (var _i2 = 0; _i2 < binArray.length; _i2++) {
+      var _td = document.createElement('td');
+      _td.appendChild(document.createTextNode(binArray[_i2]));
+      _tr.appendChild(_td);
+    }
+
+    var td = document.createElement('td');
+    var input1 = document.createElement('input');
+    input1.setAttribute('name', 'group' + _i);
+    input1.setAttribute('type', 'radio');
+    input1.setAttribute('id', 'OFF' + _i);
+    input1.setAttribute('value', '0');
+    input1.setAttribute('checked', 'checked');
+    var label1 = document.createElement('label');
+    label1.setAttribute('for', 'OFF' + _i);
+    td.appendChild(input1);
+    td.appendChild(label1);
+
+    var td2 = document.createElement('td');
+    var input2 = document.createElement('input');
+    input2.setAttribute('name', 'group' + _i);
+    input2.setAttribute('type', 'radio');
+    input2.setAttribute('id', 'ON' + _i);
+    input2.setAttribute('value', '1');
+    var label2 = document.createElement('label');
+    label2.setAttribute('for', 'ON' + _i);
+    td2.appendChild(input2);
+    td2.appendChild(label2);
+
+    var td3 = document.createElement('td');
+    var input3 = document.createElement('input');
+    input3.setAttribute('name', 'group' + _i);
+    input3.setAttribute('type', 'radio');
+    input3.setAttribute('id', 'DONTCARE' + _i);
+    input3.setAttribute('value', 'X');
+    var label3 = document.createElement('label');
+    label3.setAttribute('for', 'DONTCARE' + _i);
+    td3.appendChild(input3);
+    td3.appendChild(label3);
+
+    _tr.appendChild(td);
+    _tr.appendChild(td2);
+    _tr.appendChild(td3);
+
+    tbody.appendChild(_tr);
+  }
+
+  tbl.appendChild(tbody);
+  truthTable.appendChild(tbl);
+
+  numVars = Number(slider.noUiSlider.get());
+  cellArray = new _CellArray2.default(numVars, expansionType);
+
+  //rewdraws map
+  renderMap();
+
+  // default state of formula box
+  var formulaBox = document.getElementById('expansion');
+  formulaBox.innerHTML = '';
+  var li = document.createElement('li');
+  li.className = 'collection-item active';
+  li.innerHTML = 'F =';
+  formulaBox.appendChild(li);
+
+  // rerenders map every time truth tables changes
+  $('input:radio').click(function () {
+    renderMap();
+  });
+});
+
+function renderMap() {
+  Renderer.reset(canvas);
+  Renderer.drawMap(ctx, numVars, scale);
+
+  // resets map and returns formulas
+  var formulas = calculateMap();
+
+  formulaBox.innerHTML = '';
+
+  for (var i = 0; i < formulas.length; i++) {
+    var li = document.createElement('li');
+
+    li.className = 'collection-item';
+    if (i === 0) li.className += ' active';
+
+    li.dataset.formula = JSON.stringify(formulas[i]);
+
+    var formula = (0, _BinaryFunctions.getExpansionFormula)(formulas[i], numVars, cellArray.expansionType);
+
+    li.appendChild(document.createTextNode(formula));
+
+    formulaBox.appendChild(li);
+  }
+
+  initializeFormulaBox(formulaBox);
+
+  Renderer.drawGroups(ctx, scale, formulas[0]);
+
+  // Terms rendered last so they are not covered by groups
+  Renderer.drawTerms(ctx, scale, cellArray.cells);
+}
+
+function calculateMap() {
+  //resets cell array
+  cellArray.reset();
+
+  // marks the values from the truth table
+  minterms = getMinterms();
+  cellArray.mark(minterms);
+
+  // marks the groups
+  var groups = cellArray.getGroups();
+
+  groups = cellArray.markPrimeImplicants(groups);
+
+  return cellArray.getPossibleFormulas(groups);
+}
+
+function getMinterms() {
+  var temp = [];
+
+  for (var i = 0; i < Math.pow(2, numVars); i++) {
+    var formGroup = document.getElementsByName('group' + i);
+
+    for (var j = 0; j < formGroup.length; j++) {
+      if (formGroup[j].checked == true) {
+        temp[i] = formGroup[j].value;
+      }
+    }
+  }
+
+  return temp;
+}
+
+// Initializes formulas with
+function initializeFormulaBox(formulaBox) {
+  for (var i = 0; i < formulaBox.childNodes.length; i++) {
+    formulaBox.childNodes[i].addEventListener('click', function (event) {
+      for (var _i3 = 0; _i3 < formulaBox.childNodes.length; _i3++) {
+        if (!formulaBox.childNodes[_i3].className || formulaBox.childNodes[_i3].className.includes('active')) {
+          formulaBox.childNodes[_i3].className = 'collection-item';
+        }
+      }
+
+      event.target.className += ' active';
+
+      if (!event.target.dataset.formula) return;
+
+      Renderer.reset(canvas);
+
+      Renderer.drawMap(ctx, numVars, scale);
+
+      var data = JSON.parse(event.target.dataset.formula);
+
+      Renderer.drawGroups(ctx, scale, data);
+      Renderer.drawTerms(ctx, scale, cellArray.cells);
+    });
+  }
+}
+
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_47fccc5f.js","/")
+},{"./modules/BinaryFunctions":7,"./modules/CellArray":9,"./modules/Renderer":12,"buffer":2,"pBGvAp":5}],7:[function(require,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+'use strict';
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -4059,8 +4379,8 @@ function getMaxtermExpansionFormula(groups, vars) {
   return formula;
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/classes/BinaryFunctions.js","/classes")
-},{"buffer":2,"pBGvAp":5}],7:[function(require,module,exports){
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/BinaryFunctions.js","/modules")
+},{"buffer":2,"pBGvAp":5}],8:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
 
@@ -4101,8 +4421,8 @@ var Cell = function (_Point) {
 
 exports.default = Cell;
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/classes/Cell.js","/classes")
-},{"./Point":11,"buffer":2,"pBGvAp":5}],8:[function(require,module,exports){
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/Cell.js","/modules")
+},{"./Point":11,"buffer":2,"pBGvAp":5}],9:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
 
@@ -4550,9 +4870,9 @@ var CellArray = function () {
     }
 
     /**
-     * returns if the formula is unique to the array of formulas
-     * @param {Array.Groups} formulas - an array of simplified groups
-     * @return {boolean} whether the group is unique or not
+     * returns all possible formulas
+     * @param {Array.Groups} groups - an array of marked groups
+     * @return {Array.Groups} array of possible groupings
      */
 
   }, {
@@ -4647,14 +4967,72 @@ var CellArray = function () {
 
 exports.default = CellArray;
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/classes/CellArray.js","/classes")
-},{"./Cell":7,"./Group":10,"./Point":11,"buffer":2,"pBGvAp":5}],9:[function(require,module,exports){
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/CellArray.js","/modules")
+},{"./Cell":8,"./Group":10,"./Point":11,"buffer":2,"pBGvAp":5}],10:[function(require,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/** Class representing a group. */
+var Group =
+/**
+   * Create a dot.
+   * @param {Array.Point} cellArray - array holding all the groups points
+   * @param {string} type - the type of group it is
+   */
+function Group(cellArray, type) {
+  _classCallCheck(this, Group);
+
+  this.cellArray = cellArray;
+  this.type = type;
+  this.pImp = false;
+};
+
+exports.default = Group;
+
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/Group.js","/modules")
+},{"buffer":2,"pBGvAp":5}],11:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/** Class representing a point. */
+var Point =
+/**
+ * Create a point.
+ * @param {number} x - The x value.
+ * @param {number} y - The y value.
+ */
+function Point(x, y) {
+  _classCallCheck(this, Point);
+
+  if (x < 0 || y < 0) throw new Error('Coordinates must be positive');
+  this.x = x;
+  this.y = y;
+};
+
+exports.default = Point;
+
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/Point.js","/modules")
+},{"buffer":2,"pBGvAp":5}],12:[function(require,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.drawMap = drawMap;
+exports.reset = reset;
 exports.drawGroups = drawGroups;
 exports.drawTerms = drawTerms;
 exports.mark = mark;
@@ -4664,7 +5042,74 @@ var _chromaJs = require('chroma-js');
 
 var _chromaJs2 = _interopRequireDefault(_chromaJs);
 
+var _BinaryFunctions = require('./BinaryFunctions');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function drawMap(ctx, vars, scale) {
+  // amount of vars for each Axis
+  var xVars = vars - Math.floor(vars / 2) - vars % 2;
+  var yVars = vars - Math.floor(vars / 2);
+
+  // cell length for each Axis
+  var xLength = Math.pow(2, xVars);
+  var yLength = Math.pow(2, yVars);
+
+  scale /= yLength / 4;
+  var fontSize = scale / 4;
+  ctx.font = fontSize + 'pt Roboto';
+
+  drawGrid(ctx, xLength, yLength, scale);
+
+  // Axis Labels
+  var xStr = "";
+  var yStr = "";
+  for (var i = 0; i < xVars; i++) {
+    xStr += String.fromCharCode(65 + i);
+  }for (var _i = 0; _i < yVars; _i++) {
+    yStr += String.fromCharCode(65 + xVars + _i);
+  }ctx.fillText(xStr, scale * 3 / 4 - ctx.measureText(xStr).width / 2, scale / 4 + fontSize / 2);
+  ctx.fillText(yStr, scale / 4 - ctx.measureText(yStr).width / 2 + 2, scale * 3 / 4 + fontSize / 2);
+
+  // Axis numbers
+  for (var _i2 = 0; _i2 < xLength; _i2++) {
+    var str = (0, _BinaryFunctions.decToBin)((0, _BinaryFunctions.toGrayCode)(_i2), xVars);
+    var strW = ctx.measureText(str).width;
+
+    ctx.fillText(str, scale * (_i2 + 1) + scale / 2 - strW / 2, scale - strW / 2);
+  }
+
+  for (var _i3 = 0; _i3 < yLength; _i3++) {
+    var _str = (0, _BinaryFunctions.decToBin)((0, _BinaryFunctions.toGrayCode)(_i3), yVars);
+    var _strW = ctx.measureText(_str).width;
+
+    ctx.fillText(_str, scale / 2 - fontSize / 2, scale * (_i3 + 1) + scale / 2 + fontSize / 2);
+  }
+}
+
+function drawGrid(ctx, width, height, scale) {
+  ctx.beginPath();
+
+  ctx.moveTo(0, 0);
+  ctx.lineTo(scale, scale);
+
+  for (var i = 0; i < width + 1; i++) {
+    ctx.moveTo(scale * (i + 1), scale);
+    ctx.lineTo(scale * (i + 1), scale * (height + 1));
+  }
+
+  for (var _i4 = 0; _i4 < height + 1; _i4++) {
+    ctx.moveTo(scale, scale * (_i4 + 1));
+    ctx.lineTo(scale * (width + 1), scale * (_i4 + 1));
+  }
+
+  ctx.stroke();
+}
+
+function reset(canvas) {
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.width);
+}
 
 /**
  * Draws every group onto the kmap
@@ -4715,7 +5160,7 @@ function drawGroups(ctx, scale, groups) {
         continue;
         break;
       default:
-        console.log('error');
+        console.log('error: ' + groups[i].type);
         break;
     }
 
@@ -5156,452 +5601,5 @@ function hexToRGB(hex, alpha) {
   }
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/classes/DrawingFunctions.js","/classes")
-},{"buffer":2,"chroma-js":3,"pBGvAp":5}],10:[function(require,module,exports){
-(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/** Class representing a group. */
-var Group =
-/**
-   * Create a dot.
-   * @param {Array.Point} cellArray - array holding all the groups points
-   * @param {string} type - the type of group it is
-   */
-function Group(cellArray, type) {
-  _classCallCheck(this, Group);
-
-  this.cellArray = cellArray;
-  this.type = type;
-  this.pImp = false;
-};
-
-exports.default = Group;
-
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/classes/Group.js","/classes")
-},{"buffer":2,"pBGvAp":5}],11:[function(require,module,exports){
-(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/** Class representing a point. */
-var Point =
-/**
- * Create a point.
- * @param {number} x - The x value.
- * @param {number} y - The y value.
- */
-function Point(x, y) {
-  _classCallCheck(this, Point);
-
-  if (x < 0 || y < 0) throw new Error('Coordinates must be positive');
-  this.x = x;
-  this.y = y;
-};
-
-exports.default = Point;
-
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/classes/Point.js","/classes")
-},{"buffer":2,"pBGvAp":5}],12:[function(require,module,exports){
-(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-'use strict';
-
-var _CellArray = require('./classes/CellArray');
-
-var _CellArray2 = _interopRequireDefault(_CellArray);
-
-var _DrawingFunctions = require('./classes/DrawingFunctions');
-
-var drawer = _interopRequireWildcard(_DrawingFunctions);
-
-var _BinaryFunctions = require('./classes/BinaryFunctions');
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var c = document.getElementById('canvas');
-var ctx = c.getContext('2d');
-
-// c.height = window.innerHeight / 8 * 5;
-// c.width = window.innerHeight / 8 * 5;
-
-var scale = c.width / 5; //scale of the cells;
-
-// fixes problem with browsers making my canvas look bad
-var devicePixelRatio = window.devicePixelRatio || 1,
-    backingStoreRatio = ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1,
-    ratio = devicePixelRatio / backingStoreRatio;
-
-var oldWidth = c.width;
-var oldHeight = c.height;
-
-c.width = oldWidth * ratio + 1;
-c.height = oldHeight * ratio + 1;
-
-c.style.width = oldWidth + 'px';
-c.style.height = oldHeight + 'px';
-
-// now scale the context to counter
-// the fact that we've manually scaled
-// our c element
-ctx.scale(ratio, ratio);
-
-//kmap stuff
-var minterms = [];
-var numVars = 3;
-var expansionType = 1;
-
-var cellArray = new _CellArray2.default(numVars, expansionType);
-
-drawMap(numVars, scale);
-
-function getMinterms() {
-  var temp = [];
-  //TODO: change it to work for more minterms instead of hardcoding the 8
-  //gets minterms from html form
-  for (var i = 0; i < Math.pow(2, numVars); i++) {
-    var formGroup = document.getElementsByName('group' + i);
-
-    for (var j = 0; j < formGroup.length; j++) {
-      if (formGroup[j].checked == true) {
-        temp[i] = formGroup[j].value;
-      }
-    }
-  }
-
-  return temp;
-}
-
-function resetkmap() {
-  ctx.clearRect(0, 0, c.width, c.width);
-}
-
-var slider = document.getElementById('num-vars');
-var expansionTypeSwitch = document.getElementById('expansionType');
-
-expansionTypeSwitch.addEventListener('change', function (event) {
-  expansionType = Number(!event.target.checked);
-  cellArray.expansionType = expansionType;
-  render();
-});
-
-document.addEventListener('keypress', function (event) {
-  if (event.keyCode == 13) {
-    render();
-  }
-});
-
-var formulaBox = document.getElementById('expansion');
-
-function initializeFormulaBox() {
-  for (var i = 0; i < formulaBox.childNodes.length; i++) {
-    formulaBox.childNodes[i].addEventListener('click', function (event) {
-      console.log('hello');
-      var renderFormula;
-
-      for (var _i = 0; _i < formulaBox.childNodes.length; _i++) {
-        if (!formulaBox.childNodes[_i].className || formulaBox.childNodes[_i].className.includes('active')) {
-          formulaBox.childNodes[_i].className = 'collection-item';
-        }
-      }
-
-      event.target.className += ' active';
-
-      if (!event.target.dataset.formula) return;
-
-      resetkmap();
-
-      drawMap(numVars, scale);
-
-      var data = JSON.parse(event.target.dataset.formula);
-
-      renderFormula = (0, _BinaryFunctions.getExpansionFormula)(data, numVars, cellArray.expansionType);
-      console.log(renderFormula);
-
-      drawer.drawGroups(ctx, scale, data);
-      drawer.drawTerms(ctx, scale, cellArray.cells);
-    });
-  }
-}
-
-noUiSlider.create(slider, {
-  start: 3,
-  connect: [true, false],
-  step: 1,
-  range: {
-    'min': [3],
-    'max': [6]
-  },
-  pips: {
-    mode: 'steps',
-    density: 30
-  }
-});
-
-slider.noUiSlider.on('update', function () {
-  var truthTable = document.getElementById('truth-table');
-
-  while (truthTable.firstChild) {
-    truthTable.removeChild(truthTable.firstChild);
-  }
-
-  var tbl = document.createElement('table');
-
-  var thead = document.createElement('thead');
-
-  var superHeadRow = document.createElement('tr');
-
-  var input = document.createElement('th');
-  input.appendChild(document.createTextNode('Input'));
-  input.setAttribute('colspan', slider.noUiSlider.get());
-
-  var output = document.createElement('th');
-  output.setAttribute('colspan', 3);
-  output.appendChild(document.createTextNode('Output'));
-
-  var number = document.createElement('th');
-  number.setAttribute('colspan', 1);
-
-  superHeadRow.appendChild(number);
-  superHeadRow.appendChild(input);
-  superHeadRow.appendChild(output);
-
-  thead.appendChild(superHeadRow);
-
-  var tr = document.createElement('tr');
-  // Creates headers for the truth table
-  var numTh = document.createElement('th');
-  numTh.appendChild(document.createTextNode('#'));
-
-  tr.appendChild(numTh);
-  for (var i = 1; i < slider.noUiSlider.get() + 1; i++) {
-    var th = document.createElement('th');
-    th.appendChild(document.createTextNode(String.fromCharCode(65 + i - 1)));
-    tr.appendChild(th);
-  }
-
-  var off = document.createElement('th');
-  off.appendChild(document.createTextNode('0'));
-  var on = document.createElement('th');
-  on.appendChild(document.createTextNode('1'));
-  var dontCare = document.createElement('th');
-  dontCare.appendChild(document.createTextNode('X'));
-
-  tr.appendChild(off);
-  tr.appendChild(on);
-  tr.appendChild(dontCare);
-
-  thead.appendChild(tr);
-  tbl.appendChild(thead);
-
-  var tbody = document.createElement('tbody');
-  for (var _i2 = 0; _i2 < Math.pow(2, slider.noUiSlider.get()); _i2++) {
-    var _tr = document.createElement('tr');
-
-    var numTd = document.createElement('td');
-    numTd.appendChild(document.createTextNode(_i2));
-    _tr.appendChild(numTd);
-
-    var num = '' + _i2.toString(2);
-    var pad = '0'.repeat(slider.noUiSlider.get()); // its just 5 0's for the max var nums
-    var bin = pad.substring(0, pad.length - num.length) + num;
-
-    var binArray = bin.split('');
-
-    for (var _i3 = 0; _i3 < binArray.length; _i3++) {
-      var _td = document.createElement('td');
-      _td.appendChild(document.createTextNode(binArray[_i3]));
-      _tr.appendChild(_td);
-    }
-
-    var td = document.createElement('td');
-    var input1 = document.createElement('input');
-    input1.setAttribute('name', 'group' + _i2);
-    input1.setAttribute('type', 'radio');
-    input1.setAttribute('id', 'OFF' + _i2);
-    input1.setAttribute('value', '0');
-    input1.setAttribute('checked', 'checked');
-    var label1 = document.createElement('label');
-    label1.setAttribute('for', 'OFF' + _i2);
-    td.appendChild(input1);
-    td.appendChild(label1);
-
-    var td2 = document.createElement('td');
-    var input2 = document.createElement('input');
-    input2.setAttribute('name', 'group' + _i2);
-    input2.setAttribute('type', 'radio');
-    input2.setAttribute('id', 'ON' + _i2);
-    input2.setAttribute('value', '1');
-    var label2 = document.createElement('label');
-    label2.setAttribute('for', 'ON' + _i2);
-    td2.appendChild(input2);
-    td2.appendChild(label2);
-
-    var td3 = document.createElement('td');
-    var input3 = document.createElement('input');
-    input3.setAttribute('name', 'group' + _i2);
-    input3.setAttribute('type', 'radio');
-    input3.setAttribute('id', 'DONTCARE' + _i2);
-    input3.setAttribute('value', 'X');
-    var label3 = document.createElement('label');
-    label3.setAttribute('for', 'DONTCARE' + _i2);
-    td3.appendChild(input3);
-    td3.appendChild(label3);
-
-    _tr.appendChild(td);
-    _tr.appendChild(td2);
-    _tr.appendChild(td3);
-
-    tbody.appendChild(_tr);
-  }
-
-  tbl.appendChild(tbody);
-  truthTable.appendChild(tbl);
-
-  numVars = Number(slider.noUiSlider.get());
-  cellArray = new _CellArray2.default(numVars, expansionType);
-
-  //rewdraws map
-  resetkmap();
-
-  var formulaBox = document.getElementById('expansion');
-  formulaBox.innerHTML = '';
-  var li = document.createElement('li');
-  li.className = 'collection-item active';
-  li.innerHTML = 'F =';
-  formulaBox.appendChild(li);
-
-  drawMap(numVars, scale);
-
-  $('input:radio').click(function () {
-    initializeFormulaBox();
-    render();
-  });
-});
-
-function render() {
-  //grabs minterms on enter key
-  //resets the canvas
-  resetkmap();
-
-  drawMap(numVars, scale);
-
-  redrawMap();
-}
-
-function redrawMap() {
-  //resets cell array
-  cellArray.reset();
-
-  // marks the values from the truth table
-  minterms = getMinterms();
-  cellArray.mark(minterms);
-
-  //TODO: make simplify groups just part of the get groups function
-  // marks the groups
-  var groups = cellArray.getGroups();
-  // console.log(groups);
-  groups = cellArray.markPrimeImplicants(groups);
-  // groups = cellArray.simplifyGroups(groups);
-
-  // Add formulas to box
-  var formulas = cellArray.getPossibleFormulas(groups);
-  formulaBox.innerHTML = '';
-
-  for (var i = 0; i < formulas.length; i++) {
-    var li = document.createElement('li');
-
-    li.className = 'collection-item';
-    if (i === 0) li.className += ' active';
-
-    li.dataset.formula = JSON.stringify(formulas[i]);
-
-    var formula = (0, _BinaryFunctions.getExpansionFormula)(formulas[i], numVars, cellArray.expansionType);
-
-    li.appendChild(document.createTextNode(formula));
-
-    formulaBox.appendChild(li);
-  }
-
-  initializeFormulaBox();
-
-  // var groups = cellArray.getGroups();
-
-  // console.log(groups);
-
-  drawer.drawGroups(ctx, scale, formulas[0]);
-  drawer.drawTerms(ctx, scale, cellArray.cells);
-}
-
-function drawMap(vars, scale) {
-  var xVars = vars - Math.floor(vars / 2) - vars % 2;
-  var yVars = vars - Math.floor(vars / 2);
-
-  var xLength = Math.pow(2, xVars);
-  var yLength = Math.pow(2, yVars);
-
-  scale /= yLength / 4;
-  var fontSize = scale / 4;
-  ctx.font = fontSize + 'pt Roboto';
-
-  drawGrid(xLength, yLength, scale);
-
-  // Axis Labels
-  var xStr = "";
-  var yStr = "";
-  for (var i = 0; i < xVars; i++) {
-    xStr += String.fromCharCode(65 + i);
-  }for (var _i4 = 0; _i4 < yVars; _i4++) {
-    yStr += String.fromCharCode(65 + xVars + _i4);
-  }ctx.fillText(xStr, scale * 3 / 4 - ctx.measureText(xStr).width / 2, scale / 4 + fontSize / 2);
-  ctx.fillText(yStr, scale / 4 - ctx.measureText(yStr).width / 2 + 2, scale * 3 / 4 + fontSize / 2);
-
-  // Axis numbers
-  for (var _i5 = 0; _i5 < xLength; _i5++) {
-    var str = (0, _BinaryFunctions.decToBin)((0, _BinaryFunctions.toGrayCode)(_i5), xVars);
-    var strW = ctx.measureText(str).width;
-
-    ctx.fillText(str, scale * (_i5 + 1) + scale / 2 - strW / 2, scale - strW / 2);
-  }
-
-  for (var _i6 = 0; _i6 < yLength; _i6++) {
-    var _str = (0, _BinaryFunctions.decToBin)((0, _BinaryFunctions.toGrayCode)(_i6), yVars);
-    var _strW = ctx.measureText(_str).width;
-
-    ctx.fillText(_str, scale / 2 - fontSize / 2, scale * (_i6 + 1) + scale / 2 + fontSize / 2);
-  }
-}
-
-function drawGrid(width, height, scale) {
-  ctx.beginPath();
-
-  ctx.moveTo(0, 0);
-  ctx.lineTo(scale, scale);
-
-  for (var i = 0; i < width + 1; i++) {
-    ctx.moveTo(scale * (i + 1), scale);
-    ctx.lineTo(scale * (i + 1), scale * (height + 1));
-  }
-
-  for (var _i7 = 0; _i7 < height + 1; _i7++) {
-    ctx.moveTo(scale, scale * (_i7 + 1));
-    ctx.lineTo(scale * (width + 1), scale * (_i7 + 1));
-  }
-
-  ctx.stroke();
-}
-
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_8114c1d7.js","/")
-},{"./classes/BinaryFunctions":6,"./classes/CellArray":8,"./classes/DrawingFunctions":9,"buffer":2,"pBGvAp":5}]},{},[12])
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/Renderer.js","/modules")
+},{"./BinaryFunctions":7,"buffer":2,"chroma-js":3,"pBGvAp":5}]},{},[6])

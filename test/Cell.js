@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import Cell from '../src/classes/Cell';
+import Cell from '../src/modules/Cell';
 
 describe('Cell Class', function () {
   describe('constructor(val, x, y)', function() {

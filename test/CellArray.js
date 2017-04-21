@@ -1,8 +1,8 @@
 import { expect } from 'chai';
-import CellArray from '../src/classes/CellArray';
-import Cell from '../src/classes/Cell';
-import Point from '../src/classes/Point';
-import Group from '../src/classes/Group';
+import CellArray from '../src/modules/CellArray';
+import Cell from '../src/modules/Cell';
+import Point from '../src/modules/Point';
+import Group from '../src/modules/Group';
 
 describe('Cell Array Class', function () {
   describe('mark()', function () {
