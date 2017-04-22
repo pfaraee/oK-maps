@@ -1,6 +1,7 @@
 import Cell from './Cell';
 import Point from './Point';
 import Group from './Group';
+import { toGrayCode } from './BinaryFunctions';
 
 export default class CellArray {
   constructor(vars, expansionType) {
@@ -8,37 +9,37 @@ export default class CellArray {
     this.expansionType = expansionType;
     this.cells = new Array();
 
-    this.cells[0] = new Array();
-    this.cells[0].push(new Cell(0, 0, 0));
-    this.cells[0].push(new Cell(4, 1, 0));
+    // Genereates cell grid
+    let maxAxisVars = vars - Math.floor(vars / 2);
+    let maxYAxis = Math.pow(2, maxAxisVars);
+    let maxNum = Math.pow(2, vars);
+    let maxXAxis = maxNum / maxYAxis;
 
-    this.cells[1] = new Array();
-    this.cells[1].push(new Cell(1, 0, 1));
-    this.cells[1].push(new Cell(5, 1, 1));
-
-    this.cells[2] = new Array();
-    this.cells[2].push(new Cell(3, 0, 2));
-    this.cells[2].push(new Cell(7, 1, 2));
-
-    this.cells[3] = new Array();
-    this.cells[3].push(new Cell(2, 0, 3));
-    this.cells[3].push(new Cell(6, 1, 3));
-
-    if (this.vars > 3) {
-
-      this.cells[0].push(new Cell(12, 2, 0));
-      this.cells[0].push(new Cell(8, 3, 0));
-
-      this.cells[1].push(new Cell(13, 2, 1));
-      this.cells[1].push(new Cell(9, 3, 1));
-
-      this.cells[2].push(new Cell(15, 2, 2));
-      this.cells[2].push(new Cell(11, 3, 2));
-
-      this.cells[3].push(new Cell(14, 2, 3));
-      this.cells[3].push(new Cell(10, 3, 3));
+    // Initializes empty 2d array
+    for(let i = 0; i < maxXAxis; i++) {
+      this.cells[i] = new Array();
+      this.cells[i].length = maxYAxis;
     }
-    // holds all marked groups
+
+    // Populates 2d array
+    for(let i = 0; i < maxNum; i++) {
+      //number
+      let grayCode = toGrayCode(i);
+
+      // coordinates
+      let x = Math.floor(i / maxYAxis);
+      let y = i % maxYAxis;
+
+      // odd columns are in regular order, evens are in reverse
+      if((x + 1) % 2) {
+        this.cells[x][y] = new Cell(grayCode, x, y);
+      } else {
+        this.cells[x][maxYAxis - y - 1] = new Cell(grayCode, x, maxYAxis - y - 1)
+      }
+    }
+
+    this.maxX = maxXAxis;
+    this.maxY = maxYAxis;
   }
 
   mark(terms) {
@@ -274,7 +275,7 @@ export default class CellArray {
 
   // mods coords for overflow and swaps them because array xy and map xy are flipped
   get(x, y){
-    return this.cells[y % 4][x % Math.pow(2, this.vars - 2)];
+    return this.cells[x % this.maxX][y % this.maxY];
   }
 
   isGroupUnique(marked, group) {

@@ -4203,7 +4203,7 @@ function initializeFormulaBox(formulaBox) {
   }
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_dbcb0724.js","/")
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_4b7fcb26.js","/")
 },{"./modules/BinaryFunctions":7,"./modules/CellArray":9,"./modules/Renderer":12,"buffer":2,"pBGvAp":5}],7:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
@@ -4454,6 +4454,8 @@ var _Group = require('./Group');
 
 var _Group2 = _interopRequireDefault(_Group);
 
+var _BinaryFunctions = require('./BinaryFunctions');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -4466,37 +4468,37 @@ var CellArray = function () {
     this.expansionType = expansionType;
     this.cells = new Array();
 
-    this.cells[0] = new Array();
-    this.cells[0].push(new _Cell2.default(0, 0, 0));
-    this.cells[0].push(new _Cell2.default(4, 1, 0));
+    // Genereates cell grid
+    var maxAxisVars = vars - Math.floor(vars / 2);
+    var maxYAxis = Math.pow(2, maxAxisVars);
+    var maxNum = Math.pow(2, vars);
+    var maxXAxis = maxNum / maxYAxis;
 
-    this.cells[1] = new Array();
-    this.cells[1].push(new _Cell2.default(1, 0, 1));
-    this.cells[1].push(new _Cell2.default(5, 1, 1));
-
-    this.cells[2] = new Array();
-    this.cells[2].push(new _Cell2.default(3, 0, 2));
-    this.cells[2].push(new _Cell2.default(7, 1, 2));
-
-    this.cells[3] = new Array();
-    this.cells[3].push(new _Cell2.default(2, 0, 3));
-    this.cells[3].push(new _Cell2.default(6, 1, 3));
-
-    if (this.vars > 3) {
-
-      this.cells[0].push(new _Cell2.default(12, 2, 0));
-      this.cells[0].push(new _Cell2.default(8, 3, 0));
-
-      this.cells[1].push(new _Cell2.default(13, 2, 1));
-      this.cells[1].push(new _Cell2.default(9, 3, 1));
-
-      this.cells[2].push(new _Cell2.default(15, 2, 2));
-      this.cells[2].push(new _Cell2.default(11, 3, 2));
-
-      this.cells[3].push(new _Cell2.default(14, 2, 3));
-      this.cells[3].push(new _Cell2.default(10, 3, 3));
+    // Initializes empty 2d array
+    for (var i = 0; i < maxXAxis; i++) {
+      this.cells[i] = new Array();
+      this.cells[i].length = maxYAxis;
     }
-    // holds all marked groups
+
+    // Populates 2d array
+    for (var _i = 0; _i < maxNum; _i++) {
+      //number
+      var grayCode = (0, _BinaryFunctions.toGrayCode)(_i);
+
+      // coordinates
+      var x = Math.floor(_i / maxYAxis);
+      var y = _i % maxYAxis;
+
+      // odd columns are in regular order, evens are in reverse
+      if ((x + 1) % 2) {
+        this.cells[x][y] = new _Cell2.default(grayCode, x, y);
+      } else {
+        this.cells[x][maxYAxis - y - 1] = new _Cell2.default(grayCode, x, maxYAxis - y - 1);
+      }
+    }
+
+    this.maxX = maxXAxis;
+    this.maxY = maxYAxis;
   }
 
   _createClass(CellArray, [{
@@ -4545,9 +4547,9 @@ var CellArray = function () {
         // draws if all are on
         var group = [];
 
-        for (var _i = 0; _i < this.cells.length; _i++) {
-          for (var _j = 0; _j < this.cells[_i].length; _j++) {
-            group.push(this.cells[_i][_j]);
+        for (var _i2 = 0; _i2 < this.cells.length; _i2++) {
+          for (var _j = 0; _j < this.cells[_i2].length; _j++) {
+            group.push(this.cells[_i2][_j]);
           }
         }
 
@@ -4558,15 +4560,15 @@ var CellArray = function () {
 
       if (numActive >= 8 && this.vars > 3) {
         //mark 2x4's
-        for (var _i2 = 0; _i2 < Math.pow(2, this.vars - 2); _i2++) {
-          var rootPoint = this.get(_i2, 0);
-          var secondPoint = this.get(_i2, 1);
-          var thirdPoint = this.get(_i2, 2);
-          var fourthPoint = this.get(_i2, 3);
-          var fifthPoint = this.get(_i2 + 1, 0);
-          var sixthPoint = this.get(_i2 + 1, 1);
-          var seventhPoint = this.get(_i2 + 1, 2);
-          var eighthPoint = this.get(_i2 + 1, 3);
+        for (var _i3 = 0; _i3 < Math.pow(2, this.vars - 2); _i3++) {
+          var rootPoint = this.get(_i3, 0);
+          var secondPoint = this.get(_i3, 1);
+          var thirdPoint = this.get(_i3, 2);
+          var fourthPoint = this.get(_i3, 3);
+          var fifthPoint = this.get(_i3 + 1, 0);
+          var sixthPoint = this.get(_i3 + 1, 1);
+          var seventhPoint = this.get(_i3 + 1, 2);
+          var eighthPoint = this.get(_i3 + 1, 3);
 
           if (rootPoint.status != !this.expansionType && secondPoint.status != !this.expansionType && thirdPoint.status != !this.expansionType && fourthPoint.status != !this.expansionType && fifthPoint.status != !this.expansionType && sixthPoint.status != !this.expansionType && seventhPoint.status != !this.expansionType && eighthPoint.status != !this.expansionType && (rootPoint.status == this.expansionType || secondPoint.status == this.expansionType || thirdPoint.status == this.expansionType || fourthPoint.status == this.expansionType || fifthPoint.status == this.expansionType || sixthPoint.status == this.expansionType || seventhPoint.status == this.expansionType || eighthPoint.status == this.expansionType)) {
             var _group = [];
@@ -4586,15 +4588,15 @@ var CellArray = function () {
         }
 
         //mark 4x2's
-        for (var _i3 = 0; _i3 < Math.pow(2, this.vars - 2); _i3++) {
-          var _rootPoint = this.get(0, _i3);
-          var _secondPoint = this.get(1, _i3);
-          var _thirdPoint = this.get(2, _i3);
-          var _fourthPoint = this.get(3, _i3);
-          var _fifthPoint = this.get(0, _i3 + 1);
-          var _sixthPoint = this.get(1, _i3 + 1);
-          var _seventhPoint = this.get(2, _i3 + 1);
-          var _eighthPoint = this.get(3, _i3 + 1);
+        for (var _i4 = 0; _i4 < Math.pow(2, this.vars - 2); _i4++) {
+          var _rootPoint = this.get(0, _i4);
+          var _secondPoint = this.get(1, _i4);
+          var _thirdPoint = this.get(2, _i4);
+          var _fourthPoint = this.get(3, _i4);
+          var _fifthPoint = this.get(0, _i4 + 1);
+          var _sixthPoint = this.get(1, _i4 + 1);
+          var _seventhPoint = this.get(2, _i4 + 1);
+          var _eighthPoint = this.get(3, _i4 + 1);
 
           if (_rootPoint.status != !this.expansionType && _secondPoint.status != !this.expansionType && _thirdPoint.status != !this.expansionType && _fourthPoint.status != !this.expansionType && _fifthPoint.status != !this.expansionType && _sixthPoint.status != !this.expansionType && _seventhPoint.status != !this.expansionType && _eighthPoint.status != !this.expansionType && (_rootPoint.status == this.expansionType || _secondPoint.status == this.expansionType || _thirdPoint.status == this.expansionType || _fourthPoint.status == this.expansionType || _fifthPoint.status == this.expansionType || _sixthPoint.status == this.expansionType || _seventhPoint.status == this.expansionType || _eighthPoint.status == this.expansionType)) {
             var _group2 = [];
@@ -4617,11 +4619,11 @@ var CellArray = function () {
       if (numActive >= 4) {
         //marks horizontal 'quads'
         if (this.vars > 3) {
-          for (var _i4 = 0; _i4 < Math.pow(2, this.vars - 2); _i4++) {
-            var _rootPoint2 = this.get(0, _i4);
-            var _secondPoint2 = this.get(1, _i4);
-            var _thirdPoint2 = this.get(2, _i4);
-            var _fourthPoint2 = this.get(3, _i4);
+          for (var _i5 = 0; _i5 < Math.pow(2, this.vars - 2); _i5++) {
+            var _rootPoint2 = this.get(0, _i5);
+            var _secondPoint2 = this.get(1, _i5);
+            var _thirdPoint2 = this.get(2, _i5);
+            var _fourthPoint2 = this.get(3, _i5);
 
             if (_rootPoint2.status != !this.expansionType && _secondPoint2.status != !this.expansionType && _thirdPoint2.status != !this.expansionType && _fourthPoint2.status != !this.expansionType && (_rootPoint2.status == this.expansionType || _secondPoint2.status == this.expansionType || _thirdPoint2.status == this.expansionType || _fourthPoint2.status == this.expansionType)) {
               var _group3 = [];
@@ -4638,11 +4640,11 @@ var CellArray = function () {
         }
 
         //marks vertical 'quads'
-        for (var _i5 = 0; _i5 < Math.pow(2, this.vars - 2); _i5++) {
-          var _rootPoint3 = this.get(_i5, 0);
-          var _secondPoint3 = this.get(_i5, 1);
-          var _thirdPoint3 = this.get(_i5, 2);
-          var _fourthPoint3 = this.get(_i5, 3);
+        for (var _i6 = 0; _i6 < Math.pow(2, this.vars - 2); _i6++) {
+          var _rootPoint3 = this.get(_i6, 0);
+          var _secondPoint3 = this.get(_i6, 1);
+          var _thirdPoint3 = this.get(_i6, 2);
+          var _fourthPoint3 = this.get(_i6, 3);
 
           if (_rootPoint3.status != !this.expansionType && _secondPoint3.status != !this.expansionType && _thirdPoint3.status != !this.expansionType && _fourthPoint3.status != !this.expansionType && (_rootPoint3.status == this.expansionType || _secondPoint3.status == this.expansionType || _thirdPoint3.status == this.expansionType || _fourthPoint3.status == this.expansionType)) {
             var _group4 = [];
@@ -4658,13 +4660,13 @@ var CellArray = function () {
         }
 
         //marks 'boxes'
-        for (var _i6 = 0; _i6 < 4; _i6++) {
+        for (var _i7 = 0; _i7 < 4; _i7++) {
           // TODO: MAKE MATH.POW STUFF A CONSTANT
           for (var _j2 = 0; _j2 < Math.pow(2, this.vars - 2); _j2++) {
-            var _rootPoint4 = this.get(_j2, _i6);
-            var _secondPoint4 = this.get(_j2 + 1, _i6);
-            var _thirdPoint4 = this.get(_j2, _i6 + 1);
-            var _fourthPoint4 = this.get(_j2 + 1, _i6 + 1);
+            var _rootPoint4 = this.get(_j2, _i7);
+            var _secondPoint4 = this.get(_j2 + 1, _i7);
+            var _thirdPoint4 = this.get(_j2, _i7 + 1);
+            var _fourthPoint4 = this.get(_j2 + 1, _i7 + 1);
 
             if (_rootPoint4.status != !this.expansionType && _secondPoint4.status != !this.expansionType && _thirdPoint4.status != !this.expansionType && _fourthPoint4.status != !this.expansionType && (_rootPoint4.status == this.expansionType || _secondPoint4.status == this.expansionType || _thirdPoint4.status == this.expansionType || _fourthPoint4.status == this.expansionType)) {
               var _group5 = [];
@@ -4683,12 +4685,12 @@ var CellArray = function () {
 
       // TODO: remove verbose searches
       if (numActive >= 2) {
-        for (var _i7 = 0; _i7 < Math.pow(2, this.vars - 2); _i7++) {
+        for (var _i8 = 0; _i8 < Math.pow(2, this.vars - 2); _i8++) {
           for (var _j3 = 0; _j3 < 4; _j3++) {
-            var _rootPoint5 = this.get(_i7, _j3);
+            var _rootPoint5 = this.get(_i8, _j3);
 
             //horizontal
-            var _secondPoint5 = this.get(_i7 + 1, _j3);
+            var _secondPoint5 = this.get(_i8 + 1, _j3);
             if (_rootPoint5.status != !this.expansionType && _secondPoint5.status != !this.expansionType && (_rootPoint5.status == this.expansionType || _secondPoint5.status == this.expansionType)) {
               var _group6 = [];
               _group6.push(_rootPoint5);
@@ -4699,7 +4701,7 @@ var CellArray = function () {
             }
 
             //vertical
-            var secondPointV = this.get(_i7, _j3 + 1);
+            var secondPointV = this.get(_i8, _j3 + 1);
             if (_rootPoint5.status != !this.expansionType && secondPointV.status != !this.expansionType && (_rootPoint5.status == this.expansionType || secondPointV.status == this.expansionType)) {
               var _group7 = [];
               _group7.push(_rootPoint5);
@@ -4713,10 +4715,10 @@ var CellArray = function () {
       }
 
       if (numActive >= 1) {
-        for (var _i8 = 0; _i8 < Math.pow(2, this.vars - 2); _i8++) {
+        for (var _i9 = 0; _i9 < Math.pow(2, this.vars - 2); _i9++) {
           for (var _j4 = 0; _j4 < 4; _j4++) {
             var _group8 = [];
-            var point = this.get(_i8, _j4);
+            var point = this.get(_i9, _j4);
             _group8.push(point);
 
             var _wrapper7 = new _Group2.default(_group8, '1x1');
@@ -4733,7 +4735,7 @@ var CellArray = function () {
   }, {
     key: 'get',
     value: function get(x, y) {
-      return this.cells[y % 4][x % Math.pow(2, this.vars - 2)];
+      return this.cells[x % this.maxX][y % this.maxY];
     }
   }, {
     key: 'isGroupUnique',
@@ -4919,10 +4921,10 @@ var CellArray = function () {
         }
       }
 
-      for (var _i9 = 0; _i9 < opts.length; _i9++) {
+      for (var _i10 = 0; _i10 < opts.length; _i10++) {
         var _keeps = [];
 
-        for (var _j7 = _i9; _j7 < opts.length; _j7++) {
+        for (var _j7 = _i10; _j7 < opts.length; _j7++) {
           _keeps.push(opts[_j7]);
 
           var _formula = this.simplifyGroupsR(temp, _keeps);
@@ -4978,7 +4980,7 @@ var CellArray = function () {
 exports.default = CellArray;
 
 }).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/CellArray.js","/modules")
-},{"./Cell":8,"./Group":10,"./Point":11,"buffer":2,"pBGvAp":5}],10:[function(require,module,exports){
+},{"./BinaryFunctions":7,"./Cell":8,"./Group":10,"./Point":11,"buffer":2,"pBGvAp":5}],10:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 "use strict";
 
