@@ -68,207 +68,73 @@ export default class CellArray {
   getGroups() {
     let marked = [];
     // used to skip some group checks
-    let numActive = 0;
+    // let numActive = 0;
+    //
+    // for(let i = 0; i < this.cells.length; i++) {
+    //   for(let j = 0; j < this.cells[i].length; j++) {
+    //     if(this.cells[i][j].status != !this.expansionType) numActive++;
+    //   }
+    // }
 
-    for(let i = 0; i < this.cells.length; i++) {
-      for(let j = 0; j < this.cells[i].length; j++) {
-        if(this.cells[i][j].status != !this.expansionType) numActive++;
-      }
-    }
+    let x = this.maxX;
+    // two outer loops calculate the shapes
+    while(x >= 1) {
+      let y = this.maxY;
 
-    // marks every cell and returns early to save proccessing time
-    if(numActive >= Math.pow(2, this.vars)) { 
-      // draws if all are on
-      let group = [];
-
-      for(let i = 0; i < this.cells.length; i++) {
-        for(let j = 0; j < this.cells[i].length; j++) {
-          group.push(this.cells[i][j]);
-        }
-      }
-
-      marked.push(new Group(group, 'full'));
-
-      return marked; // all are marked
-    }
-
-    if(numActive >= 8 && this.vars > 3) {
-      //mark 2x4's
-      for(let i = 0; i < Math.pow(2, this.vars - 2); i++) {
-        let rootPoint = this.get(i, 0);
-        let secondPoint = this.get(i, 1);
-        let thirdPoint = this.get(i, 2);
-        let fourthPoint = this.get(i, 3);
-        let fifthPoint = this.get(i + 1, 0);
-        let sixthPoint = this.get(i + 1, 1);
-        let seventhPoint = this.get(i + 1, 2);
-        let eighthPoint = this.get(i + 1, 3);
-
-        if(((rootPoint.status != !this.expansionType) && (secondPoint.status != !this.expansionType) && (thirdPoint.status != !this.expansionType) &&
-        (fourthPoint.status != !this.expansionType) && (fifthPoint.status != !this.expansionType) && (sixthPoint.status != !this.expansionType) && (seventhPoint.status != !this.expansionType) &&
-        (eighthPoint.status != !this.expansionType))
-        && (rootPoint.status == this.expansionType || secondPoint.status == this.expansionType || thirdPoint.status == this.expansionType || fourthPoint.status == this.expansionType || fifthPoint.status == this.expansionType || sixthPoint.status == this.expansionType || seventhPoint.status == this.expansionType || eighthPoint.status == this.expansionType)) {
-          let group = [];
-
-          group.push(rootPoint);
-          group.push(secondPoint);
-          group.push(thirdPoint);
-          group.push(fourthPoint);
-          group.push(fifthPoint);
-          group.push(sixthPoint);
-          group.push(seventhPoint);
-          group.push(eighthPoint);
-
-          let wrapper = new Group(group, '2x4')
-          if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
-        }
-      }
-
-      //mark 4x2's
-      for(let i = 0; i < Math.pow(2, this.vars - 2); i++) {
-        let rootPoint = this.get(0, i);
-        let secondPoint = this.get(1, i);
-        let thirdPoint = this.get(2, i);
-        let fourthPoint = this.get(3 , i);
-        let fifthPoint = this.get(0, i + 1);
-        let sixthPoint = this.get(1, i + 1);
-        let seventhPoint = this.get(2, i + 1);
-        let eighthPoint = this.get(3, i + 1);
-
-        if(((rootPoint.status != !this.expansionType) && (secondPoint.status != !this.expansionType) && (thirdPoint.status != !this.expansionType) &&
-        (fourthPoint.status != !this.expansionType) && (fifthPoint.status != !this.expansionType) && (sixthPoint.status != !this.expansionType) && (seventhPoint.status != !this.expansionType) &&
-        (eighthPoint.status != !this.expansionType))
-        && (rootPoint.status == this.expansionType || secondPoint.status == this.expansionType || thirdPoint.status == this.expansionType || fourthPoint.status == this.expansionType || fifthPoint.status == this.expansionType || sixthPoint.status == this.expansionType || seventhPoint.status == this.expansionType || eighthPoint.status == this.expansionType)) {
-          let group = [];
-
-          group.push(rootPoint);
-          group.push(secondPoint);
-          group.push(thirdPoint);
-          group.push(fourthPoint);
-          group.push(fifthPoint);
-          group.push(sixthPoint);
-          group.push(seventhPoint);
-          group.push(eighthPoint);
-
-          let wrapper = new Group(group, '4x2');
-          if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
-        }
-      }
-    }
-
-    if(numActive >= 4) {
-      //marks horizontal 'quads'
-      if(this.vars > 3) {
-        for(let i = 0; i < Math.pow(2, this.vars - 2); i++) {
-          let rootPoint = this.get(0, i);
-          let secondPoint = this.get(1, i);
-          let thirdPoint = this.get(2, i);
-          let fourthPoint = this.get(3, i);
-
-          if(((rootPoint.status != !this.expansionType) && (secondPoint.status != !this.expansionType) && (thirdPoint.status != !this.expansionType) &&
-          (fourthPoint.status != !this.expansionType)) && (rootPoint.status == this.expansionType || secondPoint.status == this.expansionType || thirdPoint.status == this.expansionType || fourthPoint.status == this.expansionType )) {
+      while(y >= 1) {
+        //loops through each root cell
+        for(let i = 0; i < this.maxX; i++) {
+          for(let j = 0; j < this.maxY; j++) {
+            let nonDontCares = 0;
             let group = [];
 
-            group.push(rootPoint);
-            group.push(secondPoint);
-            group.push(thirdPoint);
-            group.push(fourthPoint);
+            //loop through every point in the shape
+            shapeChecking: {
+              for(let k = 0; k < x; k++) {
+                for(let l = 0; l < y; l++) {
+                  let point = this.get(i + k, j + l);
+                  console.log(point);
 
-            let wrapper = new Group(group, '4x1');
-            if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
+                  if(point.status != !this.expansionType) {
+                    group.push(point);
+                    if(point.status = this.expansionType) nonDontCares++;
+                  } else {
+                    break shapeChecking;
+                  }
+                }
+              }
+
+              let str = `${x}x${y}`;
+
+              console.log(str);
+
+              let wrapper = new Group(group, str);
+              if(nonDontCares && this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
+            }
           }
         }
+
+        y /= 2;
       }
 
-      //marks vertical 'quads'
-      for(let i = 0; i < Math.pow(2, this.vars - 2); i++) {
-        let rootPoint = this.get(i, 0);
-        let secondPoint = this.get(i, 1);
-        let thirdPoint = this.get(i, 2);
-        let fourthPoint = this.get(i, 3);
-
-        if(((rootPoint.status != !this.expansionType) && (secondPoint.status != !this.expansionType) && (thirdPoint.status != !this.expansionType) &&
-        (fourthPoint.status != !this.expansionType)) && (rootPoint.status == this.expansionType || secondPoint.status == this.expansionType || thirdPoint.status == this.expansionType || fourthPoint.status == this.expansionType )) {
-          let group = [];
-
-          group.push(rootPoint);
-          group.push(secondPoint);
-          group.push(thirdPoint);
-          group.push(fourthPoint);
-
-          let wrapper = new Group(group, '1x4');
-          if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
-        }
-      }
-
-      //marks 'boxes'
-      for(let i = 0; i < 4; i++) {
-        // TODO: MAKE MATH.POW STUFF A CONSTANT
-        for(let j = 0; j < Math.pow(2, this.vars - 2); j++) {
-          let rootPoint = this.get(j, i);
-          let secondPoint = this.get(j + 1, i);
-          let thirdPoint = this.get(j, i + 1);
-          let fourthPoint = this.get(j + 1, i + 1);
-
-          if(((rootPoint.status != !this.expansionType) && (secondPoint.status != !this.expansionType) && (thirdPoint.status != !this.expansionType) &&
-          (fourthPoint.status != !this.expansionType)) && (rootPoint.status == this.expansionType || secondPoint.status == this.expansionType || thirdPoint.status == this.expansionType || fourthPoint.status == this.expansionType )) {
-            let group = [];
-
-            group.push(rootPoint);
-            group.push(secondPoint);
-            group.push(thirdPoint);
-            group.push(fourthPoint);
-
-            let wrapper = new Group(group, '2x2')
-            if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
-          }
-        }
-      }
+      x /= 2;
     }
-
-    // TODO: remove verbose searches
-    if(numActive >= 2) {
-      for(let i = 0; i < Math.pow(2, this.vars - 2); i ++) {
-        for(let j = 0; j < 4;  j++) {
-          let rootPoint = this.get(i, j);
-
-          //horizontal
-          let secondPoint = this.get(i + 1, j);
-          if(((rootPoint.status != !this.expansionType) && (secondPoint.status != !this.expansionType)) && (rootPoint.status == this.expansionType || secondPoint.status == this.expansionType)) {
-            let group = [];
-            group.push(rootPoint);
-            group.push(secondPoint);
-
-            let wrapper = new Group(group, '2x1');
-            if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
-          }
-
-          //vertical
-          let secondPointV = this.get(i, j + 1);
-          if(((rootPoint.status != !this.expansionType) && (secondPointV.status != !this.expansionType)) &&(rootPoint.status == this.expansionType || secondPointV.status == this.expansionType)) {
-            let group = [];
-            group.push(rootPoint);
-            group.push(secondPointV);
-
-            let wrapper = new Group(group, '1x2')
-            if(this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
-          }
-        }
-      }
-    }
-
-    if(numActive >= 1) {
-      for(let i = 0; i < Math.pow(2, this.vars - 2); i++) {
-        for(let j = 0; j < 4; j++) {
-          let group = [];
-          let point = this.get(i, j);
-          group.push(point);
-
-          let wrapper = new Group(group, '1x1');
-          if(point.status == this.expansionType && this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
-        }
-      }
-    }
+    console.log(marked);
+    // // marks every cell and returns early to save proccessing time
+    // if(numActive >= Math.pow(2, this.vars)) {
+    //   // draws if all are on
+    //   let group = [];
+    //
+    //   for(let i = 0; i < this.cells.length; i++) {
+    //     for(let j = 0; j < this.cells[i].length; j++) {
+    //       group.push(this.cells[i][j]);
+    //     }
+    //   }
+    //
+    //   marked.push(new Group(group, 'full'));
+    //
+    //   return marked; // all are marked
+    // }
 
     return marked;
   }

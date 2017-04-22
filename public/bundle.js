@@ -4203,7 +4203,7 @@ function initializeFormulaBox(formulaBox) {
   }
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_3292612f.js","/")
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_ae5084b3.js","/")
 },{"./modules/BinaryFunctions":7,"./modules/CellArray":9,"./modules/Renderer":12,"buffer":2,"pBGvAp":5}],7:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
@@ -4534,198 +4534,73 @@ var CellArray = function () {
     value: function getGroups() {
       var marked = [];
       // used to skip some group checks
-      var numActive = 0;
+      // let numActive = 0;
+      //
+      // for(let i = 0; i < this.cells.length; i++) {
+      //   for(let j = 0; j < this.cells[i].length; j++) {
+      //     if(this.cells[i][j].status != !this.expansionType) numActive++;
+      //   }
+      // }
 
-      for (var i = 0; i < this.cells.length; i++) {
-        for (var j = 0; j < this.cells[i].length; j++) {
-          if (this.cells[i][j].status != !this.expansionType) numActive++;
-        }
-      }
+      var x = this.maxX;
+      // two outer loops calculate the shapes
+      while (x >= 1) {
+        var y = this.maxY;
 
-      // marks every cell and returns early to save proccessing time
-      if (numActive >= Math.pow(2, this.vars)) {
-        // draws if all are on
-        var group = [];
+        while (y >= 1) {
+          //loops through each root cell
+          for (var i = 0; i < this.maxX; i++) {
+            for (var j = 0; j < this.maxY; j++) {
+              var nonDontCares = 0;
+              var group = [];
 
-        for (var _i2 = 0; _i2 < this.cells.length; _i2++) {
-          for (var _j = 0; _j < this.cells[_i2].length; _j++) {
-            group.push(this.cells[_i2][_j]);
-          }
-        }
+              //loop through every point in the shape
+              shapeChecking: {
+                for (var k = 0; k < x; k++) {
+                  for (var l = 0; l < y; l++) {
+                    var point = this.get(i + k, j + l);
+                    console.log(point);
 
-        marked.push(new _Group2.default(group, 'full'));
+                    if (point.status != !this.expansionType) {
+                      group.push(point);
+                      if (point.status = this.expansionType) nonDontCares++;
+                    } else {
+                      break shapeChecking;
+                    }
+                  }
+                }
 
-        return marked; // all are marked
-      }
+                var str = x + 'x' + y;
 
-      if (numActive >= 8 && this.vars > 3) {
-        //mark 2x4's
-        for (var _i3 = 0; _i3 < Math.pow(2, this.vars - 2); _i3++) {
-          var rootPoint = this.get(_i3, 0);
-          var secondPoint = this.get(_i3, 1);
-          var thirdPoint = this.get(_i3, 2);
-          var fourthPoint = this.get(_i3, 3);
-          var fifthPoint = this.get(_i3 + 1, 0);
-          var sixthPoint = this.get(_i3 + 1, 1);
-          var seventhPoint = this.get(_i3 + 1, 2);
-          var eighthPoint = this.get(_i3 + 1, 3);
+                console.log(str);
 
-          if (rootPoint.status != !this.expansionType && secondPoint.status != !this.expansionType && thirdPoint.status != !this.expansionType && fourthPoint.status != !this.expansionType && fifthPoint.status != !this.expansionType && sixthPoint.status != !this.expansionType && seventhPoint.status != !this.expansionType && eighthPoint.status != !this.expansionType && (rootPoint.status == this.expansionType || secondPoint.status == this.expansionType || thirdPoint.status == this.expansionType || fourthPoint.status == this.expansionType || fifthPoint.status == this.expansionType || sixthPoint.status == this.expansionType || seventhPoint.status == this.expansionType || eighthPoint.status == this.expansionType)) {
-            var _group = [];
-
-            _group.push(rootPoint);
-            _group.push(secondPoint);
-            _group.push(thirdPoint);
-            _group.push(fourthPoint);
-            _group.push(fifthPoint);
-            _group.push(sixthPoint);
-            _group.push(seventhPoint);
-            _group.push(eighthPoint);
-
-            var wrapper = new _Group2.default(_group, '2x4');
-            if (this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
-          }
-        }
-
-        //mark 4x2's
-        for (var _i4 = 0; _i4 < Math.pow(2, this.vars - 2); _i4++) {
-          var _rootPoint = this.get(0, _i4);
-          var _secondPoint = this.get(1, _i4);
-          var _thirdPoint = this.get(2, _i4);
-          var _fourthPoint = this.get(3, _i4);
-          var _fifthPoint = this.get(0, _i4 + 1);
-          var _sixthPoint = this.get(1, _i4 + 1);
-          var _seventhPoint = this.get(2, _i4 + 1);
-          var _eighthPoint = this.get(3, _i4 + 1);
-
-          if (_rootPoint.status != !this.expansionType && _secondPoint.status != !this.expansionType && _thirdPoint.status != !this.expansionType && _fourthPoint.status != !this.expansionType && _fifthPoint.status != !this.expansionType && _sixthPoint.status != !this.expansionType && _seventhPoint.status != !this.expansionType && _eighthPoint.status != !this.expansionType && (_rootPoint.status == this.expansionType || _secondPoint.status == this.expansionType || _thirdPoint.status == this.expansionType || _fourthPoint.status == this.expansionType || _fifthPoint.status == this.expansionType || _sixthPoint.status == this.expansionType || _seventhPoint.status == this.expansionType || _eighthPoint.status == this.expansionType)) {
-            var _group2 = [];
-
-            _group2.push(_rootPoint);
-            _group2.push(_secondPoint);
-            _group2.push(_thirdPoint);
-            _group2.push(_fourthPoint);
-            _group2.push(_fifthPoint);
-            _group2.push(_sixthPoint);
-            _group2.push(_seventhPoint);
-            _group2.push(_eighthPoint);
-
-            var _wrapper = new _Group2.default(_group2, '4x2');
-            if (this.isGroupUnique(marked, _wrapper)) marked.push(_wrapper);
-          }
-        }
-      }
-
-      if (numActive >= 4) {
-        //marks horizontal 'quads'
-        if (this.vars > 3) {
-          for (var _i5 = 0; _i5 < Math.pow(2, this.vars - 2); _i5++) {
-            var _rootPoint2 = this.get(0, _i5);
-            var _secondPoint2 = this.get(1, _i5);
-            var _thirdPoint2 = this.get(2, _i5);
-            var _fourthPoint2 = this.get(3, _i5);
-
-            if (_rootPoint2.status != !this.expansionType && _secondPoint2.status != !this.expansionType && _thirdPoint2.status != !this.expansionType && _fourthPoint2.status != !this.expansionType && (_rootPoint2.status == this.expansionType || _secondPoint2.status == this.expansionType || _thirdPoint2.status == this.expansionType || _fourthPoint2.status == this.expansionType)) {
-              var _group3 = [];
-
-              _group3.push(_rootPoint2);
-              _group3.push(_secondPoint2);
-              _group3.push(_thirdPoint2);
-              _group3.push(_fourthPoint2);
-
-              var _wrapper2 = new _Group2.default(_group3, '4x1');
-              if (this.isGroupUnique(marked, _wrapper2)) marked.push(_wrapper2);
+                var wrapper = new _Group2.default(group, str);
+                if (nonDontCares && this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
+              }
             }
           }
+
+          y /= 2;
         }
 
-        //marks vertical 'quads'
-        for (var _i6 = 0; _i6 < Math.pow(2, this.vars - 2); _i6++) {
-          var _rootPoint3 = this.get(_i6, 0);
-          var _secondPoint3 = this.get(_i6, 1);
-          var _thirdPoint3 = this.get(_i6, 2);
-          var _fourthPoint3 = this.get(_i6, 3);
-
-          if (_rootPoint3.status != !this.expansionType && _secondPoint3.status != !this.expansionType && _thirdPoint3.status != !this.expansionType && _fourthPoint3.status != !this.expansionType && (_rootPoint3.status == this.expansionType || _secondPoint3.status == this.expansionType || _thirdPoint3.status == this.expansionType || _fourthPoint3.status == this.expansionType)) {
-            var _group4 = [];
-
-            _group4.push(_rootPoint3);
-            _group4.push(_secondPoint3);
-            _group4.push(_thirdPoint3);
-            _group4.push(_fourthPoint3);
-
-            var _wrapper3 = new _Group2.default(_group4, '1x4');
-            if (this.isGroupUnique(marked, _wrapper3)) marked.push(_wrapper3);
-          }
-        }
-
-        //marks 'boxes'
-        for (var _i7 = 0; _i7 < 4; _i7++) {
-          // TODO: MAKE MATH.POW STUFF A CONSTANT
-          for (var _j2 = 0; _j2 < Math.pow(2, this.vars - 2); _j2++) {
-            var _rootPoint4 = this.get(_j2, _i7);
-            var _secondPoint4 = this.get(_j2 + 1, _i7);
-            var _thirdPoint4 = this.get(_j2, _i7 + 1);
-            var _fourthPoint4 = this.get(_j2 + 1, _i7 + 1);
-
-            if (_rootPoint4.status != !this.expansionType && _secondPoint4.status != !this.expansionType && _thirdPoint4.status != !this.expansionType && _fourthPoint4.status != !this.expansionType && (_rootPoint4.status == this.expansionType || _secondPoint4.status == this.expansionType || _thirdPoint4.status == this.expansionType || _fourthPoint4.status == this.expansionType)) {
-              var _group5 = [];
-
-              _group5.push(_rootPoint4);
-              _group5.push(_secondPoint4);
-              _group5.push(_thirdPoint4);
-              _group5.push(_fourthPoint4);
-
-              var _wrapper4 = new _Group2.default(_group5, '2x2');
-              if (this.isGroupUnique(marked, _wrapper4)) marked.push(_wrapper4);
-            }
-          }
-        }
+        x /= 2;
       }
-
-      // TODO: remove verbose searches
-      if (numActive >= 2) {
-        for (var _i8 = 0; _i8 < Math.pow(2, this.vars - 2); _i8++) {
-          for (var _j3 = 0; _j3 < 4; _j3++) {
-            var _rootPoint5 = this.get(_i8, _j3);
-
-            //horizontal
-            var _secondPoint5 = this.get(_i8 + 1, _j3);
-            if (_rootPoint5.status != !this.expansionType && _secondPoint5.status != !this.expansionType && (_rootPoint5.status == this.expansionType || _secondPoint5.status == this.expansionType)) {
-              var _group6 = [];
-              _group6.push(_rootPoint5);
-              _group6.push(_secondPoint5);
-
-              var _wrapper5 = new _Group2.default(_group6, '2x1');
-              if (this.isGroupUnique(marked, _wrapper5)) marked.push(_wrapper5);
-            }
-
-            //vertical
-            var secondPointV = this.get(_i8, _j3 + 1);
-            if (_rootPoint5.status != !this.expansionType && secondPointV.status != !this.expansionType && (_rootPoint5.status == this.expansionType || secondPointV.status == this.expansionType)) {
-              var _group7 = [];
-              _group7.push(_rootPoint5);
-              _group7.push(secondPointV);
-
-              var _wrapper6 = new _Group2.default(_group7, '1x2');
-              if (this.isGroupUnique(marked, _wrapper6)) marked.push(_wrapper6);
-            }
-          }
-        }
-      }
-
-      if (numActive >= 1) {
-        for (var _i9 = 0; _i9 < Math.pow(2, this.vars - 2); _i9++) {
-          for (var _j4 = 0; _j4 < 4; _j4++) {
-            var _group8 = [];
-            var point = this.get(_i9, _j4);
-            _group8.push(point);
-
-            var _wrapper7 = new _Group2.default(_group8, '1x1');
-            if (point.status == this.expansionType && this.isGroupUnique(marked, _wrapper7)) marked.push(_wrapper7);
-          }
-        }
-      }
+      console.log(marked);
+      // // marks every cell and returns early to save proccessing time
+      // if(numActive >= Math.pow(2, this.vars)) {
+      //   // draws if all are on
+      //   let group = [];
+      //
+      //   for(let i = 0; i < this.cells.length; i++) {
+      //     for(let j = 0; j < this.cells[i].length; j++) {
+      //       group.push(this.cells[i][j]);
+      //     }
+      //   }
+      //
+      //   marked.push(new Group(group, 'full'));
+      //
+      //   return marked; // all are marked
+      // }
 
       return marked;
     }
@@ -4778,10 +4653,10 @@ var CellArray = function () {
         var numberOfOnes = 0;
         var matches = 0;
 
-        for (var _j5 = 0; _j5 < groups[i].cellArray.length; _j5++) {
+        for (var _j = 0; _j < groups[i].cellArray.length; _j++) {
           // for each point in the group
           // if it is a 1 increment number of ones otherwise skip this loop
-          if (groups[i].cellArray[_j5].status != this.expansionType) continue;
+          if (groups[i].cellArray[_j].status != this.expansionType) continue;
 
           numberOfOnes++;
 
@@ -4789,7 +4664,7 @@ var CellArray = function () {
           // increment matches if it is in a different group than the current group
           pairing: for (var k = 0; k < groups.length; k++) {
             for (var l = 0; l < groups[k].cellArray.length; l++) {
-              if (groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[_j5].x === groups[k].cellArray[l].x && groups[i].cellArray[_j5].y === groups[k].cellArray[l].y && i !== k) {
+              if (groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[_j].x === groups[k].cellArray[l].x && groups[i].cellArray[_j].y === groups[k].cellArray[l].y && i !== k) {
                 matches++;
                 break pairing; // used to break out of both loops
               }
@@ -4820,10 +4695,10 @@ var CellArray = function () {
         var numberOfOnes = 0;
         var matches = 0;
 
-        for (var _j6 = 0; _j6 < groups[i].cellArray.length; _j6++) {
+        for (var _j2 = 0; _j2 < groups[i].cellArray.length; _j2++) {
           // for each point in the group
           // if it is a 1 increment number of ones otherwise skip this loop
-          if (groups[i].cellArray[_j6].status != this.expansionType) continue;
+          if (groups[i].cellArray[_j2].status != this.expansionType) continue;
 
           numberOfOnes++;
 
@@ -4831,7 +4706,7 @@ var CellArray = function () {
           // increment matches if it is in a different group than the current group
           pairing: for (var k = 0; k < groups.length; k++) {
             for (var l = 0; l < groups[k].cellArray.length; l++) {
-              if (groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[_j6].x === groups[k].cellArray[l].x && groups[i].cellArray[_j6].y === groups[k].cellArray[l].y && i !== k) {
+              if (groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[_j2].x === groups[k].cellArray[l].x && groups[i].cellArray[_j2].y === groups[k].cellArray[l].y && i !== k) {
                 matches++;
                 break pairing; // used to break out of both loops
               }
@@ -4921,11 +4796,11 @@ var CellArray = function () {
         }
       }
 
-      for (var _i10 = 0; _i10 < opts.length; _i10++) {
+      for (var _i2 = 0; _i2 < opts.length; _i2++) {
         var _keeps = [];
 
-        for (var _j7 = _i10; _j7 < opts.length; _j7++) {
-          _keeps.push(opts[_j7]);
+        for (var _j3 = _i2; _j3 < opts.length; _j3++) {
+          _keeps.push(opts[_j3]);
 
           var _formula = this.simplifyGroupsR(temp, _keeps);
           _formula = this.simplifyGroups(_formula); // used to remove hiding opts
