@@ -1,4 +1,4 @@
-/*
+/**
 * Returns the binary representation of the number left padded to the number of vars
 * @param {number} num -  a number to be converted
 * @param {number} vars - the amount of vars the number should be represented in
@@ -13,6 +13,10 @@ export function decToBin(num, vars) {
   return pad.substring(0, pad.length - num.length) + num;
 }
 
+
+/**
+* converts binarynumber to graycode
+*/
 export function toGrayCode(n) {
     if (n < 0) {
         throw new RangeError("cannot convert negative numbers to gray code");
@@ -20,7 +24,7 @@ export function toGrayCode(n) {
     return n ^ (n >>> 1);
 }
 
-/*
+/**
 * Returns the result of applying Elimination Theorem to the two terms
 * @param {string} term1 - the first term
 * @param {string} term2 - the second term
@@ -43,7 +47,7 @@ export function eliminateTerms(term1, term2) {
   return term1.join('');
 }
 
-/*
+/**
 * Returns a group of terms solved using Elimination Theorem, represented as a string
 * @param {Array.Cell}  group - group to simplify
 * @param {number} vars - number of vars for the kmap
@@ -69,7 +73,7 @@ export function solveGroup(group, vars) {
   return eliminateTerms(decToBin(term1, vars), decToBin(term2, vars));
 }
 
-/*
+/**
 * Returns a variable representation of a term
 * @param {string} term
 * @return {string} the converted term
@@ -88,7 +92,7 @@ export function binaryTermToVarTerm(term) {
   return string;
 }
 
-/*
+/**
 * Returns the expansion formula for the array of groups
 * @param {Array.Array.Cell} groups - groups to expand
 * @param {number} vars - number of vars in the map
@@ -108,6 +112,9 @@ export function getExpansionFormula(groups, vars, expansionType) {
   }
 }
 
+/**
+
+*/
 export function getMintermExpansionFormula(groups, vars) {
   var formula = 'F = ';
 
@@ -128,6 +135,9 @@ export function getMintermExpansionFormula(groups, vars) {
   return formula;
 }
 
+/**
+
+*/
 export function getMaxtermExpansionFormula(groups, vars) {
   var formula = 'F = ';
 

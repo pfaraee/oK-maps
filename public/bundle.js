@@ -3903,8 +3903,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var c = document.getElementById('canvas');
 var ctx = c.getContext('2d');
-
-var scale = c.width / 5; //scale of the cells;
+var width = c.width;
 
 // ----------------------------------------
 // Fixes problem with bad scaling on chrome
@@ -3930,6 +3929,7 @@ ctx.scale(ratio, ratio);
 var minterms = [];
 var numVars = 3;
 var expansionType = 1;
+var scale = Renderer.calculateScale(width, numVars);
 
 Renderer.drawMap(ctx, numVars, scale);
 var cellArray = new _CellArray2.default(numVars, expansionType);
@@ -4094,6 +4094,7 @@ slider.noUiSlider.on('update', function () {
 
   numVars = Number(slider.noUiSlider.get());
   cellArray = new _CellArray2.default(numVars, expansionType);
+  scale = Renderer.calculateScale(width, numVars);
 
   //rewdraws map
   renderMap();
@@ -4202,7 +4203,7 @@ function initializeFormulaBox(formulaBox) {
   }
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_47fccc5f.js","/")
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_dbcb0724.js","/")
 },{"./modules/BinaryFunctions":7,"./modules/CellArray":9,"./modules/Renderer":12,"buffer":2,"pBGvAp":5}],7:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
@@ -4218,7 +4219,7 @@ exports.binaryTermToVarTerm = binaryTermToVarTerm;
 exports.getExpansionFormula = getExpansionFormula;
 exports.getMintermExpansionFormula = getMintermExpansionFormula;
 exports.getMaxtermExpansionFormula = getMaxtermExpansionFormula;
-/*
+/**
 * Returns the binary representation of the number left padded to the number of vars
 * @param {number} num -  a number to be converted
 * @param {number} vars - the amount of vars the number should be represented in
@@ -4233,6 +4234,9 @@ function decToBin(num, vars) {
   return pad.substring(0, pad.length - num.length) + num;
 }
 
+/**
+* converts binarynumber to graycode
+*/
 function toGrayCode(n) {
   if (n < 0) {
     throw new RangeError("cannot convert negative numbers to gray code");
@@ -4240,7 +4244,7 @@ function toGrayCode(n) {
   return n ^ n >>> 1;
 }
 
-/*
+/**
 * Returns the result of applying Elimination Theorem to the two terms
 * @param {string} term1 - the first term
 * @param {string} term2 - the second term
@@ -4263,7 +4267,7 @@ function eliminateTerms(term1, term2) {
   return term1.join('');
 }
 
-/*
+/**
 * Returns a group of terms solved using Elimination Theorem, represented as a string
 * @param {Array.Cell}  group - group to simplify
 * @param {number} vars - number of vars for the kmap
@@ -4289,7 +4293,7 @@ function solveGroup(group, vars) {
   return eliminateTerms(decToBin(term1, vars), decToBin(term2, vars));
 }
 
-/*
+/**
 * Returns a variable representation of a term
 * @param {string} term
 * @return {string} the converted term
@@ -4308,7 +4312,7 @@ function binaryTermToVarTerm(term) {
   return string;
 }
 
-/*
+/**
 * Returns the expansion formula for the array of groups
 * @param {Array.Array.Cell} groups - groups to expand
 * @param {number} vars - number of vars in the map
@@ -4328,6 +4332,9 @@ function getExpansionFormula(groups, vars, expansionType) {
   }
 }
 
+/**
+
+*/
 function getMintermExpansionFormula(groups, vars) {
   var formula = 'F = ';
 
@@ -4348,6 +4355,9 @@ function getMintermExpansionFormula(groups, vars) {
   return formula;
 }
 
+/**
+
+*/
 function getMaxtermExpansionFormula(groups, vars) {
   var formula = 'F = ';
 
@@ -5031,6 +5041,7 @@ exports.default = Point;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.calculateScale = calculateScale;
 exports.drawMap = drawMap;
 exports.reset = reset;
 exports.drawGroups = drawGroups;
@@ -5046,6 +5057,12 @@ var _BinaryFunctions = require('./BinaryFunctions');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function calculateScale(width, vars) {
+  var maxAxisVars = vars - Math.floor(vars / 2);
+
+  return width / (Math.pow(2, maxAxisVars) + 1);
+}
+
 function drawMap(ctx, vars, scale) {
   // amount of vars for each Axis
   var xVars = vars - Math.floor(vars / 2) - vars % 2;
@@ -5055,7 +5072,6 @@ function drawMap(ctx, vars, scale) {
   var xLength = Math.pow(2, xVars);
   var yLength = Math.pow(2, yVars);
 
-  scale /= yLength / 4;
   var fontSize = scale / 4;
   ctx.font = fontSize + 'pt Roboto';
 

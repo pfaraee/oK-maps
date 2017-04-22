@@ -1,6 +1,12 @@
 import chroma from 'chroma-js';
 import { decToBin, toGrayCode } from './BinaryFunctions';
 
+export function calculateScale(width, vars) {
+  let maxAxisVars = vars - Math.floor(vars / 2);
+
+  return (width / (Math.pow(2, maxAxisVars) + 1));
+}
+
 export function drawMap(ctx, vars, scale) {
   // amount of vars for each Axis
   let xVars = vars - Math.floor(vars / 2) - (vars % 2);
@@ -10,7 +16,6 @@ export function drawMap(ctx, vars, scale) {
   let xLength = Math.pow(2, xVars);
   let yLength = Math.pow(2, yVars);
 
-  scale /= (yLength/4);
   let fontSize = scale / 4;
   ctx.font = `${fontSize}pt Roboto`;
 

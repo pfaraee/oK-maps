@@ -4,8 +4,7 @@ import { getExpansionFormula, decToBin, toGrayCode } from './modules/BinaryFunct
 
 var c = document.getElementById('canvas');
 var ctx = c.getContext('2d');
-
-var scale = c.width / 5 //scale of the cells;
+const width = c.width;
 
 // ----------------------------------------
 // Fixes problem with bad scaling on chrome
@@ -35,6 +34,7 @@ ctx.scale(ratio, ratio);
 var minterms = [];
 var numVars = 3;
 var expansionType = 1;
+var scale = Renderer.calculateScale(width, numVars);
 
 Renderer.drawMap(ctx, numVars, scale);
 var cellArray = new CellArray(numVars, expansionType);
@@ -199,6 +199,7 @@ slider.noUiSlider.on('update', function () {
 
   numVars = Number(slider.noUiSlider.get());
   cellArray = new CellArray(numVars, expansionType);
+  scale = Renderer.calculateScale(width, numVars);
 
   //rewdraws map
   renderMap();
