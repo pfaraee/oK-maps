@@ -31,6 +31,7 @@ export default class CellArray {
       let y = i % maxYAxis;
 
       // odd columns are in regular order, evens are in reverse
+      // TODO: rewrite this so the logic rewrites what y is instead of two different blocks
       if((x + 1) % 2) {
         this.cells[x][y] = new Cell(grayCode, x, y);
       } else {
@@ -69,7 +70,6 @@ export default class CellArray {
     // used to skip some group checks
     let numActive = 0;
 
-    // TODO: refractor to work with maxterms
     for(let i = 0; i < this.cells.length; i++) {
       for(let j = 0; j < this.cells[i].length; j++) {
         if(this.cells[i][j].status != !this.expansionType) numActive++;
@@ -77,7 +77,7 @@ export default class CellArray {
     }
 
     // marks every cell and returns early to save proccessing time
-    if(numActive >= Math.pow(2, this.lets)) {
+    if(numActive >= Math.pow(2, this.vars)) { 
       // draws if all are on
       let group = [];
 

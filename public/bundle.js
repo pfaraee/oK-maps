@@ -4203,7 +4203,7 @@ function initializeFormulaBox(formulaBox) {
   }
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_4b7fcb26.js","/")
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_3292612f.js","/")
 },{"./modules/BinaryFunctions":7,"./modules/CellArray":9,"./modules/Renderer":12,"buffer":2,"pBGvAp":5}],7:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
@@ -4490,6 +4490,7 @@ var CellArray = function () {
       var y = _i % maxYAxis;
 
       // odd columns are in regular order, evens are in reverse
+      // TODO: rewrite this so the logic rewrites what y is instead of two different blocks
       if ((x + 1) % 2) {
         this.cells[x][y] = new _Cell2.default(grayCode, x, y);
       } else {
@@ -4535,7 +4536,6 @@ var CellArray = function () {
       // used to skip some group checks
       var numActive = 0;
 
-      // TODO: refractor to work with maxterms
       for (var i = 0; i < this.cells.length; i++) {
         for (var j = 0; j < this.cells[i].length; j++) {
           if (this.cells[i][j].status != !this.expansionType) numActive++;
@@ -4543,7 +4543,7 @@ var CellArray = function () {
       }
 
       // marks every cell and returns early to save proccessing time
-      if (numActive >= Math.pow(2, this.lets)) {
+      if (numActive >= Math.pow(2, this.vars)) {
         // draws if all are on
         var group = [];
 
