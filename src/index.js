@@ -69,7 +69,7 @@ noUiSlider.create(slider, {
  step: 1,
  range: {
    'min': [3],
-   'max': [6]
+   'max': [9]
  },
  pips: {
    mode: 'steps',
@@ -214,7 +214,9 @@ slider.noUiSlider.on('update', function () {
 
   // rerenders map every time truth tables changes
   $('input:radio').click(function() {
+    console.time("Mark and recalculate map: ");
     renderMap();
+    console.timeEnd("Mark and recalculate map: ");
   });
 });
 

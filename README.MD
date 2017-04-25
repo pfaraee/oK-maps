@@ -1,6 +1,6 @@
 # oK-Maps
 
-Online K-map generator for 3-6 vars, featuring real 3D visualization.
+Online K-map generator for **hypothetically** n vars, featuring real 3D visualization.
 
 ## Todo
 #### Variables
@@ -9,7 +9,7 @@ Online K-map generator for 3-6 vars, featuring real 3D visualization.
 
 #### Expansions
 ##### Need
-- [ ] Shows simplified formula (XOR's NOR's)
+- [ ] Shows simplified formula (XOR's EQUIV's, etc)
 
 ##### Nice to have
 - [ ] Calc the amount of required gates for every map, display on hover over tooltip
@@ -17,7 +17,9 @@ Online K-map generator for 3-6 vars, featuring real 3D visualization.
 #### Misc:
 - [ ] Use GoogleWebFontLoader to assure Roboto is loaded before drawing text in the canvas
 - [ ] Draw loops for every p-subcube instead of colors
+- [ ] refractor formula box and truth table code into handlebars.js
 - [ ] Make responsive to mobile and tablets
+- [ ] Write solid tests for entire codebase
 
 <!--## License
 

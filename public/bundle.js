@@ -3964,7 +3964,7 @@ noUiSlider.create(slider, {
   step: 1,
   range: {
     'min': [3],
-    'max': [6]
+    'max': [9]
   },
   pips: {
     mode: 'steps',
@@ -4109,7 +4109,9 @@ slider.noUiSlider.on('update', function () {
 
   // rerenders map every time truth tables changes
   $('input:radio').click(function () {
+    console.time("Mark and recalculate map: ");
     renderMap();
+    console.timeEnd("Mark and recalculate map: ");
   });
 });
 
@@ -4203,7 +4205,7 @@ function initializeFormulaBox(formulaBox) {
   }
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_ae5084b3.js","/")
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_261690f1.js","/")
 },{"./modules/BinaryFunctions":7,"./modules/CellArray":9,"./modules/Renderer":12,"buffer":2,"pBGvAp":5}],7:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
@@ -4554,12 +4556,13 @@ var CellArray = function () {
               var nonDontCares = 0;
               var group = [];
 
+              var str = x + 'x' + y;
+
               //loop through every point in the shape
               shapeChecking: {
                 for (var k = 0; k < x; k++) {
                   for (var l = 0; l < y; l++) {
                     var point = this.get(i + k, j + l);
-                    console.log(point);
 
                     if (point.status != !this.expansionType) {
                       group.push(point);
@@ -4569,10 +4572,6 @@ var CellArray = function () {
                     }
                   }
                 }
-
-                var str = x + 'x' + y;
-
-                console.log(str);
 
                 var wrapper = new _Group2.default(group, str);
                 if (nonDontCares && this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
@@ -4585,7 +4584,6 @@ var CellArray = function () {
 
         x /= 2;
       }
-      console.log(marked);
       // // marks every cell and returns early to save proccessing time
       // if(numActive >= Math.pow(2, this.vars)) {
       //   // draws if all are on
@@ -4780,7 +4778,7 @@ var CellArray = function () {
         if (!group.pImp) opts.push(group);
       });
 
-      console.log("length: " + opts.length);
+      // console.log("length: " + opts.length);
 
       for (var i = 0; i < opts.length; i++) {
         var keeps = [];

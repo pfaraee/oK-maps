@@ -88,12 +88,13 @@ export default class CellArray {
             let nonDontCares = 0;
             let group = [];
 
+            let str = `${x}x${y}`;
+
             //loop through every point in the shape
             shapeChecking: {
               for(let k = 0; k < x; k++) {
                 for(let l = 0; l < y; l++) {
                   let point = this.get(i + k, j + l);
-                  console.log(point);
 
                   if(point.status != !this.expansionType) {
                     group.push(point);
@@ -103,10 +104,6 @@ export default class CellArray {
                   }
                 }
               }
-
-              let str = `${x}x${y}`;
-
-              console.log(str);
 
               let wrapper = new Group(group, str);
               if(nonDontCares && this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
@@ -119,7 +116,6 @@ export default class CellArray {
 
       x /= 2;
     }
-    console.log(marked);
     // // marks every cell and returns early to save proccessing time
     // if(numActive >= Math.pow(2, this.vars)) {
     //   // draws if all are on
@@ -303,7 +299,7 @@ export default class CellArray {
       if(!group.pImp) opts.push(group);
     });
 
-    console.log("length: " + opts.length);
+    // console.log("length: " + opts.length);
 
     for(let i = 0; i < opts.length; i++) {
       let keeps = [];
