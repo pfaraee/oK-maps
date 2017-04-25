@@ -3964,7 +3964,7 @@ noUiSlider.create(slider, {
   step: 1,
   range: {
     'min': [3],
-    'max': [9]
+    'max': [8]
   },
   pips: {
     mode: 'steps',
@@ -4205,7 +4205,7 @@ function initializeFormulaBox(formulaBox) {
   }
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_261690f1.js","/")
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_55857448.js","/")
 },{"./modules/BinaryFunctions":7,"./modules/CellArray":9,"./modules/Renderer":12,"buffer":2,"pBGvAp":5}],7:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
@@ -4262,8 +4262,8 @@ function eliminateTerms(term1, term2) {
     if (term1[i] != term2[i]) {
       term1[i] = '-';
       numDiff++;
-      if (numDiff > 1) throw new Error('Unsimplifiable Terms Given');
     }
+    if (numDiff > 1) throw new Error('Unsimplifiable Terms Given');
   }
 
   return term1.join('');
@@ -4566,7 +4566,7 @@ var CellArray = function () {
 
                     if (point.status != !this.expansionType) {
                       group.push(point);
-                      if (point.status = this.expansionType) nonDontCares++;
+                      if (point.status == this.expansionType) nonDontCares++;
                     } else {
                       break shapeChecking;
                     }
@@ -5056,7 +5056,6 @@ function drawGroups(ctx, scale, groups) {
     }
 
     for (var j = 0; j < groups[i].cellArray.length; j++) {
-      console.log(rgb);
       mark(ctx, scale, groups[i].cellArray[j].x, groups[i].cellArray[j].y, 0, rgb);
     }
   }

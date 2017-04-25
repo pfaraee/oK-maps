@@ -20,6 +20,7 @@ Online K-map generator for **hypothetically** n vars, featuring real 3D visualiz
 - [ ] refractor formula box and truth table code into handlebars.js
 - [ ] Make responsive to mobile and tablets
 - [ ] Write solid tests for entire codebase
+- [ ] Fix scaling for drawing so a 10 var kmap looks good
 
 <!--## License
 

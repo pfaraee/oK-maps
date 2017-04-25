@@ -69,7 +69,7 @@ noUiSlider.create(slider, {
  step: 1,
  range: {
    'min': [3],
-   'max': [9]
+   'max': [8]
  },
  pips: {
    mode: 'steps',

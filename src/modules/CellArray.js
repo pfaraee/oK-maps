@@ -98,7 +98,7 @@ export default class CellArray {
 
                   if(point.status != !this.expansionType) {
                     group.push(point);
-                    if(point.status = this.expansionType) nonDontCares++;
+                    if(point.status == this.expansionType) nonDontCares++;
                   } else {
                     break shapeChecking;
                   }

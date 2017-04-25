@@ -127,7 +127,6 @@ export function drawGroups(ctx, scale, groups) {
     }
 
     for(let j = 0; j < groups[i].cellArray.length; j++) {
-      console.log(rgb);
       mark(ctx, scale, groups[i].cellArray[j].x, groups[i].cellArray[j].y, 0,
         rgb);
     }

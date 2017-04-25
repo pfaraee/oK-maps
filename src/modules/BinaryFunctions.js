@@ -40,8 +40,8 @@ export function eliminateTerms(term1, term2) {
     if(term1[i] != term2[i]) {
       term1[i] = '-';
       numDiff++;
-      if (numDiff > 1) throw new Error('Unsimplifiable Terms Given');
     }
+    if (numDiff > 1) throw new Error('Unsimplifiable Terms Given');
   }
 
   return term1.join('');
