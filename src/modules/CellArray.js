@@ -299,7 +299,6 @@ export default class CellArray {
       if(!group.pImp) opts.push(group);
     });
 
-    // console.log("length: " + opts.length);
 
     for(let i = 0; i < opts.length; i++) {
       let keeps = [];

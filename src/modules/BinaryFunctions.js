@@ -159,7 +159,7 @@ export function getMaxtermExpansionFormula(groups, vars) {
         formula += term[j+1];
         j++;
       }
-      console.log(term[j]);
+
       if(j != term.length - 1) formula += ' + ';
     }
 

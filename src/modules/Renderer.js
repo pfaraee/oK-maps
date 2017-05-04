@@ -140,12 +140,15 @@ export function drawGroups(ctx, scale, groups) {
  * @param {Array.Cell} cells - array of cells
  */
 export function drawTerms(ctx, scale, cells) {
-  ctx.font = '20pt Roboto';
 
   for(let i = 0; i < cells.length; i ++) {
     for(let j = 0; j < cells[i].length; j++) {
-      ctx.fillText(cells[i][j].status, scale * (cells[i][j].x + 1)+ scale / 2,
+      ctx.font = '20pt Roboto';
+      ctx.fillText(cells[i][j].status, scale * (cells[i][j].x + 1) + scale / 2,
       scale * (cells[i][j].y + 1) + scale / 2);
+      ctx.font = '10pt Roboto';
+      ctx.fillText(cells[i][j].val, scale * (cells[i][j].x + 1) + scale / 4 * 3,
+      scale * (cells[i][j].y + 1) + scale / 4 * 3);
     }
   }
 }

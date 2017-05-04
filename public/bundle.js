@@ -4205,7 +4205,7 @@ function initializeFormulaBox(formulaBox) {
   }
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_55857448.js","/")
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_5c88f9c4.js","/")
 },{"./modules/BinaryFunctions":7,"./modules/CellArray":9,"./modules/Renderer":12,"buffer":2,"pBGvAp":5}],7:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
@@ -4381,7 +4381,7 @@ function getMaxtermExpansionFormula(groups, vars) {
         formula += term[j + 1];
         j++;
       }
-      console.log(term[j]);
+
       if (j != term.length - 1) formula += ' + ';
     }
 
@@ -4778,8 +4778,6 @@ var CellArray = function () {
         if (!group.pImp) opts.push(group);
       });
 
-      // console.log("length: " + opts.length);
-
       for (var i = 0; i < opts.length; i++) {
         var keeps = [];
 
@@ -5068,11 +5066,13 @@ function drawGroups(ctx, scale, groups) {
  * @param {Array.Cell} cells - array of cells
  */
 function drawTerms(ctx, scale, cells) {
-  ctx.font = '20pt Roboto';
 
   for (var i = 0; i < cells.length; i++) {
     for (var j = 0; j < cells[i].length; j++) {
+      ctx.font = '20pt Roboto';
       ctx.fillText(cells[i][j].status, scale * (cells[i][j].x + 1) + scale / 2, scale * (cells[i][j].y + 1) + scale / 2);
+      ctx.font = '10pt Roboto';
+      ctx.fillText(cells[i][j].val, scale * (cells[i][j].x + 1) + scale / 4 * 3, scale * (cells[i][j].y + 1) + scale / 4 * 3);
     }
   }
 }

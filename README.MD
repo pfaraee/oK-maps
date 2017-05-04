@@ -4,8 +4,7 @@ Online K-map generator for **hypothetically** n vars, featuring real 3D visualiz
 
 ## Todo
 #### Variables
-- [ ] 5 vars
-- [ ] 6 vars
+- [ ] n vars
 
 #### Expansions
 ##### Need
