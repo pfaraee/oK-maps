@@ -25,5 +25,12 @@ Online K-map generator for **hypothetically** n vars, featuring real 3D visualiz
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details-->
 
+## How to Form New Sub Cubes
+
+![alt text](https://latex.codecogs.com/gif.latex?|&space;\sum&space;_{x1}&space;-&space;\sum&space;_{x2}&space;|&space;\in&space;2^n "Formula")
+
+where x1 and x2 are sub-cubes of the same size
+
+
 ## Acknowledgments
 * Professor Wilkinson
