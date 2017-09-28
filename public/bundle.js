@@ -4124,24 +4124,24 @@ function renderMap() {
 
   formulaBox.innerHTML = '';
 
-  for (var i = 0; i < formulas.length; i++) {
-    var li = document.createElement('li');
+  // for(let i = 0; i < formulas.length; i ++) {
+  //   let li = document.createElement('li');
 
-    li.className = 'collection-item';
-    if (i === 0) li.className += ' active';
+  //   li.className = 'collection-item';
+  //   if(i === 0) li.className += ' active';
 
-    li.dataset.formula = JSON.stringify(formulas[i]);
+  //   li.dataset.formula = JSON.stringify(formulas[i]);
 
-    var formula = (0, _BinaryFunctions.getExpansionFormula)(formulas[i], numVars, cellArray.expansionType);
+  //   let formula = getExpansionFormula(formulas[i], numVars, cellArray.expansionType);
 
-    li.appendChild(document.createTextNode(formula));
+  //   li.appendChild(document.createTextNode(formula));
 
-    formulaBox.appendChild(li);
-  }
+  //   formulaBox.appendChild(li);
+  // }
 
-  initializeFormulaBox(formulaBox);
-
-  Renderer.drawGroups(ctx, scale, formulas[0]);
+  // initializeFormulaBox(formulaBox);
+  var formula = (0, _BinaryFunctions.getExpansionFormula)(formulas[0], numVars, cellArray.expansionType);
+  Renderer.drawGroups(ctx, scale, formulas);
 
   // Terms rendered last so they are not covered by groups
   Renderer.drawTerms(ctx, scale, cellArray.cells);
@@ -4157,10 +4157,15 @@ function calculateMap() {
 
   // marks the groups
   var groups = cellArray.getGroups();
+  console.log(groups);
+  groups = cellArray.simplifyMinterms(groups);
+  console.log(groups);
+  console.log("end");
 
-  groups = cellArray.markPrimeImplicants(groups);
+  // groups = cellArray.markPrimeImplicants(groups);
 
-  return cellArray.getPossibleFormulas(groups);
+  // return cellArray.getPossibleFormulas(groups);
+  return groups;
 }
 
 function getMinterms() {
@@ -4205,7 +4210,7 @@ function initializeFormulaBox(formulaBox) {
   }
 }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_5c88f9c4.js","/")
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_634f5a5f.js","/")
 },{"./modules/BinaryFunctions":7,"./modules/CellArray":9,"./modules/Renderer":12,"buffer":2,"pBGvAp":5}],7:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
@@ -4502,17 +4507,29 @@ var CellArray = function () {
 
     this.maxX = maxXAxis;
     this.maxY = maxYAxis;
+
+    this.minterms = [];
   }
 
   _createClass(CellArray, [{
     key: 'mark',
     value: function mark(terms) {
+      // reset minterms
+      this.minterms = [];
+      this.minterms[0] = [];
+
       for (var i = 0; i < terms.length; i++) {
         // for each term
         for (var j = 0; j < this.cells.length; j++) {
           for (var k = 0; k < this.cells[j].length; k++) {
             if (this.cells[j][k].val === i) {
               this.cells[j][k].status = terms[i];
+
+              if (this.cells[j][k].status != !this.expansionType) {
+                var cell = new _Cell2.default(this.cells[j][k].val, this.cells[j][k].x, this.cells[j][k].y);
+                var cellArray = [cell];
+                this.minterms[0].push(new _Group2.default(cellArray, "TEST"));
+              }
             }
           }
         }
@@ -4534,81 +4551,100 @@ var CellArray = function () {
   }, {
     key: 'getGroups',
     value: function getGroups() {
-      var marked = [];
-      // used to skip some group checks
-      // let numActive = 0;
-      //
-      // for(let i = 0; i < this.cells.length; i++) {
-      //   for(let j = 0; j < this.cells[i].length; j++) {
-      //     if(this.cells[i][j].status != !this.expansionType) numActive++;
-      //   }
-      // }
+      for (var i = 0; i < this.minterms.length; i++) {
+        for (var j = 0; j < this.minterms[i].length; j++) {
+          // for each minterm
+          var subcube = this.minterms[i][j]; // root subcuve
 
-      var x = this.maxX;
-      // two outer loops calculate the shapes
-      while (x >= 1) {
-        var y = this.maxY;
 
-        while (y >= 1) {
-          //loops through each root cell
-          for (var i = 0; i < this.maxX; i++) {
-            for (var j = 0; j < this.maxY; j++) {
-              var nonDontCares = 0;
-              var group = [];
+          var root = subcube.cellArray[0]; // root minterm
+          // console.log(subcube);
+          for (var k = 0; k < this.vars; k++) {
+            // toggles every bit
+            var nextTermVal = root.val ^ 1 << k; // gets the next pairable number EX: 7 -> 6 -> 5 - > 3 -> 15
 
-              var str = x + 'x' + y;
-
-              //loop through every point in the shape
-              shapeChecking: {
-                for (var k = 0; k < x; k++) {
-                  for (var l = 0; l < y; l++) {
-                    var point = this.get(i + k, j + l);
-
-                    if (point.status != !this.expansionType) {
-                      group.push(point);
-                      if (point.status == this.expansionType) nonDontCares++;
-                    } else {
-                      break shapeChecking;
-                    }
-                  }
+            for (var l = 0; l < this.minterms[i].length; l++) {
+              // checks all other mintemrs
+              var nextTerm = this.minterms[i][l];
+              // console.log((nextTerm.cellArray[0].val == nextTermVal) && (j != l));
+              // is correct val, and isnt the same as the root subcube
+              if (nextTerm.cellArray[0].val == nextTermVal && j != l && this.isUnitable(subcube, nextTerm)) {
+                // console.log(nextTermVal);
+                // makes the new subcube's cellArray
+                var cellArray = [];
+                for (var x1 = 0; x1 < subcube.cellArray.length; x1++) {
+                  // push original terms
+                  cellArray.push(subcube.cellArray[x1]);
                 }
 
-                var wrapper = new _Group2.default(group, str);
-                if (nonDontCares && this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
+                for (var x2 = 0; x2 < nextTerm.cellArray.length; x2++) {
+                  // push new terms
+                  cellArray.push(nextTerm.cellArray[x2]);
+                }
+                // console.log(cellArray);
+
+                var group = new _Group2.default(cellArray, "TEST");
+                //makes sure a range exists for subcube dimensions
+                if (!this.minterms[i + 1]) this.minterms[i + 1] = new Array(0);
+
+                if (this.isGroupUnique(this.minterms[i + 1], group)) this.minterms[i + 1].push(group);
               }
             }
           }
-
-          y /= 2;
         }
-
-        x /= 2;
       }
-      // // marks every cell and returns early to save proccessing time
-      // if(numActive >= Math.pow(2, this.vars)) {
-      //   // draws if all are on
-      //   let group = [];
-      //
-      //   for(let i = 0; i < this.cells.length; i++) {
-      //     for(let j = 0; j < this.cells[i].length; j++) {
-      //       group.push(this.cells[i][j]);
-      //     }
-      //   }
-      //
-      //   marked.push(new Group(group, 'full'));
-      //
-      //   return marked; // all are marked
-      // }
 
-      return marked;
+      return this.minterms;
     }
 
     // mods coords for overflow and swaps them because array xy and map xy are flipped
 
   }, {
     key: 'get',
-    value: function get(x, y) {
-      return this.cells[x % this.maxX][y % this.maxY];
+    value: function get(arr, x, y) {
+      x >= 0 ? x %= this.maxX : x = this.maxX - 1 + x;
+      y >= 0 ? y %= this.maxY : y = this.maxY - 1 + y;
+
+      return arr[x][y];
+    }
+  }, {
+    key: 'isUnitable',
+    value: function isUnitable(group1, group2) {
+      if (group1.cellArray.length != group2.cellArray.length) return false;
+
+      var unitingBit = this.getDifferingBit(group1.cellArray[0].val, group2.cellArray[0].val);
+
+      for (var i = 1; i < group1.cellArray.length; i++) {
+        // for every cell 
+        var nextBit = this.getDifferingBit(group1.cellArray[i].val, group2.cellArray[i].val); // finds the uniting bit for this pair
+
+        if (nextBit != unitingBit) return false;
+      }
+
+      return true;
+    }
+
+    // returns if minterm2 is unitable with minterm1
+
+  }, {
+    key: 'getDifferingBit',
+    value: function getDifferingBit(minterm1, minterm2) {
+      var term = void 0;
+
+      for (var i = 0; i < this.vars; i++) {
+        term = minterm1 ^ 1 << i;
+        if (minterm2 == term) return i;
+      }
+
+      return -1;
+    }
+
+    // searches minterm array and finds if there is a minterm that matches those coords
+
+  }, {
+    key: 'searchTerms',
+    value: function searchTerms(minterms, x, y) {
+      for (var i = 0; i < minterms.length; i++) {}
     }
   }, {
     key: 'isGroupUnique',
@@ -4637,10 +4673,57 @@ var CellArray = function () {
 
       return true;
     }
+
+    // removes groups from minterms if more than half of the group is inside another goup
+
   }, {
-    key: 'simplifyGroups',
-    value: function simplifyGroups(groups, keep) {
-      checking: for (var i = groups.length - 1; i >= 0; i--) {
+    key: 'simplifyMinterms',
+    value: function simplifyMinterms(minterms) {
+      for (var i = 0; i < minterms.length; i++) {
+        for (var j = 0; j < minterms[i].length; j++) {
+
+          var subcube = minterms[i][j];
+          //for every subcube, if more than half of that subcubes subcubes are in other subcubes, it can be removed;
+          var removalLength = subcube.cellArray.length / 2;
+          var foreignPoints = 0;
+
+          for (var k = 0; k < subcube.cellArray.length; k++) {
+            var minterm = subcube.cellArray[k];
+            // console.log("minterm val: " + minterm.val);
+
+            foreignPointChecking:
+            //check every other subcube
+            for (var x = 0; x < minterms.length; x++) {
+              for (var y = 0; y < minterms[x].length; y++) {
+
+                //check all those subcube's minterms
+                for (var z = 0; z < minterms[x][y].cellArray.length; z++) {
+                  // console.log("z: " + z + " pair val: " + minterms[x][y].cellArray[z].val);
+
+                  if (minterms[x][y].cellArray[z].val == minterm.val && (i != x || j != y || k != z)) {
+                    foreignPoints++;
+                    break foreignPointChecking;
+                  }
+                }
+              }
+            }
+          }
+          console.log("foreign points: " + foreignPoints + " removal length: " + removalLength);
+          // if foreign points > removalLength remove the subcube
+          if (foreignPoints > removalLength) {
+            console.log("remove the point");
+            minterms[i].splice(j, 1); // removes that subcube
+            j--;
+          }
+        }
+      }
+
+      return this.minterms;
+    }
+  }, {
+    key: 'simplifyGroupsR',
+    value: function simplifyGroupsR(groups, keep) {
+      checking: for (var i = 0; i < groups.length; i++) {
         // for each group
         if (keep) {
           for (var j = 0; j < keep.length; j++) {
@@ -4663,48 +4746,6 @@ var CellArray = function () {
           pairing: for (var k = 0; k < groups.length; k++) {
             for (var l = 0; l < groups[k].cellArray.length; l++) {
               if (groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[_j].x === groups[k].cellArray[l].x && groups[i].cellArray[_j].y === groups[k].cellArray[l].y && i !== k) {
-                matches++;
-                break pairing; // used to break out of both loops
-              }
-            }
-          }
-        }
-
-        // removes the group and decrements the count by 1
-        if (matches && numberOfOnes && numberOfOnes === matches) {
-          groups.splice(i, 1);
-          i--;
-        }
-      }
-      //TODO: ask professor if this is good
-      return groups;
-    }
-  }, {
-    key: 'simplifyGroupsR',
-    value: function simplifyGroupsR(groups, keep) {
-      checking: for (var i = 0; i < groups.length; i++) {
-        // for each group
-        if (keep) {
-          for (var j = 0; j < keep.length; j++) {
-            if (JSON.stringify(groups[i]) === JSON.stringify(keep[j])) continue checking;
-          }
-        }
-
-        var numberOfOnes = 0;
-        var matches = 0;
-
-        for (var _j2 = 0; _j2 < groups[i].cellArray.length; _j2++) {
-          // for each point in the group
-          // if it is a 1 increment number of ones otherwise skip this loop
-          if (groups[i].cellArray[_j2].status != this.expansionType) continue;
-
-          numberOfOnes++;
-
-          // check every 1 in the array of groups for matching (x & y's) and
-          // increment matches if it is in a different group than the current group
-          pairing: for (var k = 0; k < groups.length; k++) {
-            for (var l = 0; l < groups[k].cellArray.length; l++) {
-              if (groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[_j2].x === groups[k].cellArray[l].x && groups[i].cellArray[_j2].y === groups[k].cellArray[l].y && i !== k) {
                 matches++;
                 break pairing; // used to break out of both loops
               }
@@ -4795,8 +4836,8 @@ var CellArray = function () {
       for (var _i2 = 0; _i2 < opts.length; _i2++) {
         var _keeps = [];
 
-        for (var _j3 = _i2; _j3 < opts.length; _j3++) {
-          _keeps.push(opts[_j3]);
+        for (var _j2 = _i2; _j2 < opts.length; _j2++) {
+          _keeps.push(opts[_j2]);
 
           var _formula = this.simplifyGroupsR(temp, _keeps);
           _formula = this.simplifyGroups(_formula); // used to remove hiding opts
@@ -5012,49 +5053,51 @@ function drawGroups(ctx, scale, groups) {
   for (var i = 0; i < groups.length; i++) {
     var rgb = void 0;
 
-    if (groups[i].pImp) {
-      rgb = hexToRGB('#f44336', 0.7);
-    } else {
-      var color = colors.splice(Math.floor(Math.random() * colors.length - 1), 1);
-      rgb = hexToRGB(color[0], 0.5);
-    }
+    for (var j = 0; j < groups[i].length; j++) {
+      if (groups[i][j].pImp) {
+        rgb = hexToRGB('#f44336', 0.7);
+      } else {
+        var color = colors.splice(Math.floor(Math.random() * colors.length - 1), 1);
+        rgb = hexToRGB(color[0], 0.5);
+      }
 
-    switch (groups[i].type) {
-      case '2x2':
-        draw2x2(ctx, scale, groups[i], rgb);
-        continue;
-        break;
-      case '2x4':
-        draw2x4(ctx, scale, groups[i], rgb);
-        continue;
-        break;
-      case '1x2':
-        draw1x2(ctx, scale, groups[i], rgb);
-        continue;
-        break;
-      case '1x4':
-        draw1x4(ctx, scale, groups[i], rgb);
-        continue;
-        break;
-      case '2x1':
-        draw2x1(ctx, scale, groups[i], rgb);
-        continue;
-        break;
-      case '4x1':
-        draw4x1(ctx, scale, groups[i], rgb);
-        continue;
-        break;
-      case '1x1':
-        mark(ctx, scale, groups[i].cellArray[0].x, groups[i].cellArray[0].y, 0, rgb);
-        continue;
-        break;
-      default:
-        console.log('error: ' + groups[i].type);
-        break;
-    }
+      switch (groups[i][j].type) {
+        case '2x2':
+          draw2x2(ctx, scale, groups[i][j], rgb);
+          continue;
+          break;
+        case '2x4':
+          draw2x4(ctx, scale, groups[i][j], rgb);
+          continue;
+          break;
+        case '1x2':
+          draw1x2(ctx, scale, groups[i][j], rgb);
+          continue;
+          break;
+        case '1x4':
+          draw1x4(ctx, scale, groups[i][j], rgb);
+          continue;
+          break;
+        case '2x1':
+          draw2x1(ctx, scale, groups[i][j], rgb);
+          continue;
+          break;
+        case '4x1':
+          draw4x1(ctx, scale, groups[i][j], rgb);
+          continue;
+          break;
+        case '1x1':
+          mark(ctx, scale, groups[i][j].cellArray[0].x, groups[i][j].cellArray[0].y, 0, rgb);
+          continue;
+          break;
+        default:
+          console.log('error: ' + groups[i][j].type);
+          break;
+      }
 
-    for (var j = 0; j < groups[i].cellArray.length; j++) {
-      mark(ctx, scale, groups[i].cellArray[j].x, groups[i].cellArray[j].y, 0, rgb);
+      for (var k = 0; k < groups[i][j].cellArray.length; k++) {
+        mark(ctx, scale, groups[i][j].cellArray[k].x, groups[i][j].cellArray[k].y, 0, rgb);
+      }
     }
   }
 }

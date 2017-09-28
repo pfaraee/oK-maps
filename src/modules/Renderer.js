@@ -83,53 +83,56 @@ export function drawGroups(ctx, scale, groups) {
   for(let i = 0; i < groups.length; i++) {
     let rgb;
 
-    if(groups[i].pImp) {
-      rgb = hexToRGB('#f44336', 0.7);
-    } else {
-      let color = colors.splice(Math.floor(Math.random() * colors.length - 1),
-      1);
-      rgb = hexToRGB(color[0], 0.5);
-    }
+    for(let j = 0; j < groups[i].length; j++) {
+      if(groups[i][j].pImp) {
+        rgb = hexToRGB('#f44336', 0.7);
+      } else {
+        let color = colors.splice(Math.floor(Math.random() * colors.length - 1),
+        1);
+        rgb = hexToRGB(color[0], 0.5);
+      }
 
-    switch (groups[i].type) {
-      case '2x2':
-        draw2x2(ctx, scale, groups[i], rgb);
-        continue;
-        break;
-      case '2x4':
-        draw2x4(ctx, scale, groups[i], rgb);
-        continue;
-        break;
-      case '1x2':
-        draw1x2(ctx, scale, groups[i], rgb);
-        continue;
-        break;
-      case '1x4':
-        draw1x4(ctx, scale, groups[i], rgb);
-        continue;
-        break;
-      case '2x1':
-        draw2x1(ctx, scale, groups[i], rgb);
-        continue;
-        break;
-      case '4x1':
-        draw4x1(ctx, scale, groups[i], rgb);
-        continue;
-        break;
-      case '1x1':
-        mark(ctx, scale, groups[i].cellArray[0].x, groups[i].cellArray[0].y, 0,
+      switch (groups[i][j].type) {
+        case '2x2':
+          draw2x2(ctx, scale, groups[i][j], rgb);
+          continue;
+          break;
+        case '2x4':
+          draw2x4(ctx, scale, groups[i][j], rgb);
+          continue;
+          break;
+        case '1x2':
+          draw1x2(ctx, scale, groups[i][j], rgb);
+          continue;
+          break;
+        case '1x4':
+          draw1x4(ctx, scale, groups[i][j], rgb);
+          continue;
+          break;
+        case '2x1':
+          draw2x1(ctx, scale, groups[i][j], rgb);
+          continue;
+          break;
+        case '4x1':
+          draw4x1(ctx, scale, groups[i][j], rgb);
+          continue;
+          break;
+        case '1x1':
+          mark(ctx, scale, groups[i][j].cellArray[0].x, groups[i][j].cellArray[0].y, 0,
+            rgb);
+          continue;
+          break;
+        default:
+          console.log('error: ' + groups[i][j].type);
+          break;
+      }
+
+      for(let k = 0; k < groups[i][j].cellArray.length; k++) {
+        mark(ctx, scale, groups[i][j].cellArray[k].x, groups[i][j].cellArray[k].y, 0,
           rgb);
-        continue;
-        break;
-      default:
-        console.log('error: ' + groups[i].type);
-        break;
+      }
     }
-
-    for(let j = 0; j < groups[i].cellArray.length; j++) {
-      mark(ctx, scale, groups[i].cellArray[j].x, groups[i].cellArray[j].y, 0,
-        rgb);
-    }
+    
   }
 }
 

@@ -41,18 +41,31 @@ export default class CellArray {
 
     this.maxX = maxXAxis;
     this.maxY = maxYAxis;
+
+    this.minterms = [];
   }
 
   mark(terms) {
+    // reset minterms
+    this.minterms = [];
+    this.minterms[0] = [];
+
     for(let i = 0; i < terms.length; i++) { // for each term
       for(let j = 0; j < this.cells.length; j++) {
         for(let k = 0; k < this.cells[j].length; k++) {
           if(this.cells[j][k].val === i) {
             this.cells[j][k].status = terms[i];
+
+            if(this.cells[j][k].status != !this.expansionType) {
+              let cell = new Cell(this.cells[j][k].val, this.cells[j][k].x, this.cells[j][k].y);
+              let cellArray = [cell];
+              this.minterms[0].push(new Group(cellArray, "TEST"));
+            }
           }
         }
       }
     }
+
   }
 
   reset() {
@@ -65,79 +78,88 @@ export default class CellArray {
 
   //Writing this near midnight
   // TODO: write it better later
-  getGroups() {
-    let marked = [];
-    // used to skip some group checks
-    // let numActive = 0;
-    //
-    // for(let i = 0; i < this.cells.length; i++) {
-    //   for(let j = 0; j < this.cells[i].length; j++) {
-    //     if(this.cells[i][j].status != !this.expansionType) numActive++;
-    //   }
-    // }
+  getGroups() {    
+    for (let i = 0; i < this.minterms.length; i++) {
+      for(let j = 0; j < this.minterms[i].length; j++) { // for each minterm
+        let subcube = this.minterms[i][j]; // root subcuve
+        
 
-    let x = this.maxX;
-    // two outer loops calculate the shapes
-    while(x >= 1) {
-      let y = this.maxY;
+        let root = subcube.cellArray[0]; // root minterm
+        // console.log(subcube);
+        for (let k = 0; k < this.vars; k++) { // toggles every bit
+          let nextTermVal = root.val ^ 1 << k; // gets the next pairable number EX: 7 -> 6 -> 5 - > 3 -> 15
 
-      while(y >= 1) {
-        //loops through each root cell
-        for(let i = 0; i < this.maxX; i++) {
-          for(let j = 0; j < this.maxY; j++) {
-            let nonDontCares = 0;
-            let group = [];
-
-            let str = `${x}x${y}`;
-
-            //loop through every point in the shape
-            shapeChecking: {
-              for(let k = 0; k < x; k++) {
-                for(let l = 0; l < y; l++) {
-                  let point = this.get(i + k, j + l);
-
-                  if(point.status != !this.expansionType) {
-                    group.push(point);
-                    if(point.status == this.expansionType) nonDontCares++;
-                  } else {
-                    break shapeChecking;
-                  }
-                }
+          for (let l = 0; l < this.minterms[i].length; l++) { // checks all other mintemrs
+            let nextTerm = this.minterms[i][l];
+            // console.log((nextTerm.cellArray[0].val == nextTermVal) && (j != l));
+            // is correct val, and isnt the same as the root subcube
+            if((nextTerm.cellArray[0].val == nextTermVal) && (j != l) && this.isUnitable(subcube, nextTerm)) {
+              // console.log(nextTermVal);
+              // makes the new subcube's cellArray
+              let cellArray = [];
+              for(let x1 = 0; x1 < subcube.cellArray.length; x1++) { // push original terms
+                cellArray.push(subcube.cellArray[x1]);
               }
 
-              let wrapper = new Group(group, str);
-              if(nonDontCares && this.isGroupUnique(marked, wrapper)) marked.push(wrapper);
+              for (let x2 = 0; x2 < nextTerm.cellArray.length; x2++) { // push new terms
+                cellArray.push(nextTerm.cellArray[x2]);
+              }
+              // console.log(cellArray);
+
+              let group = new Group(cellArray, "TEST");
+              //makes sure a range exists for subcube dimensions
+              if(!this.minterms[i + 1]) this.minterms[i + 1] = new Array(0);
+
+              if (this.isGroupUnique(this.minterms[i + 1], group)) this.minterms[i + 1].push(group);
             }
           }
         }
 
-        y /= 2;
       }
-
-      x /= 2;
     }
-    // // marks every cell and returns early to save proccessing time
-    // if(numActive >= Math.pow(2, this.vars)) {
-    //   // draws if all are on
-    //   let group = [];
-    //
-    //   for(let i = 0; i < this.cells.length; i++) {
-    //     for(let j = 0; j < this.cells[i].length; j++) {
-    //       group.push(this.cells[i][j]);
-    //     }
-    //   }
-    //
-    //   marked.push(new Group(group, 'full'));
-    //
-    //   return marked; // all are marked
-    // }
 
-    return marked;
+    return this.minterms;
   }
 
   // mods coords for overflow and swaps them because array xy and map xy are flipped
-  get(x, y){
-    return this.cells[x % this.maxX][y % this.maxY];
+  get(arr, x, y){
+    x >= 0 ? x %= this.maxX : x = this.maxX - 1 + x;
+    y >= 0 ? y %= this.maxY : y = this.maxY - 1 + y;
+
+    return arr[x][y];
+  }
+
+  isUnitable(group1, group2) {
+    if(group1.cellArray.length != group2.cellArray.length) return false;
+
+    let unitingBit = this.getDifferingBit(group1.cellArray[0].val, group2.cellArray[0].val);
+   
+    for(let i = 1; i < group1.cellArray.length; i++) { // for every cell 
+      let nextBit = this.getDifferingBit(group1.cellArray[i].val, group2.cellArray[i].val); // finds the uniting bit for this pair
+
+      if(nextBit != unitingBit) return false;
+    }
+
+    return true;
+  }
+
+  // returns if minterm2 is unitable with minterm1
+  getDifferingBit(minterm1, minterm2) {
+    let term;
+
+    for(let i =0; i < this.vars; i++) {
+      term = minterm1 ^ 1 << i;
+      if(minterm2 == term) return i;
+    }
+
+    return -1;
+  }
+
+  // searches minterm array and finds if there is a minterm that matches those coords
+  searchTerms(minterms, x, y) {
+    for(let i = 0; i < minterms.length; i++) {
+      
+    }
   }
 
   isGroupUnique(marked, group) {
@@ -151,7 +173,7 @@ export default class CellArray {
 
       for(let j = 0; j < group.cellArray.length; j++) { // for each point in the group
         for(let k = 0; k < marked[i].cellArray.length; k ++) { // for each point in the marked group
-          if((marked[i].cellArray[k].x == group.cellArray[j].x) && (marked[i].cellArray[k].y == group.cellArray[j].y)){
+          if(((marked[i].cellArray[k].x == group.cellArray[j].x) && (marked[i].cellArray[k].y == group.cellArray[j].y))) {
               matches.push(group[j]);
           }
         }
@@ -163,46 +185,48 @@ export default class CellArray {
     return true;
   }
 
-  simplifyGroups(groups, keep) {
-    checking:
-    for(let i = groups.length - 1; i >= 0; i--) { // for each group
-      if(keep){
-        for(let j = 0; j < keep.length; j++) {
-          if(JSON.stringify(groups[i]) === JSON.stringify(keep[j])) continue checking;
-        }
-      }
+  // removes groups from minterms if more than half of the group is inside another goup
+  simplifyMinterms(minterms) {
+    for(let i = 0; i < minterms.length; i++) {
+      for(let j = 0; j < minterms[i].length; j++) {
 
-      let numberOfOnes = 0;
-      let matches = 0;
+        let subcube = minterms[i][j];
+        //for every subcube, if more than half of that subcubes subcubes are in other subcubes, it can be removed;
+        let removalLength = subcube.cellArray.length / 2;
+        let foreignPoints = 0;
 
-      for(let j = 0; j < groups[i].cellArray.length; j++) { // for each point in the group
-        // if it is a 1 increment number of ones otherwise skip this loop
-        if(groups[i].cellArray[j].status != this.expansionType) continue;
+        for(let k = 0; k < subcube.cellArray.length; k++) {
+          let minterm = subcube.cellArray[k];
+          // console.log("minterm val: " + minterm.val);
 
-        numberOfOnes++;
+          foreignPointChecking:
+          //check every other subcube
+          for(let x = 0; x < minterms.length; x++) {
+            for (let y = 0; y < minterms[x].length; y++) {
 
-        // check every 1 in the array of groups for matching (x & y's) and
-        // increment matches if it is in a different group than the current group
-        pairing:
-        for(let k = 0; k < groups.length; k++) {
-          for(let l = 0; l < groups[k].cellArray.length; l++) {
-            if(groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[j].x === groups[k].cellArray[l].x
-            && groups[i].cellArray[j].y === groups[k].cellArray[l].y && i !== k) {
-              matches++;
-              break pairing; // used to break out of both loops
+              //check all those subcube's minterms
+              for(let z = 0; z < minterms[x][y].cellArray.length; z++) {
+                // console.log("z: " + z + " pair val: " + minterms[x][y].cellArray[z].val);
+
+                if(minterms[x][y].cellArray[z].val == minterm.val && (i != x || j != y || k != z)) {
+                  foreignPoints++;
+                  break foreignPointChecking;
+                }
+              }
             }
           }
         }
-      }
-
-      // removes the group and decrements the count by 1
-      if(matches && numberOfOnes && numberOfOnes === matches) {
-        groups.splice(i, 1);
-        i--;
+        console.log("foreign points: " + foreignPoints + " removal length: " + removalLength);
+        // if foreign points > removalLength remove the subcube
+        if(foreignPoints > removalLength) {
+          console.log("remove the point");
+          minterms[i].splice(j, 1); // removes that subcube
+          j--;
+        }
       }
     }
-    //TODO: ask professor if this is good
-    return groups;
+
+    return this.minterms;
   }
 
   simplifyGroupsR(groups, keep){

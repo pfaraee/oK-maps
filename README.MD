@@ -4,7 +4,7 @@ Online K-map generator for **hypothetically** n vars, featuring real 3D visualiz
 
 ## Todo
 #### Variables
-- [ ] n vars
+- [] n vars
 
 #### Expansions
 ##### Need
@@ -16,7 +16,7 @@ Online K-map generator for **hypothetically** n vars, featuring real 3D visualiz
 #### Misc:
 - [ ] Use GoogleWebFontLoader to assure Roboto is loaded before drawing text in the canvas
 - [ ] Draw loops for every p-subcube instead of colors
-- [ ] refractor formula box and truth table code into handlebars.js
+- [ ] refractor formula box and truth table code into vue.js
 - [ ] Make responsive to mobile and tablets
 - [ ] Write solid tests for entire codebase
 - [ ] Fix scaling for drawing so a 10 var kmap looks good
@@ -24,12 +24,6 @@ Online K-map generator for **hypothetically** n vars, featuring real 3D visualiz
 <!--## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details-->
-
-## How to Form New Sub Cubes
-
-![alt text](https://latex.codecogs.com/gif.latex?|&space;\sum&space;_{x1}&space;-&space;\sum&space;_{x2}&space;|&space;\in&space;2^n "Formula")
-
-where x1 and x2 are sub-cubes of the same size
 
 
 ## Acknowledgments

@@ -229,24 +229,24 @@ function renderMap() {
 
   formulaBox.innerHTML = '';
 
-  for(let i = 0; i < formulas.length; i ++) {
-    let li = document.createElement('li');
+  // for(let i = 0; i < formulas.length; i ++) {
+  //   let li = document.createElement('li');
 
-    li.className = 'collection-item';
-    if(i === 0) li.className += ' active';
+  //   li.className = 'collection-item';
+  //   if(i === 0) li.className += ' active';
 
-    li.dataset.formula = JSON.stringify(formulas[i]);
+  //   li.dataset.formula = JSON.stringify(formulas[i]);
 
-    let formula = getExpansionFormula(formulas[i], numVars, cellArray.expansionType);
+  //   let formula = getExpansionFormula(formulas[i], numVars, cellArray.expansionType);
 
-    li.appendChild(document.createTextNode(formula));
+  //   li.appendChild(document.createTextNode(formula));
 
-    formulaBox.appendChild(li);
-  }
+  //   formulaBox.appendChild(li);
+  // }
 
-  initializeFormulaBox(formulaBox);
-
-  Renderer.drawGroups(ctx, scale, formulas[0]);
+  // initializeFormulaBox(formulaBox);
+  let formula = getExpansionFormula(formulas[0], numVars, cellArray.expansionType);
+  Renderer.drawGroups(ctx, scale, formulas);
 
   // Terms rendered last so they are not covered by groups
   Renderer.drawTerms(ctx, scale, cellArray.cells);
@@ -262,10 +262,15 @@ function calculateMap() {
 
   // marks the groups
   let groups = cellArray.getGroups();
+  console.log(groups);
+  groups = cellArray.simplifyMinterms(groups);
+  console.log(groups);
+  console.log("end");
 
-  groups = cellArray.markPrimeImplicants(groups);
+  // groups = cellArray.markPrimeImplicants(groups);
 
-  return cellArray.getPossibleFormulas(groups);
+  // return cellArray.getPossibleFormulas(groups);
+  return groups;
 }
 
 function getMinterms() {
