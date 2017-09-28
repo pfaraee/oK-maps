@@ -22024,14 +22024,22 @@ var _Renderer2 = _interopRequireDefault(_Renderer);
 
 var _Templates = require('./modules/Templates');
 
+var _CellArray = require('./modules/CellArray');
+
+var _CellArray2 = _interopRequireDefault(_CellArray);
+
+var _BinaryFunctions = require('./modules/BinaryFunctions');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // -------------------
 // Initial K-map setup
 // -------------------
+var formulaBox = document.getElementById('expansion');
 var minterms = [];
 var expansionType = 1;
 var numVars = 3; // default
+var cellArray = new _CellArray2.default(numVars, expansionType);
 
 // render map
 var stage = new _konva2.default.Stage({
@@ -22043,19 +22051,12 @@ var stage = new _konva2.default.Stage({
 var renderer = new _Renderer2.default(stage, numVars);
 renderMap();
 
-// import CellArray from './modules/CellArray';
-// import { getExpansionFormula, decToBin, toGrayCode } from './modules/BinaryFunctions';
-
-
-// var cellArray = new CellArray(numVars, expansionType);
-
 // document.addEventListener('keypress', function (event) {
 //   if(event.keyCode == 13) {
 //     renderer.drawMap();
 //   }
 // });
 
-// var formulaBox = document.getElementById('expansion');
 
 // -----------------------------
 // Sets up expansion type switch
@@ -22064,7 +22065,7 @@ var expansionTypeSwitch = document.getElementById('expansionType');
 
 expansionTypeSwitch.addEventListener('change', function (event) {
   expansionType = Number(!event.target.checked);
-  // cellArray.expansionType = expansionType;
+  cellArray.expansionType = expansionType;
   renderMap();
 });
 
@@ -22090,7 +22091,6 @@ noUiSlider.create(slider, {
 slider.noUiSlider.on('update', function () {
   numVars = Number(slider.noUiSlider.get());
   renderer.vars = numVars;
-  renderer.drawMap();
 
   var truthTable = document.getElementById('truth-table');
 
@@ -22099,39 +22099,36 @@ slider.noUiSlider.on('update', function () {
     truthTable.removeChild(truthTable.firstChild);
   }
 
-  console.log(numVars);
-
   truthTable.innerHTML = (0, _Templates.tableTemplate)(numVars);
 
-  // cellArray = new CellArray(numVars, expansionType);
-  // scale = Renderer.calculateScale(width, numVars);
+  cellArray = new _CellArray2.default(numVars, expansionType);
 
   //rewdraws map
   renderMap();
 
-  // // default state of formula box
-  // var formulaBox = document.getElementById('expansion');
-  // formulaBox.innerHTML = '';
-  // let li = document.createElement('li');
-  // li.className = 'collection-item active';
-  // li.innerHTML = 'F =';
-  // formulaBox.appendChild(li);
+  // default state of formula box
+  formulaBox = document.getElementById('expansion');
+  formulaBox.innerHTML = '';
+  var li = document.createElement('li');
+  li.className = 'collection-item active';
+  li.innerHTML = 'F =';
+  formulaBox.appendChild(li);
 
-  // // rerenders map every time truth tables changes
-  // $('input:radio').click(function() {
-  //   console.time("Mark and recalculate map: ");
-  //   renderMap();
-  //   console.timeEnd("Mark and recalculate map: ");
-  // });
+  // rerenders map every time truth tables changes
+  $('input:radio').click(function () {
+    console.time("Mark and recalculate map: ");
+    renderMap();
+    console.timeEnd("Mark and recalculate map: ");
+  });
 });
 
 function renderMap() {
   renderer.drawMap();
 
   // resets map and returns formulas
-  // let formulas = calculateMap();
+  var formulas = calculateMap();
 
-  // formulaBox.innerHTML = '';
+  formulaBox.innerHTML = '';
 
   // for(let i = 0; i < formulas.length; i ++) {
   //   let li = document.createElement('li');
@@ -22147,80 +22144,78 @@ function renderMap() {
 
   //   formulaBox.appendChild(li);
   // }
-
-  // initializeFormulaBox(formulaBox);
-  // let formula = getExpansionFormula(formulas[0], numVars, cellArray.expansionType);
-  // Renderer.drawGroups(ctx, scale, formulas);
+  initializeFormulaBox(formulaBox);
+  // console.log('formulas', formulas);
+  var formula = (0, _BinaryFunctions.getExpansionFormula)(formulas[0], numVars, cellArray.expansionType);
+  // console.log(formula);
+  renderer.drawGroups(formulas);
 
   // Terms rendered last so they are not covered by groups
-  // Renderer.drawTerms(ctx, scale, cellArray.cells);
+  renderer.drawTerms(cellArray.cells);
+  console.log(renderer.stage);
 }
 
-// function calculateMap() {
-//   //resets cell array
-//   cellArray.reset();
+function calculateMap() {
+  //resets cell array
+  cellArray.reset();
 
-//   // marks the values from the truth table
-//   minterms = getMinterms();
-//   cellArray.mark(minterms);
+  // marks the values from the truth table
+  minterms = getMinterms();
+  cellArray.mark(minterms);
 
-//   // marks the groups
-//   let groups = cellArray.getGroups();
-//   console.log(groups);
-//   groups = cellArray.simplifyMinterms(groups);
-//   console.log(groups);
-//   console.log("end");
+  // marks the groups
+  var groups = cellArray.getGroups();
+  groups = cellArray.simplifyMinterms(groups);
+  // console.log(groups);
 
-//   // groups = cellArray.markPrimeImplicants(groups);
+  // groups = cellArray.markPrimeImplicants(groups);
 
-//   // return cellArray.getPossibleFormulas(groups);
-//   return groups;
-// }
+  // return cellArray.getPossibleFormulas(groups);
+  return groups;
+}
 
-// function getMinterms() {
-//   var temp = [];
+function getMinterms() {
+  var temp = [];
 
-//   for(let i = 0; i < Math.pow(2, numVars); i++) {
-//     var formGroup = document.getElementsByName('group' + i);
+  for (var i = 0; i < Math.pow(2, numVars); i++) {
+    var formGroup = document.getElementsByName('group' + i);
 
-//     for(let j = 0; j < formGroup.length; j++) {
-//       if(formGroup[j].checked == true) {
-//         temp[i] = formGroup[j].value;
-//       }
-//     }
-//   }
+    for (var j = 0; j < formGroup.length; j++) {
+      if (formGroup[j].checked == true) {
+        temp[i] = formGroup[j].value;
+      }
+    }
+  }
 
-//   return temp;
-// }
+  return temp;
+}
 
-// // Initializes formulas with
-// function initializeFormulaBox(formulaBox) {
-//   for (let i = 0; i < formulaBox.childNodes.length; i++) {
-//     formulaBox.childNodes[i].addEventListener('click', function (event) {
-//       for(let i = 0; i < formulaBox.childNodes.length; i++) {
-//         if(!formulaBox.childNodes[i].className || formulaBox.childNodes[i].className.includes('active')) {
-//           formulaBox.childNodes[i].className = 'collection-item';
-//         }
-//       }
+// Initializes formulas with
+function initializeFormulaBox(formulaBox) {
+  for (var i = 0; i < formulaBox.childNodes.length; i++) {
+    formulaBox.childNodes[i].addEventListener('click', function (event) {
+      for (var _i = 0; _i < formulaBox.childNodes.length; _i++) {
+        if (!formulaBox.childNodes[_i].className || formulaBox.childNodes[_i].className.includes('active')) {
+          formulaBox.childNodes[_i].className = 'collection-item';
+        }
+      }
 
-//       event.target.className += ' active';
+      event.target.className += ' active';
 
-//       if(!event.target.dataset.formula) return;
+      if (!event.target.dataset.formula) return;
 
-//       Renderer.reset(canvas);
+      renderer.drawMap();
+      renderer.drawTerms();
 
-//       Renderer.drawMap(ctx, numVars, scale);
+      var data = JSON.parse(event.target.dataset.formula);
 
-//       let data = JSON.parse(event.target.dataset.formula);
+      renderer.drawGroups(data);
+    });
+  }
+}
 
-//       Renderer.drawGroups(ctx, scale, data);
-//       Renderer.drawTerms(ctx, scale, cellArray.cells);
-//     });
-//   }
-// }
-
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_a5b50f3.js","/")
-},{"./modules/Renderer":10,"./modules/Templates":11,"buffer":3,"konva":6,"pBGvAp":7}],9:[function(require,module,exports){
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_5d596f05.js","/")
+},{"./modules/BinaryFunctions":9,"./modules/CellArray":11,"./modules/Renderer":14,"./modules/Templates":15,"buffer":3,"konva":6,"pBGvAp":7}],9:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
 
@@ -22414,6 +22409,557 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _Point2 = require('./Point');
+
+var _Point3 = _interopRequireDefault(_Point2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+// Cell class
+var Cell = function (_Point) {
+  _inherits(Cell, _Point);
+
+  function Cell(val, x, y) {
+    _classCallCheck(this, Cell);
+
+    if (typeof val !== 'number' || val % 1 !== 0 || val < 0) throw new Error('val must be a valid positive integer.');
+
+    var _this = _possibleConstructorReturn(this, (Cell.__proto__ || Object.getPrototypeOf(Cell)).call(this, x, y));
+
+    _this.val = Number(val);
+    _this.status = '';
+    return _this;
+  }
+
+  return Cell;
+}(_Point3.default);
+
+exports.default = Cell;
+
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/Cell.js","/modules")
+},{"./Point":13,"buffer":3,"pBGvAp":7}],11:[function(require,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Cell = require('./Cell');
+
+var _Cell2 = _interopRequireDefault(_Cell);
+
+var _Point = require('./Point');
+
+var _Point2 = _interopRequireDefault(_Point);
+
+var _Group = require('./Group');
+
+var _Group2 = _interopRequireDefault(_Group);
+
+var _BinaryFunctions = require('./BinaryFunctions');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var CellArray = function () {
+  function CellArray(vars, expansionType) {
+    _classCallCheck(this, CellArray);
+
+    this.vars = vars;
+    this.expansionType = expansionType;
+    this.cells = new Array();
+
+    // Genereates cell grid
+    var maxAxisVars = vars - Math.floor(vars / 2);
+    var maxYAxis = Math.pow(2, maxAxisVars);
+    var maxNum = Math.pow(2, vars);
+    var maxXAxis = maxNum / maxYAxis;
+
+    // Initializes empty 2d array
+    for (var i = 0; i < maxXAxis; i++) {
+      this.cells[i] = new Array();
+      this.cells[i].length = maxYAxis;
+    }
+
+    // Populates 2d array
+    for (var _i = 0; _i < maxNum; _i++) {
+      //number
+      var grayCode = (0, _BinaryFunctions.toGrayCode)(_i);
+
+      // coordinates
+      var x = Math.floor(_i / maxYAxis);
+      var y = _i % maxYAxis;
+
+      // odd columns are in regular order, evens are in reverse
+      // TODO: rewrite this so the logic rewrites what y is instead of two different blocks
+      if ((x + 1) % 2) {
+        this.cells[x][y] = new _Cell2.default(grayCode, x, y);
+      } else {
+        this.cells[x][maxYAxis - y - 1] = new _Cell2.default(grayCode, x, maxYAxis - y - 1);
+      }
+    }
+
+    this.maxX = maxXAxis;
+    this.maxY = maxYAxis;
+
+    this.minterms = [];
+  }
+
+  _createClass(CellArray, [{
+    key: 'mark',
+    value: function mark(terms) {
+      // reset minterms
+      this.minterms = [];
+      this.minterms[0] = [];
+
+      for (var i = 0; i < terms.length; i++) {
+        // for each term
+        for (var j = 0; j < this.cells.length; j++) {
+          for (var k = 0; k < this.cells[j].length; k++) {
+            if (this.cells[j][k].val === i) {
+              this.cells[j][k].status = terms[i];
+
+              if (this.cells[j][k].status != !this.expansionType) {
+                var cell = new _Cell2.default(this.cells[j][k].val, this.cells[j][k].x, this.cells[j][k].y);
+                var cellArray = [cell];
+                this.minterms[0].push(new _Group2.default(cellArray, "TEST"));
+              }
+            }
+          }
+        }
+      }
+    }
+  }, {
+    key: 'reset',
+    value: function reset() {
+      for (var i = 0; i < this.cells.length; i++) {
+        for (var j = 0; j < this.cells[i].length; j++) {
+          this.cells[i][j].status = '';
+        }
+      }
+    }
+
+    //Writing this near midnight
+    // TODO: write it better later
+
+  }, {
+    key: 'getGroups',
+    value: function getGroups() {
+      for (var i = 0; i < this.minterms.length; i++) {
+        for (var j = 0; j < this.minterms[i].length; j++) {
+          // for each minterm
+          var subcube = this.minterms[i][j]; // root subcuve
+
+
+          var root = subcube.cellArray[0]; // root minterm
+          // console.log(subcube);
+          for (var k = 0; k < this.vars; k++) {
+            // toggles every bit
+            var nextTermVal = root.val ^ 1 << k; // gets the next pairable number EX: 7 -> 6 -> 5 - > 3 -> 15
+
+            for (var l = 0; l < this.minterms[i].length; l++) {
+              // checks all other mintemrs
+              var nextTerm = this.minterms[i][l];
+              // console.log((nextTerm.cellArray[0].val == nextTermVal) && (j != l));
+              // is correct val, and isnt the same as the root subcube
+              if (nextTerm.cellArray[0].val == nextTermVal && j != l && this.isUnitable(subcube, nextTerm)) {
+                // console.log(nextTermVal);
+                // makes the new subcube's cellArray
+                var cellArray = [];
+                for (var x1 = 0; x1 < subcube.cellArray.length; x1++) {
+                  // push original terms
+                  cellArray.push(subcube.cellArray[x1]);
+                }
+
+                for (var x2 = 0; x2 < nextTerm.cellArray.length; x2++) {
+                  // push new terms
+                  cellArray.push(nextTerm.cellArray[x2]);
+                }
+                // console.log(cellArray);
+
+                var group = new _Group2.default(cellArray, "TEST");
+                //makes sure a range exists for subcube dimensions
+                if (!this.minterms[i + 1]) this.minterms[i + 1] = new Array(0);
+
+                if (this.isGroupUnique(this.minterms[i + 1], group)) this.minterms[i + 1].push(group);
+              }
+            }
+          }
+        }
+      }
+
+      return this.minterms;
+    }
+
+    // mods coords for overflow and swaps them because array xy and map xy are flipped
+
+  }, {
+    key: 'get',
+    value: function get(arr, x, y) {
+      x >= 0 ? x %= this.maxX : x = this.maxX - 1 + x;
+      y >= 0 ? y %= this.maxY : y = this.maxY - 1 + y;
+
+      return arr[x][y];
+    }
+  }, {
+    key: 'isUnitable',
+    value: function isUnitable(group1, group2) {
+      if (group1.cellArray.length != group2.cellArray.length) return false;
+
+      var unitingBit = this.getDifferingBit(group1.cellArray[0].val, group2.cellArray[0].val);
+
+      for (var i = 1; i < group1.cellArray.length; i++) {
+        // for every cell 
+        var nextBit = this.getDifferingBit(group1.cellArray[i].val, group2.cellArray[i].val); // finds the uniting bit for this pair
+
+        if (nextBit != unitingBit) return false;
+      }
+
+      return true;
+    }
+
+    // returns if minterm2 is unitable with minterm1
+
+  }, {
+    key: 'getDifferingBit',
+    value: function getDifferingBit(minterm1, minterm2) {
+      var term = void 0;
+
+      for (var i = 0; i < this.vars; i++) {
+        term = minterm1 ^ 1 << i;
+        if (minterm2 == term) return i;
+      }
+
+      return -1;
+    }
+
+    // searches minterm array and finds if there is a minterm that matches those coords
+
+  }, {
+    key: 'searchTerms',
+    value: function searchTerms(minterms, x, y) {
+      for (var i = 0; i < minterms.length; i++) {}
+    }
+  }, {
+    key: 'isGroupUnique',
+    value: function isGroupUnique(marked, group) {
+      if (typeof marked === 'undefined' || marked === null) {
+        console.log('marked is empty');
+        return true;
+      }
+
+      for (var i = 0; i < marked.length; i++) {
+        //for each marked group
+        var matches = [];
+
+        for (var j = 0; j < group.cellArray.length; j++) {
+          // for each point in the group
+          for (var k = 0; k < marked[i].cellArray.length; k++) {
+            // for each point in the marked group
+            if (marked[i].cellArray[k].x == group.cellArray[j].x && marked[i].cellArray[k].y == group.cellArray[j].y) {
+              matches.push(group[j]);
+            }
+          }
+        }
+
+        if (matches.length > group.cellArray.length / 2) return false;
+      }
+
+      return true;
+    }
+
+    // removes groups from minterms if more than half of the group is inside another goup
+
+  }, {
+    key: 'simplifyMinterms',
+    value: function simplifyMinterms(minterms) {
+      for (var i = 0; i < minterms.length; i++) {
+        for (var j = 0; j < minterms[i].length; j++) {
+
+          var subcube = minterms[i][j];
+          //for every subcube, if more than half of that subcubes subcubes are in other subcubes, it can be removed;
+          var removalLength = subcube.cellArray.length / 2;
+          var foreignPoints = 0;
+
+          for (var k = 0; k < subcube.cellArray.length; k++) {
+            var minterm = subcube.cellArray[k];
+            // console.log("minterm val: " + minterm.val);
+
+            foreignPointChecking:
+            //check every other subcube
+            for (var x = 0; x < minterms.length; x++) {
+              for (var y = 0; y < minterms[x].length; y++) {
+
+                //check all those subcube's minterms
+                for (var z = 0; z < minterms[x][y].cellArray.length; z++) {
+                  // console.log("z: " + z + " pair val: " + minterms[x][y].cellArray[z].val);
+
+                  if (minterms[x][y].cellArray[z].val == minterm.val && (i != x || j != y || k != z)) {
+                    foreignPoints++;
+                    break foreignPointChecking;
+                  }
+                }
+              }
+            }
+          }
+          // console.log("foreign points: " + foreignPoints + " removal length: " + removalLength);
+          // if foreign points > removalLength remove the subcube
+          if (foreignPoints > removalLength) {
+            // console.log("remove the point");
+            minterms[i].splice(j, 1); // removes that subcube
+            j--;
+          }
+        }
+      }
+
+      return this.minterms;
+    }
+  }, {
+    key: 'simplifyGroupsR',
+    value: function simplifyGroupsR(groups, keep) {
+      checking: for (var i = 0; i < groups.length; i++) {
+        // for each group
+        if (keep) {
+          for (var j = 0; j < keep.length; j++) {
+            if (JSON.stringify(groups[i]) === JSON.stringify(keep[j])) continue checking;
+          }
+        }
+
+        var numberOfOnes = 0;
+        var matches = 0;
+
+        for (var _j = 0; _j < groups[i].cellArray.length; _j++) {
+          // for each point in the group
+          // if it is a 1 increment number of ones otherwise skip this loop
+          if (groups[i].cellArray[_j].status != this.expansionType) continue;
+
+          numberOfOnes++;
+
+          // check every 1 in the array of groups for matching (x & y's) and
+          // increment matches if it is in a different group than the current group
+          pairing: for (var k = 0; k < groups.length; k++) {
+            for (var l = 0; l < groups[k].cellArray.length; l++) {
+              if (groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[_j].x === groups[k].cellArray[l].x && groups[i].cellArray[_j].y === groups[k].cellArray[l].y && i !== k) {
+                matches++;
+                break pairing; // used to break out of both loops
+              }
+            }
+          }
+        }
+
+        // removes the group and decrements the count by 1
+        if (matches && numberOfOnes && numberOfOnes === matches) {
+          groups.splice(i, 1);
+          i++;
+        }
+      }
+      //TODO: ask professor if this is good
+      return groups;
+    }
+  }, {
+    key: 'markPrimeImplicants',
+    value: function markPrimeImplicants(groups) {
+      for (var i = groups.length - 1; i >= 0; i--) {
+        // for each group
+        for (var j = 0; j < groups[i].cellArray.length; j++) {
+          // for each point in the group
+          var matches = 0;
+
+          // if it is a 1 increment number of ones otherwise skip this loop
+          if (groups[i].cellArray[j].status != this.expansionType) continue;
+
+          // check every 1 in the array of groups for matching (x & y's) and
+          // increment matches if it is in a different group than the current group
+          pairing: for (var k = 0; k < groups.length; k++) {
+            for (var l = 0; l < groups[k].cellArray.length; l++) {
+              if (groups[k].cellArray[l].status == this.expansionType && groups[i].cellArray[j].x === groups[k].cellArray[l].x && groups[i].cellArray[j].y === groups[k].cellArray[l].y && i !== k) {
+                matches++;
+                break pairing; // used to break out of both loops
+              }
+            }
+          }
+
+          if (!matches) {
+            groups[i].pImp = true;
+            break;
+          }
+        }
+      }
+      //TODO: ask professor if this is good
+      return groups;
+    }
+
+    /**
+     * returns all possible formulas
+     * @param {Array.Groups} groups - an array of marked groups
+     * @return {Array.Groups} array of possible groupings
+     */
+
+  }, {
+    key: 'getPossibleFormulas',
+    value: function getPossibleFormulas(groups) {
+      var temp = groups.slice();
+      var formulas = [];
+
+      var pImps = [];
+
+      groups.forEach(function (group) {
+        if (group.pImp) pImps.push(group);
+      });
+
+      var opts = [];
+
+      groups.forEach(function (group) {
+        if (!group.pImp) opts.push(group);
+      });
+
+      for (var i = 0; i < opts.length; i++) {
+        var keeps = [];
+
+        for (var j = i; j < opts.length; j++) {
+          keeps.push(opts[j]);
+
+          var formula = this.simplifyGroups(temp, keeps);
+          formula = this.simplifyGroups(formula); // used to remove hiding opts
+
+          if (this.isUniqueFormula(formulas, formula)) formulas.push(formula);
+          temp = groups.slice();
+        }
+      }
+
+      for (var _i2 = 0; _i2 < opts.length; _i2++) {
+        var _keeps = [];
+
+        for (var _j2 = _i2; _j2 < opts.length; _j2++) {
+          _keeps.push(opts[_j2]);
+
+          var _formula = this.simplifyGroupsR(temp, _keeps);
+          _formula = this.simplifyGroups(_formula); // used to remove hiding opts
+
+          if (this.isUniqueFormula(formulas, _formula)) formulas.push(_formula);
+          temp = groups.slice();
+        }
+      }
+
+      if (!opts.length) formulas.push(this.simplifyGroups(temp));
+
+      return formulas;
+    }
+
+    /**
+     * returns if the formula is unique to the array of formulas
+     * @param {Array.Groups} formulas - an array of simplified groups
+     * @param {Group} formulas - a simplified group
+     * @return {boolean} whether the group is unique or not
+     */
+
+  }, {
+    key: 'isUniqueFormula',
+    value: function isUniqueFormula(formulas, formula) {
+      for (var i = 0; i < formulas.length; i++) {
+        if (JSON.stringify(formulas[i]) === JSON.stringify(formula)) return false;
+      }
+
+      return true;
+    }
+
+    /**
+     * Converts cells to points
+     * @param {Array.Array.Cells} groups - a 2d array of cells
+     * @return {Array.Array.Point} a 2d array of points
+     */
+
+  }, {
+    key: 'cellsToPoints',
+    value: function cellsToPoints(groups) {
+      return groups.map(function (group) {
+        return group.map(function (cell) {
+          return new _Point2.default(cell.x, cell.y);
+        });
+      });
+    }
+  }]);
+
+  return CellArray;
+}();
+
+exports.default = CellArray;
+
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/CellArray.js","/modules")
+},{"./BinaryFunctions":9,"./Cell":10,"./Group":12,"./Point":13,"buffer":3,"pBGvAp":7}],12:[function(require,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/** Class representing a group. */
+var Group =
+/**
+   * Create a dot.
+   * @param {Array.Point} cellArray - array holding all the groups points
+   * @param {string} type - the type of group it is
+   */
+function Group(cellArray, type) {
+  _classCallCheck(this, Group);
+
+  this.cellArray = cellArray;
+  this.type = type;
+  this.pImp = false;
+};
+
+exports.default = Group;
+
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/Group.js","/modules")
+},{"buffer":3,"pBGvAp":7}],13:[function(require,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/** Class representing a point. */
+var Point =
+/**
+ * Create a point.
+ * @param {number} x - The x value.
+ * @param {number} y - The y value.
+ */
+function Point(x, y) {
+  _classCallCheck(this, Point);
+
+  if (x < 0 || y < 0) throw new Error('Coordinates must be positive');
+  this.x = x;
+  this.y = y;
+};
+
+exports.default = Point;
+
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/Point.js","/modules")
+},{"buffer":3,"pBGvAp":7}],14:[function(require,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _chromaJs = require('chroma-js');
@@ -22463,8 +23009,9 @@ var Renderer = function () {
     value: function drawMap() {
       this.stage.destroyChildren(); // IMPORTANT. resets map
 
-      var vars = this.vars; // these two added just so I can type less
+      var vars = this.vars; // added so i can type less
       var stage = this.stage;
+      var scale = this.calculateScale(stage.width(), vars);
 
       // amount of vars for each Axis
       var xVars = vars - Math.floor(vars / 2) - vars % 2;
@@ -22473,8 +23020,6 @@ var Renderer = function () {
       // cell length for each Axis
       var xLength = Math.pow(2, xVars);
       var yLength = Math.pow(2, yVars);
-
-      var scale = this.calculateScale(stage.width(), vars);
 
       var mainLayer = new Konva.Layer();
 
@@ -22564,143 +23109,130 @@ var Renderer = function () {
         mainLayer.add(_num);
       }
 
-      stage.add(mainLayer);
+      this.stage.add(mainLayer);
+    }
+
+    /**
+     * Marks every cell with its current status
+     * @param {Object} ctx - the context which you want to draw to
+     * @param {number} scale - the scale of the cells
+     * @param {Array.Cell} cells - array of cells
+     */
+
+  }, {
+    key: 'drawTerms',
+    value: function drawTerms(cells) {
+      var scale = this.calculateScale(this.stage.width(), this.vars);
+      var termLayer = new Konva.Layer();
+
+      for (var i = 0; i < cells.length; i++) {
+        for (var j = 0; j < cells[i].length; j++) {
+          var term = new Konva.Text({
+            text: cells[i][j].status,
+            fontSize: scale / 3,
+            fontFamily: 'Roboto',
+            fill: 'black'
+          });
+          term.x(i * scale + scale / 2 - term.width() / 2 + scale);
+          term.y(j * scale + scale / 2 - term.height() / 2 + scale);
+
+          termLayer.add(term);
+          // ctx.font = '10pt Roboto';
+          // ctx.fillText(cells[i][j].val, scale * (cells[i][j].x + 1) + scale / 4 * 3,
+          // scale * (cells[i][j].y + 1) + scale / 4 * 3);
+        }
+      }
+
+      this.stage.add(termLayer);
+    }
+
+    /**
+     * Marks a cell completely
+     * @param {number} x - the x coord of the cell
+     * @param {number} y - the y coord of the cell
+     * @param {string} color - the color of the cell
+     * @return {Rect} - Konva rect
+     */
+
+  }, {
+    key: 'mark',
+    value: function mark(x, y, color) {
+      var scale = this.calculateScale(this.stage.width(), this.vars);
+      var rect = new Konva.Rect({
+        x: x * scale + scale,
+        y: y * scale + scale,
+        width: scale,
+        height: scale,
+        fill: color,
+        strokeWidth: 1
+      });
+      console.log(rect.x());
+      return rect;
+    }
+
+    /**
+     * Draws every group onto the kmap
+     * @param {Array.Cell} groups - array of cells
+     */
+
+  }, {
+    key: 'drawGroups',
+    value: function drawGroups(groups) {
+      var colors = _chromaJs2.default.scale(['#9c27b0', '#3f51b5', '#03a9f4', '#009688', '#8bc34a', '#ffeb3b', '#ff9800']).colors(12);
+
+      var groupLayer = new Konva.Layer();
+
+      for (var i = 0; i < groups.length; i++) {
+        for (var j = 0; j < groups[i].length; j++) {
+          var rgb = void 0;
+
+          if (groups[i][j].pImp) {
+            rgb = this.hexToRGB('#f44336', 0.7);
+          } else {
+            var color = colors.splice(Math.floor(Math.random() * colors.length - 1), 1);
+            rgb = this.hexToRGB(color[0], 0.5);
+          }
+          console.log(groups[i][j].cellArray);
+          for (var k = 0; k < groups[i][j].cellArray.length; k++) {
+            var rect = this.mark(groups[i][j].cellArray[k].x, groups[i][j].cellArray[k].y, rgb);
+            console.log(rect);
+            groupLayer.add(rect);
+          }
+        }
+      }
+      console.log(groupLayer);
+      this.stage.add(groupLayer);
+    }
+
+    /**
+     * Converts a hex string to a rgba color string and returns it
+     * @param {string} hex - hex string color
+     * @param {string} alpha - opacity for the color
+     * @return {string} converted rgba color
+     */
+
+  }, {
+    key: 'hexToRGB',
+    value: function hexToRGB(hex, alpha) {
+      var r = parseInt(hex.slice(1, 3), 16);
+      var g = parseInt(hex.slice(3, 5), 16);
+      var b = parseInt(hex.slice(5, 7), 16);
+
+      if (alpha) {
+        return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+      } else {
+        return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+      }
     }
   }]);
 
   return Renderer;
 }();
 
-/**
- * Draws every group onto the kmap
- * @param {Object} ctx - the context which you want to draw to
- * @param {number} scale - the scale of the cells
- * @param {Array.Cell} groups - array of cells
- */
-
-
 exports.default = Renderer;
-function drawGroups(ctx, scale, groups) {
-  var colors = _chromaJs2.default.scale(['#9c27b0', '#3f51b5', '#03a9f4', '#009688', '#8bc34a', '#ffeb3b', '#ff9800']).colors(12);
-
-  for (var i = 0; i < groups.length; i++) {
-    var rgb = void 0;
-
-    for (var j = 0; j < groups[i].length; j++) {
-      if (groups[i][j].pImp) {
-        rgb = hexToRGB('#f44336', 0.7);
-      } else {
-        var color = colors.splice(Math.floor(Math.random() * colors.length - 1), 1);
-        rgb = hexToRGB(color[0], 0.5);
-      }
-
-      switch (groups[i][j].type) {
-        case '2x2':
-          draw2x2(ctx, scale, groups[i][j], rgb);
-          continue;
-          break;
-        case '2x4':
-          draw2x4(ctx, scale, groups[i][j], rgb);
-          continue;
-          break;
-        case '1x2':
-          draw1x2(ctx, scale, groups[i][j], rgb);
-          continue;
-          break;
-        case '1x4':
-          draw1x4(ctx, scale, groups[i][j], rgb);
-          continue;
-          break;
-        case '2x1':
-          draw2x1(ctx, scale, groups[i][j], rgb);
-          continue;
-          break;
-        case '4x1':
-          draw4x1(ctx, scale, groups[i][j], rgb);
-          continue;
-          break;
-        case '1x1':
-          mark(ctx, scale, groups[i][j].cellArray[0].x, groups[i][j].cellArray[0].y, 0, rgb);
-          continue;
-          break;
-        default:
-          console.log('error: ' + groups[i][j].type);
-          break;
-      }
-
-      for (var k = 0; k < groups[i][j].cellArray.length; k++) {
-        mark(ctx, scale, groups[i][j].cellArray[k].x, groups[i][j].cellArray[k].y, 0, rgb);
-      }
-    }
-  }
-}
-
-/**
- * Marks every cell with its current status
- * @param {Object} ctx - the context which you want to draw to
- * @param {number} scale - the scale of the cells
- * @param {Array.Cell} cells - array of cells
- */
-function drawTerms(ctx, scale, cells) {
-
-  for (var i = 0; i < cells.length; i++) {
-    for (var j = 0; j < cells[i].length; j++) {
-      ctx.font = '20pt Roboto';
-      ctx.fillText(cells[i][j].status, scale * (cells[i][j].x + 1) + scale / 2, scale * (cells[i][j].y + 1) + scale / 2);
-      ctx.font = '10pt Roboto';
-      ctx.fillText(cells[i][j].val, scale * (cells[i][j].x + 1) + scale / 4 * 3, scale * (cells[i][j].y + 1) + scale / 4 * 3);
-    }
-  }
-}
-
-/**
- * Marks a cell completely
- * @param {Object} ctx - the context which you want to draw to
- * @param {number} scale - the scale of the cell
- * @param {number} x - the x coord of the cell
- * @param {number} y - the y coord of the cell
- * @param {number} rotation - rotation of the cell
- * @param {string} color - the color of the cell
- */
-function mark(ctx, scale, x, y, rotation, color) {
-  // saves current context state
-  ctx.save();
-
-  // translates the origin of the context
-  ctx.translate((x + 1) * scale + scale / 2, (y + 1) * scale + scale / 2);
-  // rotates around the origin
-  ctx.rotate(rotation * Math.PI / 180);
-
-  // draws match color
-  ctx.beginPath();
-
-  ctx.fillStyle = color;
-  // subtracts to center the match color
-  ctx.fillRect(-scale / 2, -scale / 2, scale, scale);
-  ctx.fillStyle = '#000';
-
-  ctx.restore();
-}
-/**
- * Converts a hex string to a rgba color string and returns it
- * @param {string} hex - hex string color
- * @param {string} alpha - opacity for the color
- * @return {string} converted rgba color
- */
-function hexToRGB(hex, alpha) {
-  var r = parseInt(hex.slice(1, 3), 16);
-  var g = parseInt(hex.slice(3, 5), 16);
-  var b = parseInt(hex.slice(5, 7), 16);
-
-  if (alpha) {
-    return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
-  } else {
-    return 'rgb(' + r + ', ' + g + ', ' + b + ')';
-  }
-}
 
 }).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/Renderer.js","/modules")
-},{"./BinaryFunctions":9,"buffer":3,"chroma-js":4,"pBGvAp":7}],11:[function(require,module,exports){
+},{"./BinaryFunctions":9,"buffer":3,"chroma-js":4,"pBGvAp":7}],15:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
 

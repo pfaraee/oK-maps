@@ -216,10 +216,10 @@ export default class CellArray {
             }
           }
         }
-        console.log("foreign points: " + foreignPoints + " removal length: " + removalLength);
+        // console.log("foreign points: " + foreignPoints + " removal length: " + removalLength);
         // if foreign points > removalLength remove the subcube
         if(foreignPoints > removalLength) {
-          console.log("remove the point");
+          // console.log("remove the point");
           minterms[i].splice(j, 1); // removes that subcube
           j--;
         }
