@@ -1,12 +1,13 @@
 import Konva from 'konva';
 import Renderer from './modules/Renderer';
+import { tableTemplate } from './modules/Templates';
 
 // -------------------
 // Initial K-map setup
 // -------------------
 var minterms = [];
 var expansionType = 1;
-let numVars = 3;
+let numVars = 3; // default
 
 // render map
 let stage = new Konva.Stage({
@@ -15,8 +16,8 @@ let stage = new Konva.Stage({
   height: 500
 });
 
-let renderer = new Renderer(stage, 3); // 3 vars is default
-renderer.drawMap();
+let renderer = new Renderer(stage, numVars); 
+renderMap();
 
 // import CellArray from './modules/CellArray';
 // import { getExpansionFormula, decToBin, toGrayCode } from './modules/BinaryFunctions';
@@ -32,16 +33,16 @@ renderer.drawMap();
 
 // var formulaBox = document.getElementById('expansion');
 
-// // -----------------------------
-// // Sets up expansion type switch
-// // -----------------------------
-// var expansionTypeSwitch = document.getElementById('expansionType');
+// -----------------------------
+// Sets up expansion type switch
+// -----------------------------
+var expansionTypeSwitch = document.getElementById('expansionType');
 
-// expansionTypeSwitch.addEventListener('change', function (event) {
-//   expansionType = Number(!event.target.checked);
-//   cellArray.expansionType = expansionType;
-//   renderMap();
-// });
+expansionTypeSwitch.addEventListener('change', function (event) {
+  expansionType = Number(!event.target.checked);
+  // cellArray.expansionType = expansionType;
+  renderMap();
+});
 
 // ----------------------------
 // Slider and truth table setup
@@ -62,182 +63,75 @@ noUiSlider.create(slider, {
  }
 });
 
-slider.noUiSlider.on('update', function () {
-  renderer.vars = slider.noUiSlider.get();
+slider.noUiSlider.on('update', () => {
+  numVars = Number(slider.noUiSlider.get());
+  renderer.vars = numVars;
   renderer.drawMap();
-//   var truthTable = document.getElementById('truth-table');
 
-//   while(truthTable.firstChild){
-//     truthTable.removeChild(truthTable.firstChild);
-//   }
+  let truthTable = document.getElementById('truth-table');
 
-//   var tbl = document.createElement('table');
+  //resets truth table
+  while(truthTable.firstChild){
+    truthTable.removeChild(truthTable.firstChild);
+  } 
 
-//   var thead = document.createElement('thead');
+  console.log(numVars);
 
-//   var superHeadRow = document.createElement('tr');
+  truthTable.innerHTML = tableTemplate(numVars);
 
-//   let input = document.createElement('th');
-//   input.appendChild(document.createTextNode('Input'));
-//   input.setAttribute('colspan', slider.noUiSlider.get());
+  // cellArray = new CellArray(numVars, expansionType);
+  // scale = Renderer.calculateScale(width, numVars);
 
-//   let output = document.createElement('th');
-//   output.setAttribute('colspan', 3);
-//   output.appendChild(document.createTextNode('Output'));
+  //rewdraws map
+  renderMap();
 
-//   let number = document.createElement('th');
-//   number.setAttribute('colspan', 1);
+  // // default state of formula box
+  // var formulaBox = document.getElementById('expansion');
+  // formulaBox.innerHTML = '';
+  // let li = document.createElement('li');
+  // li.className = 'collection-item active';
+  // li.innerHTML = 'F =';
+  // formulaBox.appendChild(li);
 
-//   superHeadRow.appendChild(number);
-//   superHeadRow.appendChild(input);
-//   superHeadRow.appendChild(output);
+  // // rerenders map every time truth tables changes
+  // $('input:radio').click(function() {
+  //   console.time("Mark and recalculate map: ");
+  //   renderMap();
+  //   console.timeEnd("Mark and recalculate map: ");
+  // });
 
-//   thead.appendChild(superHeadRow);
-
-//   var tr = document.createElement('tr');
-//   // Creates headers for the truth table
-//   let numTh = document.createElement('th');
-//   numTh.appendChild(document.createTextNode('#'));
-
-//   tr.appendChild(numTh);
-//   for(let i = 1; i < slider.noUiSlider.get() + 1; i ++) {
-//     let th = document.createElement('th');
-//     th.appendChild(document.createTextNode(String.fromCharCode(65 + i - 1)));
-//     tr.appendChild(th);
-//   }
-
-//   let off = document.createElement('th');
-//   off.appendChild(document.createTextNode('0'));
-//   let on = document.createElement('th');
-//   on.appendChild(document.createTextNode('1'));
-//   let dontCare = document.createElement('th');
-//   dontCare.appendChild(document.createTextNode('X'));
-
-//   tr.appendChild(off);
-//   tr.appendChild(on);
-//   tr.appendChild(dontCare);
-
-//   thead.appendChild(tr);
-//   tbl.appendChild(thead);
-
-//   var tbody = document.createElement('tbody');
-//   for(let i = 0; i < Math.pow(2, slider.noUiSlider.get()); i++) {
-//     let tr = document.createElement('tr');
-
-//     let numTd = document.createElement('td');
-//     numTd.appendChild(document.createTextNode(i));
-//     tr.appendChild(numTd);
-
-//     var num = '' + i.toString(2);
-//     var pad = '0'.repeat(slider.noUiSlider.get()); // its just 5 0's for the max var nums
-//     var bin = pad.substring(0, pad.length - num.length) + num;
-
-//     var binArray = bin.split('');
-
-//     for (let i = 0; i < binArray.length; i++) {
-//       let td = document.createElement('td');
-//       td.appendChild(document.createTextNode(binArray[i]));
-//       tr.appendChild(td);
-//     }
-
-//     let td = document.createElement('td');
-//     let input1 = document.createElement('input');
-//     input1.setAttribute('name', 'group' + i);
-//     input1.setAttribute('type', 'radio');
-//     input1.setAttribute('id', 'OFF'+ i);
-//     input1.setAttribute('value', '0');
-//     input1.setAttribute('checked', 'checked');
-//     let label1 = document.createElement('label');
-//     label1.setAttribute('for', 'OFF' + i);
-//     td.appendChild(input1);
-//     td.appendChild(label1)
-
-//     let td2 = document.createElement('td');
-//     let input2 = document.createElement('input');
-//     input2.setAttribute('name', 'group' + i);
-//     input2.setAttribute('type', 'radio');
-//     input2.setAttribute('id', 'ON' + i);
-//     input2.setAttribute('value', '1');
-//     let label2 = document.createElement('label');
-//     label2.setAttribute('for', 'ON' + i);
-//     td2.appendChild(input2);
-//     td2.appendChild(label2);
-
-//     let td3 = document.createElement('td');
-//     let input3 = document.createElement('input');
-//     input3.setAttribute('name', 'group' + i);
-//     input3.setAttribute('type', 'radio');
-//     input3.setAttribute('id', 'DONTCARE' + i);
-//     input3.setAttribute('value', 'X');
-//     let label3 = document.createElement('label');
-//     label3.setAttribute('for', 'DONTCARE' + i);
-//     td3.appendChild(input3);
-//     td3.appendChild(label3);
-
-//     tr.appendChild(td);
-//     tr.appendChild(td2);
-//     tr.appendChild(td3);
-
-//     tbody.appendChild(tr);
-//   }
-
-//   tbl.appendChild(tbody);
-//   truthTable.appendChild(tbl);
-
-//   numVars = Number(slider.noUiSlider.get());
-//   cellArray = new CellArray(numVars, expansionType);
-//   scale = Renderer.calculateScale(width, numVars);
-
-//   //rewdraws map
-//   renderMap();
-
-//   // default state of formula box
-//   var formulaBox = document.getElementById('expansion');
-//   formulaBox.innerHTML = '';
-//   let li = document.createElement('li');
-//   li.className = 'collection-item active';
-//   li.innerHTML = 'F =';
-//   formulaBox.appendChild(li);
-
-//   // rerenders map every time truth tables changes
-//   $('input:radio').click(function() {
-//     console.time("Mark and recalculate map: ");
-//     renderMap();
-//     console.timeEnd("Mark and recalculate map: ");
-//   });
 });
 
-// function renderMap() {
-//   Renderer.reset(canvas);
-//   Renderer.drawMap(ctx, numVars, scale);
+function renderMap() {
+  renderer.drawMap();
 
-//   // resets map and returns formulas
-//   let formulas = calculateMap();
+  // resets map and returns formulas
+  // let formulas = calculateMap();
 
-//   formulaBox.innerHTML = '';
+  // formulaBox.innerHTML = '';
 
-//   // for(let i = 0; i < formulas.length; i ++) {
-//   //   let li = document.createElement('li');
+  // for(let i = 0; i < formulas.length; i ++) {
+  //   let li = document.createElement('li');
 
-//   //   li.className = 'collection-item';
-//   //   if(i === 0) li.className += ' active';
+  //   li.className = 'collection-item';
+  //   if(i === 0) li.className += ' active';
 
-//   //   li.dataset.formula = JSON.stringify(formulas[i]);
+  //   li.dataset.formula = JSON.stringify(formulas[i]);
 
-//   //   let formula = getExpansionFormula(formulas[i], numVars, cellArray.expansionType);
+  //   let formula = getExpansionFormula(formulas[i], numVars, cellArray.expansionType);
 
-//   //   li.appendChild(document.createTextNode(formula));
+  //   li.appendChild(document.createTextNode(formula));
 
-//   //   formulaBox.appendChild(li);
-//   // }
+  //   formulaBox.appendChild(li);
+  // }
 
-//   // initializeFormulaBox(formulaBox);
-//   let formula = getExpansionFormula(formulas[0], numVars, cellArray.expansionType);
-//   Renderer.drawGroups(ctx, scale, formulas);
+  // initializeFormulaBox(formulaBox);
+  // let formula = getExpansionFormula(formulas[0], numVars, cellArray.expansionType);
+  // Renderer.drawGroups(ctx, scale, formulas);
 
-//   // Terms rendered last so they are not covered by groups
-//   Renderer.drawTerms(ctx, scale, cellArray.cells);
-// }
+  // Terms rendered last so they are not covered by groups
+  // Renderer.drawTerms(ctx, scale, cellArray.cells);
+}
 
 // function calculateMap() {
 //   //resets cell array

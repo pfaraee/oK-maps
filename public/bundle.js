@@ -22022,6 +22022,8 @@ var _Renderer = require('./modules/Renderer');
 
 var _Renderer2 = _interopRequireDefault(_Renderer);
 
+var _Templates = require('./modules/Templates');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // -------------------
@@ -22029,7 +22031,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // -------------------
 var minterms = [];
 var expansionType = 1;
-var numVars = 3;
+var numVars = 3; // default
 
 // render map
 var stage = new _konva2.default.Stage({
@@ -22038,8 +22040,8 @@ var stage = new _konva2.default.Stage({
   height: 500
 });
 
-var renderer = new _Renderer2.default(stage, 3); // 3 vars is default
-renderer.drawMap();
+var renderer = new _Renderer2.default(stage, numVars);
+renderMap();
 
 // import CellArray from './modules/CellArray';
 // import { getExpansionFormula, decToBin, toGrayCode } from './modules/BinaryFunctions';
@@ -22055,16 +22057,16 @@ renderer.drawMap();
 
 // var formulaBox = document.getElementById('expansion');
 
-// // -----------------------------
-// // Sets up expansion type switch
-// // -----------------------------
-// var expansionTypeSwitch = document.getElementById('expansionType');
+// -----------------------------
+// Sets up expansion type switch
+// -----------------------------
+var expansionTypeSwitch = document.getElementById('expansionType');
 
-// expansionTypeSwitch.addEventListener('change', function (event) {
-//   expansionType = Number(!event.target.checked);
-//   cellArray.expansionType = expansionType;
-//   renderMap();
-// });
+expansionTypeSwitch.addEventListener('change', function (event) {
+  expansionType = Number(!event.target.checked);
+  // cellArray.expansionType = expansionType;
+  renderMap();
+});
 
 // ----------------------------
 // Slider and truth table setup
@@ -22086,181 +22088,73 @@ noUiSlider.create(slider, {
 });
 
 slider.noUiSlider.on('update', function () {
-  renderer.vars = slider.noUiSlider.get();
+  numVars = Number(slider.noUiSlider.get());
+  renderer.vars = numVars;
   renderer.drawMap();
-  //   var truthTable = document.getElementById('truth-table');
 
-  //   while(truthTable.firstChild){
-  //     truthTable.removeChild(truthTable.firstChild);
-  //   }
+  var truthTable = document.getElementById('truth-table');
 
-  //   var tbl = document.createElement('table');
+  //resets truth table
+  while (truthTable.firstChild) {
+    truthTable.removeChild(truthTable.firstChild);
+  }
 
-  //   var thead = document.createElement('thead');
+  console.log(numVars);
 
-  //   var superHeadRow = document.createElement('tr');
+  truthTable.innerHTML = (0, _Templates.tableTemplate)(numVars);
 
-  //   let input = document.createElement('th');
-  //   input.appendChild(document.createTextNode('Input'));
-  //   input.setAttribute('colspan', slider.noUiSlider.get());
+  // cellArray = new CellArray(numVars, expansionType);
+  // scale = Renderer.calculateScale(width, numVars);
 
-  //   let output = document.createElement('th');
-  //   output.setAttribute('colspan', 3);
-  //   output.appendChild(document.createTextNode('Output'));
+  //rewdraws map
+  renderMap();
 
-  //   let number = document.createElement('th');
-  //   number.setAttribute('colspan', 1);
+  // // default state of formula box
+  // var formulaBox = document.getElementById('expansion');
+  // formulaBox.innerHTML = '';
+  // let li = document.createElement('li');
+  // li.className = 'collection-item active';
+  // li.innerHTML = 'F =';
+  // formulaBox.appendChild(li);
 
-  //   superHeadRow.appendChild(number);
-  //   superHeadRow.appendChild(input);
-  //   superHeadRow.appendChild(output);
-
-  //   thead.appendChild(superHeadRow);
-
-  //   var tr = document.createElement('tr');
-  //   // Creates headers for the truth table
-  //   let numTh = document.createElement('th');
-  //   numTh.appendChild(document.createTextNode('#'));
-
-  //   tr.appendChild(numTh);
-  //   for(let i = 1; i < slider.noUiSlider.get() + 1; i ++) {
-  //     let th = document.createElement('th');
-  //     th.appendChild(document.createTextNode(String.fromCharCode(65 + i - 1)));
-  //     tr.appendChild(th);
-  //   }
-
-  //   let off = document.createElement('th');
-  //   off.appendChild(document.createTextNode('0'));
-  //   let on = document.createElement('th');
-  //   on.appendChild(document.createTextNode('1'));
-  //   let dontCare = document.createElement('th');
-  //   dontCare.appendChild(document.createTextNode('X'));
-
-  //   tr.appendChild(off);
-  //   tr.appendChild(on);
-  //   tr.appendChild(dontCare);
-
-  //   thead.appendChild(tr);
-  //   tbl.appendChild(thead);
-
-  //   var tbody = document.createElement('tbody');
-  //   for(let i = 0; i < Math.pow(2, slider.noUiSlider.get()); i++) {
-  //     let tr = document.createElement('tr');
-
-  //     let numTd = document.createElement('td');
-  //     numTd.appendChild(document.createTextNode(i));
-  //     tr.appendChild(numTd);
-
-  //     var num = '' + i.toString(2);
-  //     var pad = '0'.repeat(slider.noUiSlider.get()); // its just 5 0's for the max var nums
-  //     var bin = pad.substring(0, pad.length - num.length) + num;
-
-  //     var binArray = bin.split('');
-
-  //     for (let i = 0; i < binArray.length; i++) {
-  //       let td = document.createElement('td');
-  //       td.appendChild(document.createTextNode(binArray[i]));
-  //       tr.appendChild(td);
-  //     }
-
-  //     let td = document.createElement('td');
-  //     let input1 = document.createElement('input');
-  //     input1.setAttribute('name', 'group' + i);
-  //     input1.setAttribute('type', 'radio');
-  //     input1.setAttribute('id', 'OFF'+ i);
-  //     input1.setAttribute('value', '0');
-  //     input1.setAttribute('checked', 'checked');
-  //     let label1 = document.createElement('label');
-  //     label1.setAttribute('for', 'OFF' + i);
-  //     td.appendChild(input1);
-  //     td.appendChild(label1)
-
-  //     let td2 = document.createElement('td');
-  //     let input2 = document.createElement('input');
-  //     input2.setAttribute('name', 'group' + i);
-  //     input2.setAttribute('type', 'radio');
-  //     input2.setAttribute('id', 'ON' + i);
-  //     input2.setAttribute('value', '1');
-  //     let label2 = document.createElement('label');
-  //     label2.setAttribute('for', 'ON' + i);
-  //     td2.appendChild(input2);
-  //     td2.appendChild(label2);
-
-  //     let td3 = document.createElement('td');
-  //     let input3 = document.createElement('input');
-  //     input3.setAttribute('name', 'group' + i);
-  //     input3.setAttribute('type', 'radio');
-  //     input3.setAttribute('id', 'DONTCARE' + i);
-  //     input3.setAttribute('value', 'X');
-  //     let label3 = document.createElement('label');
-  //     label3.setAttribute('for', 'DONTCARE' + i);
-  //     td3.appendChild(input3);
-  //     td3.appendChild(label3);
-
-  //     tr.appendChild(td);
-  //     tr.appendChild(td2);
-  //     tr.appendChild(td3);
-
-  //     tbody.appendChild(tr);
-  //   }
-
-  //   tbl.appendChild(tbody);
-  //   truthTable.appendChild(tbl);
-
-  //   numVars = Number(slider.noUiSlider.get());
-  //   cellArray = new CellArray(numVars, expansionType);
-  //   scale = Renderer.calculateScale(width, numVars);
-
-  //   //rewdraws map
+  // // rerenders map every time truth tables changes
+  // $('input:radio').click(function() {
+  //   console.time("Mark and recalculate map: ");
   //   renderMap();
-
-  //   // default state of formula box
-  //   var formulaBox = document.getElementById('expansion');
-  //   formulaBox.innerHTML = '';
-  //   let li = document.createElement('li');
-  //   li.className = 'collection-item active';
-  //   li.innerHTML = 'F =';
-  //   formulaBox.appendChild(li);
-
-  //   // rerenders map every time truth tables changes
-  //   $('input:radio').click(function() {
-  //     console.time("Mark and recalculate map: ");
-  //     renderMap();
-  //     console.timeEnd("Mark and recalculate map: ");
-  //   });
+  //   console.timeEnd("Mark and recalculate map: ");
+  // });
 });
 
-// function renderMap() {
-//   Renderer.reset(canvas);
-//   Renderer.drawMap(ctx, numVars, scale);
+function renderMap() {
+  renderer.drawMap();
 
-//   // resets map and returns formulas
-//   let formulas = calculateMap();
+  // resets map and returns formulas
+  // let formulas = calculateMap();
 
-//   formulaBox.innerHTML = '';
+  // formulaBox.innerHTML = '';
 
-//   // for(let i = 0; i < formulas.length; i ++) {
-//   //   let li = document.createElement('li');
+  // for(let i = 0; i < formulas.length; i ++) {
+  //   let li = document.createElement('li');
 
-//   //   li.className = 'collection-item';
-//   //   if(i === 0) li.className += ' active';
+  //   li.className = 'collection-item';
+  //   if(i === 0) li.className += ' active';
 
-//   //   li.dataset.formula = JSON.stringify(formulas[i]);
+  //   li.dataset.formula = JSON.stringify(formulas[i]);
 
-//   //   let formula = getExpansionFormula(formulas[i], numVars, cellArray.expansionType);
+  //   let formula = getExpansionFormula(formulas[i], numVars, cellArray.expansionType);
 
-//   //   li.appendChild(document.createTextNode(formula));
+  //   li.appendChild(document.createTextNode(formula));
 
-//   //   formulaBox.appendChild(li);
-//   // }
+  //   formulaBox.appendChild(li);
+  // }
 
-//   // initializeFormulaBox(formulaBox);
-//   let formula = getExpansionFormula(formulas[0], numVars, cellArray.expansionType);
-//   Renderer.drawGroups(ctx, scale, formulas);
+  // initializeFormulaBox(formulaBox);
+  // let formula = getExpansionFormula(formulas[0], numVars, cellArray.expansionType);
+  // Renderer.drawGroups(ctx, scale, formulas);
 
-//   // Terms rendered last so they are not covered by groups
-//   Renderer.drawTerms(ctx, scale, cellArray.cells);
-// }
+  // Terms rendered last so they are not covered by groups
+  // Renderer.drawTerms(ctx, scale, cellArray.cells);
+}
 
 // function calculateMap() {
 //   //resets cell array
@@ -22325,8 +22219,8 @@ slider.noUiSlider.on('update', function () {
 //   }
 // }
 
-}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_7ed7f43a.js","/")
-},{"./modules/Renderer":10,"buffer":3,"konva":6,"pBGvAp":7}],9:[function(require,module,exports){
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_a5b50f3.js","/")
+},{"./modules/Renderer":10,"./modules/Templates":11,"buffer":3,"konva":6,"pBGvAp":7}],9:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 'use strict';
 
@@ -22806,4 +22700,54 @@ function hexToRGB(hex, alpha) {
 }
 
 }).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/Renderer.js","/modules")
-},{"./BinaryFunctions":9,"buffer":3,"chroma-js":4,"pBGvAp":7}]},{},[8])
+},{"./BinaryFunctions":9,"buffer":3,"chroma-js":4,"pBGvAp":7}],11:[function(require,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getVarTables = getVarTables;
+exports.getTableRows = getTableRows;
+var tableTemplate = exports.tableTemplate = function tableTemplate(vars) {
+  return '\n    <thead>\n      <tr>\n        <th colspan="1"></th>\n        <th colspan="' + vars + '">Input</th>\n        <th colspan="3">Output</th>\n      </tr>\n      <tr>\n        <th>#</th>\n        ' + getVarTables(vars) + '\n        <th>1</th>\n        <th>0</th>\n        <th>X</th>\n      </tr>\n    </thead>\n    <tbody>\n      ' + getTableRows(vars) + '\n    </tbody>\n  ';
+};
+
+function getVarTables(numVars) {
+  var string = '';
+
+  for (var i = 1; i < numVars + 1; i++) {
+    string += '<th>' + String.fromCharCode(65 + i - 1) + '</th>';
+  }
+
+  return string;
+};
+
+function getTableRows(numVars) {
+  var string = '';
+
+  for (var i = 0; i < Math.pow(2, numVars); i++) {
+    string += '<tr>';
+    string += '<td>' + i + '</td>';
+
+    var num = '' + i.toString(2);
+    var pad = '0'.repeat(numVars); // its just 5 0's for the max var nums
+    var bin = pad.substring(0, pad.length - num.length) + num;
+
+    var binArray = bin.split('');
+
+    for (var _i = 0; _i < binArray.length; _i++) {
+      string += '<td>' + binArray[_i] + '</td>';
+    }
+
+    string += '<td> \n                <input name="group' + i + '" type="radio" id="OFF' + i + '" value=0 checked>\n                <label for="OFF' + i + '"></label>\n              </td>';
+    string += '<td> \n                <input name="group' + i + '" type="radio" id="ON' + i + '" value=1 >\n                <label for="ON' + i + '"></label>\n              </td>';
+    string += '<td> \n                <input name="group' + i + '" type="radio" id="DONTCARE' + i + '" value=X >\n                <label for="DONTCARE' + i + '"></label>\n              </td>';
+    string += '</tr>';
+  }
+
+  return string;
+};
+
+}).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/modules/Templates.js","/modules")
+},{"buffer":3,"pBGvAp":7}]},{},[8])
