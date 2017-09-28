@@ -1,5 +1,11 @@
 @import "materialize";
 
+div#konvaC {
+  margin: 20px;
+  width: 500px;
+  height: 500px;
+}
+
 div#num-vars {
   margin-left: 20px;
   margin-right: 20px;
@@ -59,9 +65,7 @@ canvas#canvas {
 }
 
 .collection.expansion {
-  width: 400px;
   max-height: 200px;
-  margin: 0 auto;
   overflow-y: scroll !important;
 
   li.collection-item {

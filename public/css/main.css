@@ -6437,6 +6437,11 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
   .picker--time .picker__box {
     margin-bottom: 5em; } }
 
+div#konvaC {
+  margin: 20px;
+  width: 500px;
+  height: 500px; }
+
 div#num-vars {
   margin-left: 20px;
   margin-right: 20px;
@@ -6487,9 +6492,7 @@ canvas#canvas {
   right: 30px; }
 
 .collection.expansion {
-  width: 400px;
   max-height: 200px;
-  margin: 0 auto;
   overflow-y: scroll !important; }
   .collection.expansion li.collection-item {
     text-align: left; }
